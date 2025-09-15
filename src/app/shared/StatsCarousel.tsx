@@ -19,6 +19,7 @@ const StatsCarousel = () => {
       <div
         className="flex gap-12 animate-scroll whitespace-nowrap"
       >
+        
         {stats.map((item) => (
           <div
             key={item.id}

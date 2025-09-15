@@ -39,7 +39,7 @@ export default function Plans() {
        <PricingCard
         title="Starter"
         description="List your first property with ease."
-        price="$12"
+        price={`${isOn?"$10":"$12"}`}
         period="per month"
         buttonText="Get Started"
         features={[
@@ -57,7 +57,7 @@ export default function Plans() {
        <PricingCard
         title="Professional"
         description="Get more listings and recognition."
-        price="$24"
+        price={`${isOn?"$20":"$24"}`}
         period="per month"
         buttonText="Get Started"
         features={[
@@ -75,7 +75,7 @@ export default function Plans() {
        <PricingCard
         title="Enterprise"
         description="Certified property solutions at scale."
-        price="$200"
+        price={`${isOn?"$190":"$200"}`}
         period="per month"
         buttonText="Get Started"
         features={[

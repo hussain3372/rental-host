@@ -1,11 +1,14 @@
-import React from 'react'
+'use client'
+import LandingPage from "./landing/LandingPage";
+import Footer from "../Layout/Footer";
+import Header from "../Layout/Header";
 
-const page = () => {
+export default function Home() {
   return (
-    <div>
-      
-    </div>
-  )
+    <>
+      <Header />
+      <LandingPage />
+      <Footer />
+    </>
+  );
 }
-
-export default page

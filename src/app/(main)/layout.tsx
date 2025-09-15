@@ -1,11 +1,13 @@
-import React from 'react'
+import type { ReactNode } from "react";
 
-const layout = () => {
+type MainLayoutProps = {
+  children: ReactNode;
+};
+
+export default function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div>
-      
+    <div className="main-content">
+      {children}
     </div>
-  )
+  );
 }
-
-export default layout
