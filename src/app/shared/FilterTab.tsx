@@ -1,0 +1,34 @@
+"use client";
+
+import Image from "next/image";
+import React from "react";
+
+interface FilterTabProps {
+  label: string;
+  icon?: string;
+  onClick?: () => void;
+}
+
+const FilterTab: React.FC<FilterTabProps> = ({ label, icon, onClick }) => {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-2 px-4 py-2 rounded-md border border-gray-700 
+                 bg-[#0A0C0B] text-white font-medium transition cursor-pointer
+                 hover:bg-gray-800"
+    >
+      {icon && (
+        <Image
+          src={icon}
+          alt={label}
+          width={24}
+          height={24}
+          className="object-contain"
+        />
+      )}
+      <span>{label}</span>
+    </button>
+  );
+};
+
+export default FilterTab;
