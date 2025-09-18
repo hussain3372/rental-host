@@ -15,7 +15,7 @@ const stats: StatItem[] = [
 
 const StatsCarousel = () => {
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full max-w-[1320px] mx-auto overflow-hidden pt-[17px] pb-[15px] bg-black">
       <div
         className="flex gap-12 animate-scroll whitespace-nowrap"
       >
@@ -48,7 +48,7 @@ const StatsCarousel = () => {
               height={24}
               className="object-contain"
             />
-            <span>{item.text}</span>
+            <span className="leading-[24px] text-[20px] font-medium">{item.text}</span>
           </div>
         ))}
       </div>

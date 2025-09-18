@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import BlackButton from "../../shared/BlackButton";
+import Image from "next/image";
 
 const Testimonial = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -36,16 +37,27 @@ const Testimonial = () => {
   //   return () => clearInterval(interval);
   // }, [testimonials.length]);
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % testimonials.length);
-  };
+const nextSlide = () => {
+  setCurrentSlide((prev) => {
+    if (prev < testimonials.length - 1) {
+      return prev + 1;
+    }
+    return prev; 
+  });
+};
 
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
+const prevSlide = () => {
+  setCurrentSlide((prev) => {
+    if (prev > 0) {
+      return prev - 1;
+    }
+    return prev; 
+  });
+};
+
 
   return (
-    <div className="bg-[#121315] text-white max-w-[1440px] mx-auto px-6 md:px-[120px] py-6 md:py-[82px] flex items-center justify-center p-8">
+    <div className="bg-[#121315] text-white container-class px-6 md:px-[120px] py-6 md:py-[82px] flex items-center justify-center p-8">
       <div className="w-full">
         {/* Header */}
         <div className="flex items-center gap-2 mb-12">
@@ -85,18 +97,18 @@ const Testimonial = () => {
 
     {/* Right Side: Number + Arrows */}
     <div className="flex items-center gap-[10px]">
-      <div className="flex gap-[10px]">
+      <div className="flex gap-[10px] ">
         <button
           onClick={prevSlide}
-          className="w-[56px] h-[56px] rounded-[4px] border border-[#FFFFFF33] flex items-center justify-center p-2 opacity-100 transition-colors duration-200"
+          className="w-[56px] h-[56px] rounded-[4px] border border-[#FFFFFF33] flex items-center justify-center p-2 opacity-100 transition-colors duration-200 cursor-pointer"
         >
-          <img src="/images/arrow-left.png" alt="Previous" className="w-5 h-5" />
+          <Image src="/images/arrow-left.png" height={5} width={5} alt="Previous" className="w-5 h-5 " />
         </button>
         <button
           onClick={nextSlide}
-          className="w-[56px] h-[56px] rounded-[4px] border border-[#FFFFFF33] flex items-center justify-center p-2 opacity-100 transition-colors duration-200"
+          className="w-[56px] h-[56px] rounded-[4px] border border-[#FFFFFF33] flex items-center justify-center p-2 opacity-100 transition-colors duration-200 cursor-pointer"
         >
-          <img src="/images/arrow-right.png" alt="Next" className="w-5 h-5" />
+          <Image src="/images/arrow-right.png" height={5} width={5} alt="Next" className="w-5 h-5 " />
         </button>
       </div>
     </div>

@@ -1,12 +1,27 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import FilterTab from "@/app/shared/FilterTab";
 import Button from "@/app/shared/Button";
 import StatsCarousel from "@/app/shared/StatsCarousel";
+import { useRouter } from "next/navigation";
 
 const HeroSection = () => {
+  const router = useRouter();
+  const [searchInput, setSearchInput] = useState("");
+
+  const handleSearchClick = () => {
+    if (searchInput.trim() !== "") {
+      router.push(`/search-page?query=${encodeURIComponent(searchInput)}`);
+    }
+  };
+
+
+  // const handleSearchClick = () => {
+  //   router.push("/search-page");
+  // };
+
   const filters = [
     { id: "verified", label: "Verified Property", icon: "/images/search-by-property.png" },
     { id: "host", label: "Host Excellence", icon: "/images/search-by-exellence.png" },
@@ -14,9 +29,9 @@ const HeroSection = () => {
   ];
 
   return (
-    <div className="text-white overflow-hidden max-w-[1440px] mx-auto w-full">
+    <div className="text-white overflow-hidden container-class w-full">
       {/* Gradient Light Effects */}
-      <div className="inset-0 hidden sm:block pointer-events-none max-w-[1440px] mx-auto">
+      <div className="inset-0 hidden sm:block pointer-events-none container-class">
         <Image
           src="/images/gr1.png"
           alt="gradient"
@@ -60,7 +75,7 @@ const HeroSection = () => {
           alt="Background"
           className="inset-0 absolute !top-5 !h-[892px]"
           fill
-          style={{ transform: "translateY(-10px)" }}
+          style={{ transform: "translateY(-13px)" }}
         />
       </div>
 
@@ -125,10 +140,17 @@ const HeroSection = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="w-full sm:w-[600px] md:w-[700px] lg:w-[860px]  sm:h-[220px] bg-[#0A0C0B] rounded-[16px] sm:rounded-[24px] relative p-4">
+        <div className="w-full sm:w-[600px] md:w-[700px] lg:w-[860px]  sm:h-[220px]  bg-[#0A0C0B] rounded-[16px] sm:rounded-[24px] relative p-4">
+          {/* <input
+            type="text"
+            placeholder='"Search for certified and verified properties..."'
+            className="w-full h-[140px] max-w-[828px] px-6 py-4 outline-none text-[18px] leading-[24px] font-medium text-white  pb-[100px] ps-[16px] !pt-[16px]"
+          /> */}
           <input
             type="text"
             placeholder='"Search for certified and verified properties..."'
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="w-full h-[140px] max-w-[828px] px-6 py-4 outline-none text-[18px] leading-[24px] font-medium text-white  pb-[100px] ps-[16px] !pt-[16px]"
           />
 
@@ -141,12 +163,12 @@ const HeroSection = () => {
 
           {/* Button */}
           <div className="mt-4 sm:mt-0 sm:absolute sm:bottom-4 sm:right-4 w-full sm:w-auto">
-            <Button text="Search Certified Host" className="w-full sm:w-auto shadow-2xl" />
+            <Button text="Search Certified Host" onClick={handleSearchClick} className="w-full sm:w-auto shadow-2xl w-[204px] h-[44px]" />
           </div>
         </div>
 
         {/* Carousel */}
-        <div className="w-full pt-12 sm:pt-18 md:px-[97px] px-[20px] 2xl:px-[60px] pb-[80px] md:pb-[127px]">
+        <div className="w-full pt-12  md:pt-15 lg:pt-8 lg:px-[93px] md:px-[50px] px-[10px]  pb-[80px] md:pb-[127px]">
           <StatsCarousel />
         </div>
       </div>

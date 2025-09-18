@@ -9,6 +9,8 @@ type ButtonProps = {
   iconHeight?: number;
   onClick?: () => void;
   className?: string;
+  width?: string;  
+  height?: string; 
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -18,15 +20,17 @@ const Button: React.FC<ButtonProps> = ({
   iconHeight = 24,
   onClick,
   className,
+  width ,
+  height  ,
 }) => {
   return (
     <button
       onClick={onClick}
       className={`
         flex items-center gap-3
-        w-[204px] h-[44px] 
+        ${width} ${height} 
         px-5 py-3
-        rounded-[9px] 
+        rounded-[9px] cursor-pointer
         bg-[#EFFC76] text-[#121315] text-[16px] leading-[20px] font-normal
         transition duration-200 hover:opacity-90
         shadow-[0px_-39px_11px_0px_#00000003_inset,

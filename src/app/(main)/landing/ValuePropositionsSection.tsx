@@ -7,7 +7,7 @@ import BlackButton from "../../shared/BlackButton";
 
 const ValuePropositionsSection = () => {
   return (
-    <div className="bg-[#121315] max-w-[1440px] mx-auto text-white py-20 px-[10px] md:px-[23px] lg:px-[120px]">
+    <div className="bg-[#121315] container-class text-white py-20 px-[10px] md:px-[23px] lg:px-[120px]">
       <div className=" text-center">
         {/* Top Badge */}
         <div className="flex items-center justify-center">
@@ -63,7 +63,7 @@ const ValuePropositionsSection = () => {
               iconSrc="/images/react.png"
               iconWidth={56}
               iconHeight={56}
-              className="w-fll"
+              className="w-full max-w-[340px]"
             />
           </div>
 

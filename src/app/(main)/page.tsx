@@ -1,14 +1,14 @@
 'use client'
 import LandingPage from "./landing/LandingPage";
-import Footer from "../Layout/Footer";
-import Header from "../Layout/Header";
+// import Footer from "../layout/Footer";
+// import Header from "@/app/layout/Header";
 
 export default function Home() {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <LandingPage />
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

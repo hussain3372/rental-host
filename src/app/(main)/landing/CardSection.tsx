@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import BlackButton from "../../shared/BlackButton";
+import Image from "next/image";
 
 const steps = [
   {
@@ -28,14 +29,14 @@ function CardSection() {
     <div className="px-[120px] bg-[#121315] max-w-[1440px] mx-auto py-[80px] max-[1100px]:px-[80px] max-[1100px]:py-[60px] max-[430px]:px-[50px] max-[430px]:py-[0px]">
       {/* Top Section */}
       <div className="flex flex-col gap-[24px]">
-      
+
 
         <BlackButton
           text="How It Works"
           iconSrc="/images/how-it-works.png"
           iconWidth={32}
           iconHeight={32}
-          className="w-[194px]"
+          className="max-w-[200px]"
         />
         <span className="text-[#fff] text-[48px] font-medium leading-[56px] max-[425px]:leading-[24px] max-[425px]:text-[24px]">
           How Our Hosting Platform Works.
@@ -48,9 +49,9 @@ function CardSection() {
       {/* Cards Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-30 md:gap-y-[115px] md:gap-x-[17px] lg:gap-[24px] mt-[150px] sm:mt-[211px] ">
         {steps.map((step) => (
-          <div key={step.id} className="relative flex flex-col items-center text-left">
+          <div key={step.id} className="relative flex flex-col items-center text-left ">
             {/* Glow Background */}
-            <img
+            <Image
               src={step.glow}
               alt="glow"
               width={197}
@@ -59,16 +60,25 @@ function CardSection() {
             />
 
             {/* Card Header */}
-<div className="w-full flex items-center gap-3 bg-[#EFFC76] rounded-[24px] px-3 py-3 shadow-lg relative z-10 ">
+            <div className="w-full flex items-center gap-3 bg-[#EFFC76] rounded-[24px] px-3 py-3 shadow-lg relative z-10 ">
               {/* Number Circle */}
-              <div className="w-[48px] h-[48px] flex items-center justify-center rounded-full bg-[#2D2D2D] text-[24px] leading-[33px] text-[#EFFC76] font-medium shadow-lg">
+              <div
+                className="w-[48px] h-[48px] flex items-center justify-center rounded-full bg-[#2D2D2D] text-[24px] leading-[33px] text-[#EFFC76] font-medium"
+                style={{
+                  boxShadow: `  0px 48px 13px 0px #00000003, 0px 31px 12px 0px #0000000A, 0px 17px 10px 0px #00000026,  0px 8px 8px 0px #00000042,  0px 2px 4px 0px #0000004A,  5px -54px 22px 0px #00000008 inset, 3px -30px 18px 0px #0000001A inset,
+      1px -14px 14px 0px #0000002B inset,
+      0px -3px 7px 0px #00000033 inset
+    `,
+                }}
+              >
                 {step.id}
               </div>
-              <span className="text-[#121315] font-medium text-[20px] leading-[24px] ">{step.title}</span>
+
+              <span className="text-[#121315] font-semibold text-[20px] leading-[24px] ">{step.title}</span>
             </div>
 
             {/* Body Text */}
-            <p className="mt-4 text-[#FFFFFF99] text-[16px] leading-[22px] max-w-[320px]">
+            <p className="mt-4 text-[#D5D5D5] text-[18px] leading-[22px] max-w-[320px] font-medium">
               {step.desc}
             </p>
           </div>

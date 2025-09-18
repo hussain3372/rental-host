@@ -13,9 +13,9 @@ const FilterTab: React.FC<FilterTabProps> = ({ label, icon, onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 px-4 py-2 rounded-md border border-gray-700 
+      className="flex items-center gap-2 px-[10px] py-2 rounded-md border border-[#2A2B2E]
                  bg-[#0A0C0B] text-white font-medium transition cursor-pointer
-                 hover:bg-gray-800"
+                 hover:bg-[#2A2B2E]"
     >
       {icon && (
         <Image

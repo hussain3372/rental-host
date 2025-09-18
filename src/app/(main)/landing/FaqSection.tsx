@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import BlackButton from "../../shared/BlackButton";
+import Image from 'next/image';
 
 // Define type for each FAQ item
 interface FAQ {
@@ -91,9 +92,26 @@ const FaqSection = () => {
   }) => {
     const actualIndex = isLeft ? index : index + leftFAQsLength;
     const isOpen = openItems.has(actualIndex);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+useEffect(() => {
+  if (!contentRef.current) return;
+  const content = contentRef.current;
+  const scrollHeight = content.scrollHeight;
+
+  if (isOpen) {
+    // OPEN
+    content.style.maxHeight = `${scrollHeight}px`;
+    content.style.opacity = '1';
+  } else {
+    // CLOSE
+    content.style.maxHeight = '0px';
+    content.style.opacity = '0';
+  }
+}, [isOpen]);
 
     return (
-      <div className="mb-4">
+      <div className="mb-4 border-b border-[#333]">
         <button
           onClick={() => toggleItem(actualIndex)}
           className={`w-full text-left p-0 bg-transparent border-none cursor-pointer transition-colors duration-300 ${
@@ -106,15 +124,15 @@ const FaqSection = () => {
             </h3>
             <div className="flex-shrink-0 ml-2">
               {isOpen ? (
-                <img
+                <Image
                   src="/images/multiple-icon.png"
-                  alt="Expand"
+                  alt="Collapse"
                   width={24}
                   height={24}
                   className="transition-all duration-300 opacity-80 hover:opacity-100"
                 />
               ) : (
-                <img
+                <Image
                   src="/images/plus-icon.png"
                   alt="Expand"
                   width={24}
@@ -127,9 +145,12 @@ const FaqSection = () => {
         </button>
 
         <div
-          className={`overflow-hidden transition-all duration-300 linear ${
-            isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-          }`}
+          ref={contentRef}
+          className="overflow-hidden transition-all duration-500 ease-in-out"
+          style={{
+            maxHeight: isOpen ? 'none' : '0px',
+            opacity: isOpen ? 1 : 0,
+          }}
         >
           <div className="pb-4 pr-8">
             <p className="text-[#D5D5D5] font-medium text-[18px] leading-[22px]">
@@ -142,7 +163,7 @@ const FaqSection = () => {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto text-white">
+    <div className="container-class text-white">
       <div className="px-3 md:px-[80px] lg:px-[120px] py-12">
         <div className="pb-[64px]">
           <div className="flex items-center mb-[40px]">
@@ -155,11 +176,11 @@ const FaqSection = () => {
             />
           </div>
 
-          <h1 className="text-[20px] md:text-[30px] lg:text-[40px] sm:leading-[25px] md:leading-[30px] font-medium lg:leading-[48px] w-full">
+          <h1 className="text-[20px] md:text-[30px] lg:text-[48px] sm:leading-[25px] md:leading-[30px] font-medium lg:leading-[56px] w-full">
             What You need to know
           </h1>
 
-          <p className="text-[#FFFFFF99] pt-[24px] font-medium text-[18px] leading-[24px] max-[425px]:text-[14px] w-full max-w-[661px]">
+          <p className="text-[#FFFFFF99] pt-[24px] font-medium sm:text-[18px] leading-[22px] max-[425px] text-[14px] w-full max-w-[661px]">
             Quick answers to the most common questions about our certifications
             and services.
           </p>

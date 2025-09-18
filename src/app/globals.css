@@ -1,28 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #121315;
   --foreground: #171717;
 }
 
-@theme inline {
+/* @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
+} */
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #121315;
-    --foreground: #ededed;
+    --foreground: #121315;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 @keyframes scroll {
@@ -33,7 +32,10 @@ body {
     transform: translateX(-50%);
   }
 }
-
+.container-class{
+  max-width: 1540px;
+  margin: 0 auto;
+}
 .animate-scroll {
   display: flex;
   animation: scroll 10s linear infinite;
