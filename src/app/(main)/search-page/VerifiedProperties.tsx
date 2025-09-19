@@ -58,7 +58,8 @@ const VerifiedProperties: React.FC<VerifiedPropertiesProps> = ({ properties }) =
                     <div className="flex items-center gap-2 mb-4">
                         <BlackButton
                             text="Certified Properties"
-                            iconSrc="/images/how-it-works.png"
+                            
+                            iconSrc="/images/value.png"
                             iconWidth={32}
                             iconHeight={32}
                             className="w-[259px]"

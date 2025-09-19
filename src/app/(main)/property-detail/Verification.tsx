@@ -91,10 +91,10 @@ export default function Verification() {
           <div className='flex flex-col gap-[32px] sm:gap-[38px] lg:gap-[45px] w-full lg:w-auto'>
             {verification.map((item, index) => (
               <div key={item.id}>
-                <h2 className='font-semibold text-[20px] sm:text-[22px] lg:text-[24px] leading-[26px] sm:leading-[29px] lg:leading-[32px] text-white'>
+                <h2 className='font-semibold text-[20px] sm:text-[24px]  leading-[26px] sm:leading-[32px]  text-white'>
                   {item.value}
                 </h2>
-                <p className='pt-3 sm:pt-3.5 lg:pt-4 text-white opacity-60 text-[14px] sm:text-[15px] lg:text-[16px]'>
+                <p className='pt-3 sm:pt-3.5 lg:pt-4 font-medium text-[18px] sm:text-[20px]  leading-[20px] sm:leading-[24px]  text-[#FFFFFFCC]'>
                   {item.title}
                 </p>
                 {/* Divider - responsive width */}

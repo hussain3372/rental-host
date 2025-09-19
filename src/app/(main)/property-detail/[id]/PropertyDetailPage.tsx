@@ -148,7 +148,7 @@ const totalSteps = images.length;
           <button
             onClick={prevStep}
             disabled={currentStep === 0}
-            className="w-10 h-10 rounded border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] disabled:cursor-not-allowed cursor-pointer"
+            className="w-10 h-10 rounded border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] cursor-pointer"
           >
             <Image
               src="/images/left.png"
@@ -178,7 +178,7 @@ const totalSteps = images.length;
           <button
             onClick={nextStep}
             disabled={currentStep === totalSteps - 1}
-            className="w-10 h-10 rounded border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] disabled:cursor-not-allowed cursor-pointer" 
+            className="w-10 h-10 rounded border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] cursor-pointer" 
           >
             <Image src="/images/right.png" alt="Next" width={11} height={13} />
           </button>
@@ -186,7 +186,7 @@ const totalSteps = images.length;
       </div>
 
       {/* Property Description */}
-      <p className="text-white opacity-80 text-[16px] sm:text-[24px] leading-[25px] sm:leading-[32px]">
+      <p className="text-[#FFFFFFCC] text-[16px] sm:text-[24px] leading-[25px] sm:leading-[32px]  font-medium text-justify">
         {property.title} at {property.expiry} listing is guaranteed authentic
         and comes with a digital badge for instant checks. The Grand Oak
         Residence at 1234 Maplewood Avenue, Austin, Texas is a fully verified

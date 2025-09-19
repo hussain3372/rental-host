@@ -1,0 +1,567 @@
+"use client";
+import Image from "next/image";
+import React, { useState, useMemo } from "react";
+import { Table } from "@/app/shared/Tables";
+
+export default function Tracking() {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filterType, setFilterType] = useState<"certification" | "application">(
+    "certification"
+  );
+  const [searchTerm, setSearchTerm] = useState("");
+  const [certificationFilters, setCertificationFilters] = useState({
+    listedProperty: "",
+    status: "",
+    expiryDate: "",
+  });
+  const [applicationFilters, setApplicationFilters] = useState({
+    application: "",
+    submissionDate: "",
+  });
+
+  const trackingdata = [
+    {
+      id: 1,
+      title: "Skyline Residences",
+      percentage: "76",
+      bg: "#aae6ff",
+      minibg: "#2185AF",
+    },
+    {
+      id: 2,
+      title: "Coastal Hillside City",
+      percentage: "56",
+      bg: "#f5ff94",
+      minibg: "#BCCC29",
+    },
+    {
+      id: 3,
+      title: "Skyline Residences",
+      percentage: "64",
+      bg: "#CCFFA4",
+      minibg: "#6BBE2B",
+    },
+    {
+      id: 4,
+      title: "Skyline Residences",
+      percentage: "88",
+      bg: "#EFC8FF",
+      minibg: "#A745CE",
+    },
+  ];
+
+  const allCertificationData = [
+    {
+      "Property Name": "Coastal Hillside Estate",
+      Address: "762 Evergreen Terrace",
+      "Certificate Expiry Date": "Aug 12, 2025",
+      Status: "Verified",
+    },
+    {
+      "Property Name": "Coastal Hillside Estate",
+      Address: "762 Evergreen Terrace",
+      "Certificate Expiry Date": "Aug 12, 2025",
+      Status: "Near Expiry",
+    },
+    {
+      "Property Name": "Coastal Hillside Estate",
+      Address: "762 Evergreen Terrace",
+      "Certificate Expiry Date": "Aug 12, 2025",
+      Status: "Verified",
+    },
+    {
+      "Property Name": "Coastal Hillside Estate",
+      Address: "762 Evergreen Terrace",
+      "Certificate Expiry Date": "Aug 12, 2025",
+      Status: "Verified",
+    },
+    {
+      "Property Name": "Coastal Hillside Estate",
+      Address: "762 Evergreen Terrace",
+      "Certificate Expiry Date": "Aug 12, 2025",
+      Status: "Expired",
+    },
+  ];
+
+  const allApplicationData = [
+    {
+      "Application ID": "APP-001",
+      "Property Name": "Coastal Hillside Estate",
+      "Submission Date": "Aug 01, 2024",
+      Status: "In Progress",
+    },
+    {
+      "Application ID": "APP-002",
+      "Property Name": "Skyline Residences",
+      "Submission Date": "Jul 15, 2024",
+      Status: "Approved",
+    },
+    {
+      "Application ID": "APP-003",
+      "Property Name": "Urban Heights",
+      "Submission Date": "Jun 20, 2024",
+      Status: "Rejected",
+    },
+    {
+      "Application ID": "APP-004",
+      "Property Name": "Mountain View Complex",
+      "Submission Date": "Sep 05, 2024",
+      Status: "Pending Review",
+    },
+    {
+      "Application ID": "APP-005",
+      "Property Name": "Coastal Hillside Estate",
+      "Submission Date": "Aug 25, 2024",
+      Status: "In Progress",
+    },
+  ];
+
+  // Filter and search logic for certifications
+  const filteredCertificationData = useMemo(() => {
+    let filtered = allCertificationData;
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (item) =>
+          item["Property Name"]
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          item["Address"].toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply certification filters
+    if (certificationFilters.listedProperty) {
+      filtered = filtered.filter(
+        (item) => item["Property Name"] === certificationFilters.listedProperty
+      );
+    }
+
+    if (certificationFilters.status) {
+      filtered = filtered.filter(
+        (item) => item["Status"] === certificationFilters.status
+      );
+    }
+
+    if (certificationFilters.expiryDate) {
+      filtered = filtered.filter((item) =>
+        item["Certificate Expiry Date"].includes(
+          certificationFilters.expiryDate
+        )
+      );
+    }
+
+    return filtered;
+  }, [searchTerm, certificationFilters]);
+
+  // Filter and search logic for applications
+  // const filteredApplicationData = useMemo(() => {
+  //     let filtered = allApplicationData;
+
+  //     // Apply search filter
+  //     if (searchTerm) {
+  //         filtered = filtered.filter(item =>
+  //             item["Application ID"].toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //             item["Property Name"].toLowerCase().includes(searchTerm.toLowerCase())
+  //         );
+  //     }
+
+  //     // Apply application filters
+  //     if (applicationFilters.application) {
+  //         filtered = filtered.filter(item =>
+  //             item["Application ID"] === applicationFilters.application
+  //         );
+  //     }
+
+  //     if (applicationFilters.submissionDate) {
+  //         filtered = filtered.filter(item =>
+  //             item["Submission Date"].includes(applicationFilters.submissionDate)
+  //         );
+  //     }
+
+  //     return filtered;
+  // }, [searchTerm, applicationFilters]);
+
+  const tableControl = {
+    hover: true,
+    striped: false,
+    bordered: false,
+    shadow: false,
+    compact: false,
+    headerBgColor: "#252628", // Changed from #1a1c1e to #252628
+    headerTextColor: "white", // Changed from #9ca3af to white
+    rowBgColor: "black",
+    rowTextColor: "#e5e7eb",
+    hoverBgColor: "black",
+    hoverTextColor: "#ffffff",
+    fontSize: 13,
+    textAlign: "left" as const,
+    rowBorder: false,
+    headerBorder: true,
+    borderColor: "#374151",
+    highlightRowOnHover: true,
+  };
+
+  // Get unique values for dropdowns
+  const uniqueProperties = [
+    ...new Set(allCertificationData.map((item) => item["Property Name"])),
+  ];
+  const uniqueStatuses = [
+    ...new Set(allCertificationData.map((item) => item["Status"])),
+  ];
+  const uniqueApplications = [
+    ...new Set(allApplicationData.map((item) => item["Application ID"])),
+  ];
+  // const uniqueAppStatuses = [...new Set(allApplicationData.map(item => item["Status"]))];
+
+  const openCertificationFilter = () => {
+    setFilterType("certification");
+    setIsFilterOpen(true);
+  };
+
+  const openApplicationFilter = () => {
+    setFilterType("application");
+    setIsFilterOpen(true);
+  };
+
+  const handleApplyFilter = () => {
+    setIsFilterOpen(false);
+  };
+
+  const handleResetFilter = () => {
+    setCertificationFilters({
+      listedProperty: "",
+      status: "",
+      expiryDate: "",
+    });
+    setApplicationFilters({
+      application: "",
+      submissionDate: "",
+    });
+    setSearchTerm("");
+  };
+
+  return (
+    <>
+      <div className="pt-[20px] max-w-[1440px] mx-auto flex flex-col z-[10002] xl:flex-row items-center bg-[#0f1114]">
+        {/* Left Panel - Application Tracker */}
+        <div className="bg-black rounded-md w-full md:w-[354px] p-5 h-fit">
+          <div className="flex justify-between items-center">
+            <p className="font-semibold text-[16px] leading-[20px] text-white">
+              Application Tracker
+            </p>
+            <Image
+              src="/images/filter.png"
+              alt="filter"
+              height={34}
+              width={34}
+              className="cursor-pointer"
+              onClick={openApplicationFilter}
+            />
+          </div>
+          <div className="pt-[37px] flex flex-col gap-2">
+            {trackingdata.map((item) => (
+              <div className="flex items-center relative" key={item.id}>
+                <div
+                  className="h-[76.25px] pl-2 pb-3 text-[#121315CC] opacity-80 text-[14px] leading-[18px] font-semibold flex flex-col justify-end rounded-xl"
+                  style={{
+                    backgroundColor: item.bg,
+                    width: `${item.percentage}%`,
+                  }}
+                >
+                  <span>{item.title}</span>
+                </div>
+                <span
+                  className="w-10 h-[36px] z-[999] -ml-4 text-center flex items-center justify-center text-white text-[12px] leading-[16px] font-bold rounded-full"
+                  style={{ backgroundColor: item.minibg }}
+                >
+                  {item.percentage}%
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Panel - Certification Table */}
+        <div className="flex-1 bg-[#0f1114] max-w-[320px] sm:max-w-none p-5">
+          <div className="bg-[black] rounded-lg overflow-hidden">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-center pt-5 px-7">
+              <h2 className="text-white text-[16px] font-semibold leading-[20px]">
+                Certification
+              </h2>
+              <div className="flex items-center pt-3 sm:pt-0 gap-3">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="bg-[#2d3238] text-gray-300 placeholder-[#5a5b5d] w-[204px] rounded-md px-3 py-2 text-sm pl-8"
+                  />
+                  <div className="absolute left-2.5 top-2.5 w-4 h-4 text-gray-500">
+                    <Image
+                      src="/images/search.png"
+                      alt="search"
+                      width={16}
+                      height={16}
+                    />
+                  </div>
+                </div>
+                <button
+                  onClick={openCertificationFilter}
+                  className="h-[34px] cursor-pointer rounded-md bg-[#2e2f31] py-2 px-3 flex items-center gap-1"
+                >
+                  <span className="text-sm leading-[18px] font-medium text-white opacity-60">
+                    Filter
+                  </span>
+                  <Image
+                    src="/images/filter1.png"
+                    alt="filter"
+                    height={9}
+                    width={13}
+                  />
+                </button>
+              </div>
+            </div>
+
+            {/* Table using your global component */}
+            <div className="p-0 max-w-[300px] md:max-w-none">
+              <Table
+                data={filteredCertificationData}
+                control={tableControl}
+                showModal={false}
+                modalTitle="Property Details"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Full Page Overlay */}
+      {isFilterOpen && (
+        <div
+          className="fixed inset-0 bg-black/70 z-[100000]"
+          onClick={() => setIsFilterOpen(false)}
+        />
+      )}
+
+      {/* Right Slide Panel Filter */}
+      <div
+        className={`fixed top-0 right-0 h-full bg-[#0f1114] z-[100000] transform transition-transform duration-300 ease-in-out ${
+          isFilterOpen ? "translate-x-0" : "translate-x-full"
+        } w-[250px] sm:w-1/2 lg:w-2/5 xl:w-1/3`}
+      >
+        <div
+          className="h-full justify-between flex flex-col  bg-[#1a1a1a] overflow-y-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div>
+            <div className="flex justify-between items-center p-6 ">
+              <h3 className="text-white text-[20px] leading-[24px] font-medium ">
+                Apply Filter
+              </h3>
+              <button
+                onClick={handleResetFilter}
+                className="text-[#EFFC76] cursor-pointer text-[18px] leading-[22px] font-regular font-medium underline"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div className=" px-6 p">
+              <p className="text-white text-[16px] opacity-60  mb-6">
+                Refine listings to find the right property faster.
+              </p>
+
+              {/* Certification Filters */}
+              {filterType === "certification" && (
+                <div className="space-y-6">
+                  {/* Listed Property */}
+                  <div>
+                    <label className="text-white leading-[18px] text-sm font-medium mb-3 block">
+                      Listed property
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={certificationFilters.listedProperty}
+                        onChange={(e) =>
+                          setCertificationFilters((prev) => ({
+                            ...prev,
+                            listedProperty: e.target.value,
+                          }))
+                        }
+                        className="w-full bg-[#2d3238] text-gray-300 rounded-md px-4 py-3 text-sm border border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                      >
+                        <option value="">Select property</option>
+                        {uniqueProperties.map((property) => (
+                          <option key={property} value={property}>
+                            {property}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <svg
+                          className="w-4 h-4 text-gray-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Status */}
+                  <div>
+                    <label className="text-white leading-[18px] text-sm font-medium mb-3 block">
+                      Status
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={certificationFilters.status}
+                        onChange={(e) =>
+                          setCertificationFilters((prev) => ({
+                            ...prev,
+                            status: e.target.value,
+                          }))
+                        }
+                        className="w-full bg-[#2d3238] text-gray-300 rounded-md px-4 py-3 text-sm border border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                      >
+                        <option value="">Select status</option>
+                        {uniqueStatuses.map((status) => (
+                          <option key={status} value={status}>
+                            {status}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <svg
+                          className="w-4 h-4 text-gray-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expiry Date */}
+                  <div>
+                    <label className="text-white  text-sm font-medium mb-3 block">
+                      Expiry date
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="date"
+                        value={certificationFilters.expiryDate}
+                        onChange={(e) =>
+                          setCertificationFilters((prev) => ({
+                            ...prev,
+                            expiryDate: e.target.value,
+                          }))
+                        }
+                        className="w-full bg-[#2d3238] text-gray-300  rounded-md px-4 py-3 text-sm border border-[#404040] focus:border-[#EFFC76] focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Application Filters */}
+              {filterType === "application" && (
+                <div className="space-y-6">
+                  {/* Application */}
+                  <div>
+                    <label className="text-white text-sm font-medium mb-3 block">
+                      Application
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={applicationFilters.application}
+                        onChange={(e) =>
+                          setApplicationFilters((prev) => ({
+                            ...prev,
+                            application: e.target.value,
+                          }))
+                        }
+                        className="w-full bg-[#2d3238] text-gray-300 rounded-md px-4 py-3 text-sm border border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                      >
+                        <option value="">Select application</option>
+                        {uniqueApplications.map((application) => (
+                          <option key={application} value={application}>
+                            {application}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <svg
+                          className="w-4 h-4 text-gray-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Submission Date */}
+                  <div>
+                    <label className="text-white text-sm font-medium mb-3 block">
+                      Submission date
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="date"
+                        value={applicationFilters.submissionDate}
+                        onChange={(e) =>
+                          setApplicationFilters((prev) => ({
+                            ...prev,
+                            submissionDate: e.target.value,
+                          }))
+                        }
+                        className="w-full bg-[#2d3238] text-gray-300 rounded-md px-4 py-3 text-sm border border-[#404040] focus:border-[#EFFC76] focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Apply Button - Fixed at bottom */}
+          <div className="p-6  bg-[#1a1a1a]">
+            <button
+              onClick={handleApplyFilter}
+              className="w-full bg-[#EFFC76] cursor-pointer text-black font-semibold py-4 rounded-md hover:bg-[#e8f566] transition-colors text-sm"
+            >
+              Apply Filter
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

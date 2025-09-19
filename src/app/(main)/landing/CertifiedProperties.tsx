@@ -46,11 +46,11 @@ const CertifiedProperties = () => {
                     />
                 </div>
                 <div>
-                    <h2 className="text-[20px] md:text-[30px] lg:text-[40px] font-medium leading-snug w-full max-w-[810px]">
+                    <h2 className="text-[20px] md:text-[30px] lg:text-[48px] lg:leading-[56px] md:leading-[40px] leading-[36px] font-medium leading-snug w-full max-w-[810px]">
                         Explore Our Collection of Officially Certified and Verified Properties
                     </h2>
 
-                    <div className="flex justify-between items-center w-full ">
+                    {/* <div className="flex justify-between items-center w-full ">
                         <p className="text-[#FFFFFF99] font-medium text-[14px] leading-[22px] mt-6 w-full max-w-[688px] sm:text-[18px]">
                             Browse through a trusted selection of properties that meet the
                             highest standards of quality, authenticity, and reliability.
@@ -61,7 +61,21 @@ const CertifiedProperties = () => {
                         >
                             Explore More
                         </Link>
-                    </div>
+                    </div> */}
+                    <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-4 ">
+  <p className="text-[#FFFFFF99] font-medium text-[14px] leading-[22px] sm:text-[18px] mt-6 flex-1 w-full max-w-[688px]">
+    Browse through a trusted selection of properties that meet the
+    highest standards of quality, authenticity, and reliability.
+  </p>
+
+  <Link
+    href="/coming-soon"
+    className="text-[#EFFC76] font-normal underline whitespace-nowrap text-[20px] leading-[24px]"
+  >
+    Explore More
+  </Link>
+</div>
+
                 </div>
 
             </div>
@@ -136,10 +150,10 @@ export default CertifiedProperties;
 
 const CardFooter = ({ title, author }: { title: string; author: string }) => {
     return (
-        <div className="flex justify-between items-center mt-4">
+        <div className="flex justify-between items-center mt-4 cursor-pointer">
             {/* Left Side (Title + Author) */}
             <div>
-                <h3 className="font-medium sm:text-[24px] text-[20px] sm:leading-[28px] leading-5">
+                <h3 className="font-medium sm:text-[28px] text-[22px] sm:leading-[32px] leading-6">
                     {title}
                 </h3>
                 <p className="sm:text-[20px] text-[16px] sm:leading-[24px] leading-4 mt-2 text-[#FFFFFFCC]">
@@ -154,14 +168,14 @@ const CardFooter = ({ title, author }: { title: string; author: string }) => {
                     alt="Arrow"
                     width={24}
                     height={24}
-                    className="absolute inset-0  transition-all duration-500 ease-in-out group-hover:translate-x-6 group-hover:opacity-0"
+                    className="absolute inset-0  transition-all duration-500 ease-in-out group-hover:translate-x-6 group-hover:opacity-0 "
                 />
                 <Image
                     src="/images/yellow-arrow-right.svg"
                     alt="Arrow Hover"
                     width={32}
                     height={32}
-                    className="absolute inset-0 -translate-x-6 mt-[-6px] opacity-0 transition-all duration-500 ease-in-out group-hover:translate-x-0 group-hover:opacity-100"
+                    className="absolute inset-0 -translate-x-6 mt-[-6px] opacity-0 transition-all duration-500 ease-in-out group-hover:translate-x-0 group-hover:opacity-100 "
                 />
             </div>
         </div>

@@ -140,7 +140,7 @@ const HeroSection = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="w-full sm:w-[600px] md:w-[700px] lg:w-[860px]  sm:h-[220px]  bg-[#0A0C0B] rounded-[16px] sm:rounded-[24px] relative p-4">
+        <div className="w-full sm:w-[600px] md:w-[700px] lg:w-[860px]  sm:h-[220px] md:h-[273px] lg:h-auto  bg-[#0A0C0B] rounded-[16px] sm:rounded-[24px] relative p-4">
           {/* <input
             type="text"
             placeholder='"Search for certified and verified properties..."'
@@ -162,13 +162,26 @@ const HeroSection = () => {
           </div>
 
           {/* Button */}
-          <div className="mt-4 sm:mt-0 sm:absolute sm:bottom-4 sm:right-4 w-full sm:w-auto">
-            <Button text="Search Certified Host" onClick={handleSearchClick} className="w-full sm:w-auto shadow-2xl w-[204px] h-[44px]" />
+          {/* Button */}
+          <div
+            className="
+    mt-4 
+    sm:mt-0 sm:absolute sm:bottom-4 sm:right-4 
+    md:static md:flex md:justify-end 
+    w-full sm:w-auto
+  "
+          >
+            <Button
+              text="Search Certified Host"
+              onClick={handleSearchClick}
+              className="w-full sm:w-auto w-[204px] h-[44px]"
+            />
           </div>
+
         </div>
 
         {/* Carousel */}
-        <div className="w-full pt-12  md:pt-15 lg:pt-8 lg:px-[93px] md:px-[50px] px-[10px]  pb-[80px] md:pb-[127px]">
+        <div className="w-full pt-12  md:pt-15 lg:pt-9 lg:px-[93px] md:px-[50px] px-[10px]  pb-[80px] md:pb-[127px]">
           <StatsCarousel />
         </div>
       </div>

@@ -46,56 +46,50 @@ const ValuePropositionsSection = () => {
             legal side of hosting.
           </h2>
         </div>
+<div className="flex flex-wrap justify-center gap-[24px] mb-8 sm:px-[30px]">
+  <PropositionsCard
+    text="Earn guests trust instantly"
+    iconSrc="/images/react.png"
+    iconWidth={56}
+    iconHeight={56}
+    className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
+  />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[12px]  mb-8">
-          <div className="flex items-center w-full">
-            <PropositionsCard
-              text="Earn guests trust instantly"
-              iconSrc="/images/react.png"
-              iconWidth={56}
-              iconHeight={56}
-            />
-          </div>
+  <PropositionsCard
+    text="Boost your bookings"
+    iconSrc="/images/react.png"
+    iconWidth={56}
+    iconHeight={56}
+    className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
+  />
 
-          <div className="flex items-center w-full">
-            <PropositionsCard
-              text="Boost your bookings"
-              iconSrc="/images/react.png"
-              iconWidth={56}
-              iconHeight={56}
-              className="w-full max-w-[340px]"
-            />
-          </div>
+  <PropositionsCard
+    text="Get verified certifications"
+    iconSrc="/images/react.png"
+    iconWidth={56}
+    iconHeight={56}
+    className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
+  />
+</div>
 
-          <div className="flex items-center w-full">
-            <PropositionsCard
-              text="Get verified certifications"
-              iconSrc="/images/react.png"
-              iconWidth={56}
-              iconHeight={56}
-              className=" "
-            />
-          </div>
-        </div>
-        <div className="flex flex-wrap justify-center gap-4">
-          <div className="flex items-center space-x-3">
-            <PropositionsCard
-              text="Stay compliant with ease"
-              iconSrc="/images/react.png"
-              iconWidth={56}
-              iconHeight={56}
-            />
-          </div>
+<div className="flex flex-wrap justify-center gap-[24px]">
+  <PropositionsCard
+    text="Stay compliant with ease"
+    iconSrc="/images/react.png"
+    iconWidth={56}
+    iconHeight={56}
+    className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
+  />
 
-          <div className="flex items-center space-x-3">
-            <PropositionsCard
-              text="Certified badges and renewals"
-              iconSrc="/images/react.png"
-              iconWidth={56}
-              iconHeight={56}
-            />
-          </div>
-        </div>
+   <PropositionsCard
+    text="Certified badges and renewals"
+    iconSrc="/images/react.png"
+    iconWidth={56}
+    iconHeight={56}
+  className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(36%-16px)]"
+  />
+</div>
+
       </div>
     </div>
   );

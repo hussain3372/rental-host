@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface PricingCardProps {
   title: string;
@@ -43,7 +44,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
         transform: isHovered ? "translateY(-8px)" : "translateY(0)",
         transition: "all 0.3s ease",
       }}
-      className={`rounded-2xl max-w-[320px] md:max-w-[384px] shadow-lg p-[20px] sm:p-[36px] border-l-[1px] border-r-[1px] border-t-[2px] border-t ${bgColor} border-white ${textColor} flex flex-col justify-between relative overflow-hidden`}
+      className={`rounded-2xl max-w-[360px] sm:max-w-[384px] shadow-lg p-[20px] sm:p-[36px] border-l-[1px] border-r-[1px] border-t-[2px] border-t ${bgColor} border-white ${textColor} flex flex-col justify-between relative overflow-hidden`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -70,14 +71,17 @@ const PricingCard: React.FC<PricingCardProps> = ({
       </div>
 
       {/* Button */}
-      <button
-        className={`mt-6 w-full py-[10px] px-[20px] cursor-pointer rounded-[10px] font-medium relative z-10 transition-all duration-300 ${isHovered
+
+      <Link
+        href="/coming-soon"
+        className={`mt-6 w-full py-[10px] px-[20px] cursor-pointer rounded-[10px] font-medium relative z-10 transition-all duration-300 flex items-center justify-center ${isHovered
             ? "bg-[#EFFC76] text-black shadow-[inset_5px_-54px_22px_0px_#00000008,inset_3px_-30px_18px_0px_#0000001A,inset_1px_-14px_14px_0px_#0000002B]"
             : `${buttonBg} ${buttonTextColor} shadow-[inset_5px_-54px_22px_0px_#00000008,inset_3px_-30px_18px_0px_#0000001A,inset_1px_-14px_14px_0px_#0000002B]`
           }`}
       >
         {buttonText}
-      </button>
+      </Link>
+
 
 
       <div className={`bg-gradient-to-r -ml-0 flex text-center my-[32px] w-[250px] sm:w-[312px] h-[1px] from-transparent via-white to-transparent relative z-10 ${isHovered ? "opacity-80" : "opacity-100"
@@ -86,13 +90,13 @@ const PricingCard: React.FC<PricingCardProps> = ({
       {/* Features */}
       <ul className="space-y-2 text-sm relative z-10 max-w-[312px]">
         {features.map((feature, idx) => (
-         <li
-  key={idx}
-  className="flex items-start text-[15px] leading-[20px] font-medium space-x-[8px] transition-transform duration-300 hover:translate-x-1"
->
-  <Image width={18} height={13} src="/images/check.png" alt="check" className="mt-1" />
-  <span className="flex-1"> {feature} </span>
-</li>
+          <li
+            key={idx}
+            className="flex items-start text-[16px] leading-[20px] font-medium space-x-[8px] transition-transform duration-300 hover:translate-x-1"
+          >
+            <Image width={18} height={13} src="/images/check.png" alt="check" className="mt-1" />
+            <span className="flex-1 whitespace-nowrap"> {feature} </span>
+          </li>
 
         ))}
       </ul>

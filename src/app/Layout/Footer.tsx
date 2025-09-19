@@ -71,7 +71,7 @@ function Footer() {
 
         {/* CTA */}
         <div className="flex justify-center py-[72px]">
-          <Link href="/coming-soon" className="px-[40px] cursor-pointer font-medium py-[16px] text-[#121315] text-[18px] leading-[22px] bg-[#EFFC76] hover:bg-[#eef98f] rounded-md shadow-[inset_0_4px_6px_rgba(0,0,0,0.3)]">
+          <Link href="/auth/signup" className="px-[40px] cursor-pointer font-medium py-[16px] text-[#121315] text-[18px] leading-[22px] bg-[#EFFC76] hover:bg-[#eef98f] rounded-md shadow-[inset_0_4px_6px_rgba(0,0,0,0.3)]">
             Register Now
           </Link>
         </div>
@@ -104,9 +104,9 @@ function Footer() {
           <p className="text-[10px] sm:text-[12px] font-medium leading-[16px] text-[#FFFFFF66]">
             2025 @ Rental Host Certification. All rights reserved.
           </p>
-          <p className="font-medium text-[10px] sm:text-[12px] leading-[16px] text-[#FFFFFF66] hover:text-white  transition-colors">
+          <Link href="/coming-soon" className="font-medium text-[10px] sm:text-[12px] leading-[16px] text-[#FFFFFF66] hover:text-white  transition-colors">
             Privacy Policy
-          </p>
+          </Link>
         </div>
       </div>
     </div>

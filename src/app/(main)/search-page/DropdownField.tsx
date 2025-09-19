@@ -36,7 +36,7 @@ const DropdownField: React.FC<DropdownFieldProps> = ({ icon, label, options, onS
     <div ref={ref} className="relative z-50">
       <div
         onClick={() => setOpen(!open)}
-        className="flex items-center justify-between w-full sm:w-auto bg-[#18191B] text-white rounded-lg p-[14px] cursor-pointer border border-[#2A2B2E]"
+        className="flex items-center justify-between px-[14px] w-full sm:w-auto bg-[#18191B] text-white rounded-lg p-[14px] cursor-pointer border border-[#2A2B2E]"
       >
         <div className="flex items-center">
           <Image src={icon} alt={label} width={28} height={28} className="mr-2" />

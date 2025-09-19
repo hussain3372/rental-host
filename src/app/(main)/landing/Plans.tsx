@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import BlackButton from '@/app/shared/BlackButton';
-import ToggleSwitch from '@/app/shared/toggles';
 import PricingCard from '@/app/shared/PlanCard';
+import ToggleSwitch from '@/app/shared/toggles';
 
 export default function Plans() {
     const [isOn, setIsOn] = useState(false);
@@ -13,7 +13,7 @@ export default function Plans() {
         <div className='container-class pb-[20px] sm:pb-[96px]  px-3 md:px-[80px] lg:px-[120px] pt-[10px] md:pt-[96px]'>
             <div className=''>
                 <BlackButton
-                    text="Our plans"
+                    text="Our Plans"
                     iconSrc="/images/plan.png"
                     iconWidth={32}
                     iconHeight={32}

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
+import Link from 'next/link';
 export default function Unlock() {
   return (
     <div className='max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-[120px] pb-[20px] sm:pb-[80px] pt-[78px]'>
@@ -13,10 +14,13 @@ export default function Unlock() {
           <p className='max-w-[500px] font-medium text-sm sm:text-base md:text-lg lg:text-[18px] leading-relaxed lg:leading-[22px] pt-4 sm:pt-6 lg:pt-[32px] opacity-60'>
             Lorem ipsum dolor sit amet consectetur. Sit nisi proin dolor auctor. Amet sit libero ipsum natoque.
           </p>
-          <button className="mt-[32px] cursor-pointer shadow-2xl shadow-black  font-semibold text-[18px] sm:mt-8 lg:mt-10 bg-black text-[#c4c4c4] px-[20px] py-[11px] rounded-lg transition-colors duration-200">
-            Start Today
-          </button>
+          <Link href="/auth/signup">
+            <button className="mt-[32px] cursor-pointer shadow-2xl shadow-black font-semibold text-[18px] sm:mt-8 lg:mt-10 bg-black text-[#c4c4c4] px-[20px] py-[11px] rounded-lg transition-colors duration-200">
+              Start Today
+            </button>
+          </Link>
         </div>
+        
         
         {/* Image Section - Maintains natural dimensions */}
          <div className='flex-shrink-0 relative'>

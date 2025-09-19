@@ -110,10 +110,8 @@ const Searchsection: React.FC<SearchsectionProps> = ({
             />
           </div>
         </div>
-
-
         {/* Dropdown Filters */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 w-full sm:w-[500px] md:w-[700px] lg:w-[860px] mt-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 w-full sm:w-[500px] md:w-[700px] lg:w-[860px] mt-5 pr-4 sm:pr-[0px] sm:pl-[0px] pl-4">
           <DropdownField
             icon="/images/location.png"
             label={selectedLocation}
@@ -129,7 +127,7 @@ const Searchsection: React.FC<SearchsectionProps> = ({
           <DropdownField
             icon="/images/expiry-date.png"
             label={selectedExpiry}
-            options={["Expiry Date", "2025-09-30", "Aug 12, 2025", "2026-03-15"]}
+            options={["Expiry Date", "Mar 12, 2025", "Aug 12, 2025", "Jul 12, 2025"]}
             onSelect={setSelectedExpiry}
           />
         </div>
