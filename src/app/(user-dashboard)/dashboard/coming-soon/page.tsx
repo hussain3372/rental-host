@@ -3,7 +3,7 @@ import React from "react";
 
 const page = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#121315] text-white text-center px-4">
+    <div className="flex flex-col items-center justify-center min-h-screen  text-white text-center px-4">
       <h1 className="text-4xl md:text-6xl font-bold mb-6">🚀 Coming Soon</h1>
       <p className="text-lg md:text-xl mb-8 text-[#fff]">
         We are building something better to serve.
@@ -14,8 +14,8 @@ const page = () => {
     simplicity, and powerful features.
   </p>
       <Link
-        href="/"
-        className="px-6 py-3 rounded-lg bg-white text-[#000] font-semibold shadow-md hover:bg-[#f1f1f1] transition-all"
+        href="/dashboard"
+        className="px-6 py-3 z-[10000000] cursor-pointer rounded-lg bg-white text-[#000] font-semibold shadow-md hover:bg-[#f1f1f1] transition-all"
       >
         Go to Home
       </Link>

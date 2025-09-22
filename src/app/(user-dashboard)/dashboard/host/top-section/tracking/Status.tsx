@@ -42,13 +42,13 @@ export default function Status() {
   ];
 
   return (
-    <div className=" max-w-[1440px] mx-auto flex flex-col xl:flex-row gap-[24px]">
+    <div className=" flex flex-col xl:flex-row gap-[24px]">
       {/* Cards Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-[20px] flex-1">
         {application.map((item) => (
           <div
             key={item.id}
-            className="bg-black rounded-[12px] py-[20px] pr-[20px] pl-[5px] flex flex-col justify-between"
+            className="bg-[#121315] rounded-[12px] py-[20px] pr-[20px] pl-[20px] flex flex-col justify-between"
           >
             <div className="flex items-start justify-between">
               <div>
@@ -83,7 +83,7 @@ export default function Status() {
       </div>
 
       {/* Yellow Section */}
-      <div className="bg-[#EFFC76] lg:max-h-[304px] !z-0 w-full lg:max-w-[397px]  relative rounded-[24px] text-black flex flex-col justify-between overflow-hidden">
+      <div className="bg-[#EFFC76] lg:max-h-[304px] !z-0 w-full lg:max-w-[462px]  relative rounded-[24px] text-black flex flex-col justify-between overflow-hidden">
         <div className="p-[20px] flex flex-col justify-between !z-0 relative">
           <h3 className="font-medium text-[28px] leading-[32px] max-w-[391px]">
             Ready for your next property certification?

@@ -71,7 +71,7 @@ function Footer() {
 
         {/* CTA */}
         <div className="flex justify-center py-[72px]">
-          <Link href="/auth/signup" className="px-[40px] cursor-pointer font-medium py-[16px] text-[#121315] text-[18px] leading-[22px] bg-[#EFFC76] hover:bg-[#eef98f] rounded-md shadow-[inset_0_4px_6px_rgba(0,0,0,0.3)]">
+          <Link href="/auth/signup" className="px-[40px] cursor-pointer font-semibold py-[16px] text-[#121315] text-[18px] leading-[22px] bg-[#EFFC76] hover:bg-[#eef98f] rounded-md shadow-[inset_0_4px_6px_rgba(0,0,0,0.3)]">
             Register Now
           </Link>
         </div>

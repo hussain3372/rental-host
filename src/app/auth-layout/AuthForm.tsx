@@ -1,5 +1,5 @@
 import React, { useState , useEffect } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -37,7 +37,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
     otp: ["", "", "", "", "", ""],
   });
 
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(true);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
@@ -179,7 +179,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
     otp: {
       title: "Verify Your Email",
       subtitle: "We've sent a verification code to your email address. Please enter it below to continue.",
-      buttonText: "Verify Code",
+      buttonText: "Verify",
     },
     "reset-password": {
       title: "Create New Password",
@@ -189,7 +189,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
   };
 
   const currentConfig = config[mode];
-  const [timeLeft, setTimeLeft] = useState(90); // 1:30
+  const [timeLeft, setTimeLeft] = useState(120);
   const [showResend, setShowResend] = useState(false);
 
   useEffect(() => {
@@ -211,7 +211,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
   const handleResend = () => {
     toast.success("Code resent");
-    setTimeLeft(90); // restart
+    setTimeLeft(120); // restart
     setShowResend(false);
   };
 
@@ -220,14 +220,14 @@ const AuthForm: React.FC<AuthFormProps> = ({
       case "login":
         return (
           <>
-            <div className=" pt-[20px] max-w-[1000px] sm:pt-[40px]">
+            <div className=" pt-[20px] max-w-[1100px] sm:pt-[40px]">
               <label className="text-white font-medium leading-[18px] text-sm ">
                 Email
               </label>
               <input
                 type="email"
                 placeholder="Enter email"
-                className={`w-full xl:min-w-[640px] mt-[10px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.email ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
+                className={`w-full xl:min-w-[640px] text-[14px] mt-[10px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.email ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
               />
@@ -235,13 +235,13 @@ const AuthForm: React.FC<AuthFormProps> = ({
                 <p className="text-red-500 text-sm mt-1">{errors.email}</p>
               )}
             </div>
-            <div className="max-w-[1000px]">
+            <div className="max-w-[1100px]">
               <label className="text-white text-sm font-medium leading-[18px]">Password</label>
               <div className="relative">
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={!showPassword ? "text" : "password"}
                   placeholder="Enter password"
-                  className={`w-full xl:min-w-[640px] mt-[10px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.password ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 pr-12 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
+                  className={`w-full xl:min-w-[640px] text-[14px]  mt-[10px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.password ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 pr-12 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
                   value={formData.password}
                   onChange={(e) =>
                     handleInputChange("password", e.target.value)
@@ -250,9 +250,9 @@ const AuthForm: React.FC<AuthFormProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute cursor-pointer right-1 top-1/2 transform -translate-y-1/4 text-[#999999] "
+                  className="absolute cursor-pointer right-3 top-1/2 transform -translate-y-1/4 text-[#999999] "
                 >
-                  {showPassword ? (
+                  {!showPassword ? (
                     <Image
                       src="/images/eye-off.png"
                       alt="hide password"
@@ -277,12 +277,12 @@ const AuthForm: React.FC<AuthFormProps> = ({
       case "signup":
         return (
           <>
-            <div className="max-w-[1000px]">
+            <div className="max-w-[1100px]">
               <label className="text-white text-sm font-medium leading-[18px]">Email</label>
               <input
                 type="email"
                 placeholder="Enter email"
-                className={`w-full mt-[10px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.email ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
+                className={`w-full mt-[10px] text-[14px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.email ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
               />
@@ -290,13 +290,13 @@ const AuthForm: React.FC<AuthFormProps> = ({
                 <p className="text-red-500 text-sm mt-1">{errors.email}</p>
               )}
             </div>
-            <div className="space-y-1 max-w-[1000px]">
+            <div className="space-y-1 max-w-[1100px]">
               <label className="text-white text-sm font-medium leading-[18px]">Password</label>
               <div className="relative">
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={!showPassword ? "text" : "password"}
                   placeholder="Enter password"
-                  className={`w-full mt-[10px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.password ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 pr-12 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
+                  className={`w-full mt-[10px] text-[14px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.password ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 pr-12 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
                   value={formData.password}
                   onChange={(e) =>
                     handleInputChange("password", e.target.value)
@@ -307,7 +307,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute cursor-pointer right-3 top-6 transform  text-[#999999] "
                 >
-                  {showPassword ? (
+                  {!showPassword ? (
                     <Image
                       src="/images/eye-off.png"
                       alt="hide password"
@@ -323,7 +323,12 @@ const AuthForm: React.FC<AuthFormProps> = ({
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolut cursor-pointer right-4 top-1/2 transform -translate-y-1/2 "
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {!showPassword ?  <Image
+                      src="/images/eye-off.png"
+                      alt="hide password"
+                      width={20}
+                      height={20}
+                    /> : <Eye size={20} />}
                 </button>
               </div>
               {errors.password && (
@@ -335,12 +340,12 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
       case "forgot":
         return (
-          <div className="space-y-1 max-w-[1000px]">
+          <div className="space-y-1 max-w-[1100px]">
             <label className="text-white text-sm font-medium leading-[18px]">Email</label>
             <input
               type="email"
               placeholder="Enter email"
-              className={`w-full mt-[10px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.email ? 'border-red-500' : 'border-[#404040]'} rounded-lg px-4 py-3 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
+              className={`w-full mt-[10px] text-[14px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.email ? 'border-red-500' : 'border-[#404040]'} rounded-lg px-4 py-3 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
               value={formData.email}
               onChange={(e) => handleInputChange("email", e.target.value)}
             />
@@ -375,25 +380,22 @@ const AuthForm: React.FC<AuthFormProps> = ({
               {formatTime(timeLeft)}
             </p>
 
-            {showResend && (
               <div
-                onClick={handleResend}
-                className="font-semibold max-w-[602px] cursor-pointer text-[18px] leading-[22px] text-[#EFFC76] text-center pt-[40px] flex !justify-center"
+                className="font-semibold max-w-[602px] text-[18px] leading-[22px] text-[#EFFC76] text-center pt-[40px] flex !justify-center"
               >
-                <p className="text-center"> Resend Link </p>
+                <button onClick={handleResend} disabled={!showResend} className={`"text-center underline ${showResend?"cursor-pointer":"cursor-not-allowed opacity-50"}"`}> Resend Link </button>
               </div>
-            )}
           </div>
         );
 
       case "reset-password":
         return (
           <>
-            <div className="space-y-1 max-w-[1000px]">
+            <div className="space-y-1 max-w-[1100px]">
               <label className="text-white text-sm font-medium  leading-[18px]">New password</label>
               <div className="relative">
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={!showPassword ? "text" : "password"}
                   placeholder="Enter new password"
                   className={`w-full mt-[10px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.password ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 pr-12 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
                   value={formData.password}
@@ -406,14 +408,19 @@ const AuthForm: React.FC<AuthFormProps> = ({
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 cursor-pointer top-6 transform  text-gray-500 hover:text-white"
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {!showPassword ?  <Image
+                      src="/images/eye-off.png"
+                      alt="hide password"
+                      width={20}
+                      height={20}
+                    /> : <Eye size={20} />}
                 </button>
               </div>
               {errors.password && (
                 <p className="text-red-500 text-sm mt-1">{errors.password}</p>
               )}
             </div>
-            <div className="space-y-1 max-w-[1000px]">
+            <div className="space-y-1 max-w-[1100px]">
               <label className="text-white text-sm font-medium leading-[18px] ">Confirm new password</label>
               <div className="relative">
                 <input
@@ -455,7 +462,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
   return (
     <div className="min-h-screen  bg-[#121315] xl:gap-[80px] flex flex-col lg:flex-row">
 {/* Left Panel */}
-<div className="flex items-center pl-[20px] md:pl-[80px] p-8 lg:w-1/2">
+<div className="flex items-center pl-[20px] md:pl-[80px] py-8  lg:w-1/2">
   <div className="w-full max-w-[640px] space-y-8">
     {/* Logo */}
     <div className="flex items-center space-x-2 ">
@@ -543,10 +550,13 @@ const AuthForm: React.FC<AuthFormProps> = ({
       <button
         type="submit"
         disabled={loading}
-        className=" bg-[#EFFC76] mt-[40px] mb-[85px] cursor-pointer text-[#101010] py-4 px-[40px] inline rounded-xl hover:bg-yellow-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-inner font-semibold text-[18px] leading-[22px]"
+        className=" bg-[#EFFC76] yellow-btn mt-[40px]  cursor-pointer text-[#101010] py-4 px-[40px] inline rounded-xl  transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-inner font-semibold text-[18px] leading-[22px]"
       >
         {loading ? "Please wait..." : currentConfig.buttonText}
       </button>
+      <div className={`py-[60px] ${mode==="signup"||mode==="login"||mode==="forgot"?"block":"hidden"}`}>
+       <p className="text-white/60 font-regular text-[16px] leading-[20px]">   {mode === "signup" ? "Already have an account?" : mode === "forgot" ? "Remember your password?" : "Don't have an account?"} <Link className="text-[#EFFC76] font-bold" href={mode==="signup"||mode==="forgot"?"/auth/login":"/auth/signup"}>{ mode==="signup"?"Login":mode==="forgot"?"Login":"Signup"}</Link> </p>
+      </div>
     </form>
 
     {/* Social Login for Signup */}

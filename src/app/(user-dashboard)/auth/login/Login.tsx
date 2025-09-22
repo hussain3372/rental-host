@@ -5,7 +5,7 @@ import AuthForm from "@/app/auth-layout/AuthForm"
 export default function Login() {
   return (
     <div>
-       <AuthForm mode="login" onSubmit={()=>window.location.href='/'} />
+       <AuthForm mode="login" onSubmit={()=>window.location.href='/dashboard'} />
     </div>
   )
 }

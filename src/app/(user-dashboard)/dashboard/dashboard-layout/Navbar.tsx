@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 interface NavbarProps {
@@ -10,9 +11,9 @@ export function Navbar({ isCollapsed }: NavbarProps) {
     <>
       {/* Desktop Navbar (unchanged) */}
       <nav
-        className={`bg-[#111] z-[100] fixed text-white hidden lg:block transition-all px-6 py-4 duration-300 ease-in-out`}
+        className={` z-[1000] w-full bg-[#0A0C0B] fixed text-white hidden lg:block transition-all pl-5 pr-5  py-4 duration-300 ease-in-out`}
         style={{
-          width: isCollapsed ? "calc(100vw - 70px)" : "calc(100vw - 266px)",
+          width: isCollapsed ? "calc(100vw - 150px)" : "calc(100vw - 279px)",
         }}
       >
         <div className="flex justify-between items-center  border-b border-b-[#3b3d3c]  ">
@@ -26,13 +27,15 @@ export function Navbar({ isCollapsed }: NavbarProps) {
 
           {/* Right side */}
           <div className="flex items-center gap-3">
-            <Image
-              src="/images/person.png"
-              alt="profile pic"
-              height={40}
-              width={40}
-              className="rounded-full object-cover"
-            />
+            <Link href="/dashboard/profile" className="h-10 w-10">
+              <Image
+                src="/images/person.png"
+                alt="profile pic"
+                height={32}
+                width={32}
+                className="rounded-full object-cover h-10 w-10"
+              />
+            </Link>
             <div>
               <p className="font-medium text-[14px] leading-[18px]">John Deo</p>
               <p className="text-[14px] leading-[18px] text-white/60">
@@ -47,19 +50,19 @@ export function Navbar({ isCollapsed }: NavbarProps) {
       <nav className="fixed top-0 left-0 w-full text-white bg-[#111] lg:hidden z-50">
         <div className="flex justify-between items-center px-4 py-3">
           {/* Left side */}
-          <div className="">
-            
-          </div>
+          <div className=""></div>
 
           {/* Right side */}
           <div className="flex items-center gap-2">
-            <Image
-              src="/images/person.png"
-              alt="profile pic"
-              height={32}
-              width={32}
-              className="rounded-full object-cover"
-            />
+            <Link href="/dashboard/profile">
+              <Image
+                src="/images/person.png"
+                alt="profile pic"
+                height={32}
+                width={32}
+                className="rounded-full object-cover"
+              />
+            </Link>
             <div className="flex flex-col">
               <p className="text-[13px] font-medium">John Deo</p>
               <p className="text-[12px] text-white/60">johndeo@gmail.com</p>

@@ -4,7 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Menu } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-
+import SearchDrawer from "@/app/shared/SearchDrawer";
+import { allProperties } from "@/app/(main)/search-page/data/properties";
 interface SidebarProps {
   onCollapseChange: (isCollapsed: boolean) => void;
 }
@@ -28,7 +29,7 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
   const toggleMobileMenu = () => {
     setIsMobileOpen((prev) => !prev);
   };
-
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -50,197 +51,365 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
   return (
     <>
       {/* Mobile top bar */}
-      <div className="lg:hidden flex items-center z-[100] justify-between px-4 py-3 border-b fixed w-full">
+      <div className="lg:hidden flex items-center z-[100] justify-between px-4 py-3 border-b fixed w-full ">
         <button onClick={toggleMobileMenu} className="text-white">
           <Menu size={28} />
         </button>
       </div>
 
-      <div className="flex">
+      <div className="flex bg-[#121315] relative">
         {/* Sidebar */}
         <div
           ref={sidebarRef}
-          className={`pt-[24px] mt-[40px] sm:mt-0 !overflow-y-auto px-[20px] ${
-            isCollapsed ? 'w-[70px]' : 'w-[266px]'
-          } border-r h-[100vh] overflow-y-auto border-r-[#222325] fixed flex flex-col
+          className={`pt-[24px] bg-[#121315] mt-[40px] sm:mt-0 px-[20px] ${
+            isCollapsed ? 'flex items-center w-[100px]' : 'w-[266px]'
+          } border-r h-[100vh] overflow-y-auto overflow-x-hidden border-r-[#222325] fixed flex flex-col
           transition-all duration-300 ease-in-out z-30
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} 
           lg:translate-x-0`}
         >
           {/* Header */}
           <div className="justify-between items-center mb-[48px] flex">
-            {!isCollapsed && (
-              <Image
-                onClick={toggleCollapse}
-                src="/images/auth-logo.png"
-                alt="Logo"
-                width={53}
-                height={31}
-                className="cursor-pointer hover:scale-110 h-auto w-auto transition-transform duration-200"
-              />
-            )}
             <Image
               onClick={toggleCollapse}
-              src="/images/narrow.png"
-              alt="Collapse"
-              width={28}
-              height={32}
+              src="/images/auth-logo.png"
+              alt="Logo"
+              width={53}
+              height={31}
               className="cursor-pointer hover:scale-110 h-auto w-auto transition-transform duration-200"
             />
           </div>
 
           {/* Search & Notifications */}
-          <div className="border-b border-b-[#3f4041] pb-[32px] mb-[32px]">
-            <div className="flex justify-between items-center group cursor-pointer mb-[20px]">
-              <Link href="/search" className="flex gap-[8px] items-center">
-                <Image
-                  src="/images/search.png"
-                  alt="Search"
-                  width={16}
-                  height={16}
-                  className="opacity-80 group-hover:opacity-100 h-auto w-auto transition-opacity"
-                />
-                <p className={`font-normal text-[16px] leading-[20px] text-[#ffffff] transition-colors group-hover:text-[#eefb75] ${isCollapsed ? 'hidden' : 'block'}`}>
+          <div className="border-b border-b-[#3f4041] pb-[32px] mb-[32px] ml-[-14px]">
+            {/* Search */}
+            <Link
+              href="/search"
+              className={`flex justify-between items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${
+                isActive('/search') ? 'bg-[#4a5439]' : 'hover:bg-[#4a5439]'
+              }`}
+            >
+              <div className="flex gap-[8px] items-center">
+                <div className="relative w-[20px] h-[20px]">
+                  <Image
+                    src="/images/search.png"
+                    alt="Search"
+                    width={isCollapsed ? 28 : 16}
+                    height={isCollapsed ? 28 : 16}
+                    className={`opacity-80 group-hover:opacity-0 absolute transition-opacity ${
+                      isActive('/search') ? 'opacity-0' : ''
+                    }`}
+                  />
+                  <Image
+                    src="/images/search.png"
+                    alt="Search"
+                    width={isCollapsed ? 28 : 16}
+                    height={isCollapsed ? 28 : 16}
+                    className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${
+                      isActive('/search') ? 'opacity-100' : ''
+                    }`}
+                  />
+                </div>
+                <p
+                  className={`font-normal text-[16px] leading-[20px] text-[#ffffff] transition-colors group-hover:text-[#eefb75] ${
+                    isCollapsed ? 'hidden' : 'block'
+                  } ${isActive('/search') ? 'text-[#eefb75]' : ''}`}
+                >
                   Search
                 </p>
-              </Link>
-              <div className={`flex gap-[4px] ${isCollapsed ? 'hidden' : 'block'}`}>
+              </div>
+              <div
+                className={`flex gap-[4px] ${
+                  isCollapsed ? 'hidden' : 'block'
+                }`}
+              >
                 <div className="w-[20px] h-[20px] bg-[#3f4041] rounded-[3px] border-b border-b-white flex items-center justify-center">
-                  <span className="text-[#ffffff] text-[10px] font-normal">⌘</span>
-                </div>
-                <div className="w-[20px] h-[20px] bg-[#3f4041] rounded-[3px] border-b border-b-white flex items-center justify-center">
-                  <span className="text-[#ffffff] text-[10px] font-normal">K</span>
+                  <span className="text-[#ffffff] text-[10px] font-normal">
+                    K
+                  </span>
                 </div>
               </div>
-            </div>
+            </Link>
 
-            <div className="flex justify-between items-center group cursor-pointer">
-              <Link href="/dashboard/notification" className="flex gap-[8px] items-center">
-                <Image
-                  src="/images/notification.png"
-                  alt="Notifications"
-                  width={16}
-                  height={16}
-                  className="opacity-80 group-hover:opacity-100 transition-opacity"
-                />
-                <p className={`font-normal text-[16px] leading-[20px] text-[#ffffff] transition-colors group-hover:text-[#eefb75] ${isCollapsed ? 'hidden' : 'block'}`}>
+            {/* Notifications */}
+            <Link
+              href="/dashboard/notifications"
+              className={`flex justify-between items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 ${
+                isActive('/dashboard/notifications') ? 'bg-[#4a5439]' : 'hover:bg-[#4a5439]'
+              }`}
+            >
+              <div className="flex gap-[8px] items-center">
+                <div className="relative w-[20px] h-[20px]">
+                  <Image
+                    src="/images/notification.png"
+                    alt="Notifications"
+                    width={isCollapsed ? 28 : 16}
+                    height={isCollapsed ? 28 : 16}
+                    className={`opacity-80 group-hover:opacity-0 absolute transition-opacity ${
+                      isActive('/dashboard/notifications') ? 'opacity-0' : ''
+                    }`}
+                  />
+                  <Image
+                    src="/images/notification-yellow.svg"
+                    alt="Notifications"
+                    width={isCollapsed ? 28 : 14}
+                    height={isCollapsed ? 28 : 14}
+                    className={`opacity-0 ml-[1px] mt-[1px] group-hover:opacity-100 absolute transition-opacity ${
+                      isActive('/dashboard/notifications') ? 'opacity-100' : ''
+                    }`}
+                  />
+                </div>
+                <p
+                  className={`font-normal text-[16px] leading-[20px] ${
+                    isActive('/dashboard/notifications')
+                      ? 'text-[#eefb75]'
+                      : 'text-[#ffffff] group-hover:text-[#eefb75]'
+                  } ${isCollapsed ? 'hidden' : 'block'}`}
+                >
                   Notifications
                 </p>
-              </Link>
-              <div className={`w-[20px] h-[20px] bg-[#D84725] rounded-[4px] border-b border-b-white flex items-center justify-center transition-transform duration-200 group-hover:scale-105 ${isCollapsed ? 'hidden' : 'flex'}`}>
+              </div>
+              <div
+                className={`w-[20px] h-[20px] bg-[#D84725] rounded-[4px] border-b border-b-white flex items-center justify-center transition-transform duration-200 group-hover:scale-105 ${
+                  isCollapsed ? 'hidden' : 'flex'
+                }`}
+              >
                 <span className="text-[#ffffff] text-[10px] font-medium">8</span>
               </div>
-            </div>
+            </Link>
           </div>
 
           {/* Main Navigation */}
           <div className="flex-1 ml-[-14px]">
             {/* Home */}
-            <Link href="/dashboard/host" className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard/host') ? 'bg-[#4a5439]' : 'hover:bg-[#4a5439]'}`}>
-              <Image
-                src={isActive('/dashboard/host') ? "/images/home.png" : "/images/home-simple.png"}
-                alt="Home"
-                width={20}
-                height={20}
-                className="opacity-100"
-              />
-              <p className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/host') ? 'text-[#eefb75]' : 'text-[#ffffff] group-hover:text-[#eefb75]'} ${isCollapsed ? 'hidden' : 'block'}`}>
+            <Link
+              href="/dashboard"
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${
+                isActive('/dashboard')
+                  ? 'bg-[#4a5439]'
+                  : 'hover:bg-[#4a5439]'
+              }`}
+            >
+              <div className="relative w-[20px] h-[20px]">
+                <Image
+                  src="/images/home-simple.png"
+                  alt="Home"
+                  width={isCollapsed ? 28 : 16}
+                  height={isCollapsed ? 28 : 16}
+                  className={`opacity-100 group-hover:opacity-0 ml-[2px] mt-[2px] absolute transition-opacity ${
+                    isActive('/dashboard') ? 'hidden' : ''
+                  }`}
+                />
+                <Image
+                  src="/images/home.png"
+                  alt="Home"
+                  width={isCollapsed ? 28 : 21}
+                  height={isCollapsed ? 28 : 21}
+                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${
+                    isActive('/dashboard') ? 'opacity-100' : ''
+                  }`}
+                />
+              </div>
+              <p
+                className={`font-normal text-[16px] leading-[20px] ${
+                  isActive('/dashboard')
+                    ? 'text-[#eefb75]'
+                    : 'text-[#ffffff] group-hover:text-[#eefb75]'
+                } ${isCollapsed ? 'hidden' : 'block'}`}
+              >
                 Home
               </p>
             </Link>
 
             {/* Applications */}
-            <Link href="/dashboard/coming-soon" className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard/applications') ? 'bg-[#4a5439]' : 'hover:bg-[#4a5439]'}`}>
-              <Image
-                src={isActive('/dashboard/applications') ? "/images/application-yellow.png" : "/images/applications.png"}
-                alt="Applications"
-                width={20}
-                height={20}
-                className="opacity-100 group-hover:hidden"
-              />
-              <Image
-                src="/images/application-yellow.png"
-                alt="Applications"
-                width={20}
-                height={20}
-                className="opacity-100 hidden group-hover:block"
-              />
-              <p className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/applications') ? 'text-[#eefb75]' : 'text-[#ffffff] group-hover:text-[#eefb75]'} ${isCollapsed ? 'hidden' : 'block'}`}>
+            <Link
+              href="/dashboard/application"
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${
+                isActive('/dashboard/application')
+                  ? 'bg-[#4a5439] text-[#EFFC76]'
+                  : 'hover:bg-[#4a5439]'
+              }`}
+            >
+              <div className="relative w-[20px] h-[20px]">
+                <Image
+                  src="/images/applications.png"
+                  alt="Applications"
+                  width={isCollapsed ? 28 : 20}
+                  height={isCollapsed ? 28 : 20}
+                  className={`opacity-100 group-hover:opacity-0 absolute transition-opacity ${
+                    isActive('/dashboard/application') ? 'opacity-0' : ''
+                  }`}
+                />
+                <Image
+                  src="/images/application-yellow.png"
+                  alt="Applications"
+                  width={isCollapsed ? 28 : 20}
+                  height={isCollapsed ? 28 : 20}
+                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${
+                    isActive('/dashboard/application') ? 'opacity-100' : ''
+                  }`}
+                />
+              </div>
+              <p
+                className={`font-normal text-[16px] leading-[20px] ${
+                  isActive('/dashboard/application')
+                    ? 'text-[#eefb75]'
+                    : 'text-[#ffffff] group-hover:text-[#eefb75]'
+                } ${isCollapsed ? 'hidden' : 'block'}`}
+              >
                 My Applications
               </p>
             </Link>
 
             {/* Certificates */}
-            <Link href="/dashboard/coming-soon" className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard/certificates') ? 'bg-[#4a5439]' : 'hover:bg-[#4a5439]'}`}>
-              <Image
-                src={isActive('/dashboard/certificates') ? "/images/certificates-yellow.png" : "/images/certificates.png"}
-                alt="Certificates"
-                width={20}
-                height={20}
-                className="opacity-100 group-hover:hidden"
-              />
-              <Image
-                src="/images/certificates-yellow.png"
-                alt="Certificates"
-                width={20}
-                height={20}
-                className="opacity-100 hidden group-hover:block"
-              />
-              <p className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/certificates') ? 'text-[#eefb75]' : 'text-[#ffffff] group-hover:text-[#eefb75]'} ${isCollapsed ? 'hidden' : 'block'}`}>
+            <Link
+              href="/dashboard/coming-soon"
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${
+                isActive('/dashboard/certificates')
+                  ? 'bg-[#4a5439]'
+                  : 'hover:bg-[#4a5439]'
+              }`}
+            >
+              <div className="relative w-[20px] h-[20px]">
+                <Image
+                  src="/images/certificates.png"
+                  alt="Certificates"
+                  width={isCollapsed ? 28 : 20}
+                  height={isCollapsed ? 28 : 20}
+                  className={`opacity-100 group-hover:opacity-0 absolute transition-opacity ${
+                    isActive('/dashboard/certificates') ? 'opacity-0' : ''
+                  }`}
+                />
+                <Image
+                  src="/images/certificates-yellow.png"
+                  alt="Certificates"
+                  width={isCollapsed ? 28 : 20}
+                  height={isCollapsed ? 28 : 20}
+                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${
+                    isActive('/dashboard/certificates') ? 'opacity-100' : ''
+                  }`}
+                />
+              </div>
+              <p
+                className={`font-normal text-[16px] leading-[20px] ${
+                  isActive('/dashboard/certificates')
+                    ? 'text-[#eefb75]'
+                    : 'text-[#ffffff] group-hover:text-[#eefb75]'
+                } ${isCollapsed ? 'hidden' : 'block'}`}
+              >
                 My Certificates
               </p>
             </Link>
           </div>
 
           {/* Bottom Section */}
-          <div className="pb-[24px]">
+          <div className="pb-[24px] ml-[-14px]">
             {/* Settings */}
-            <Link href="/dashboard/coming-soon" className={`flex gap-[8px] items-center py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard/settings') ? 'bg-[#4a5439]' : 'hover:bg-[#4a5439]'}`}>
+            <Link
+              href="/dashboard/subscription-plan"
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${
+                isActive('/dashboard/settings')
+                  ? 'bg-[#4a5439]'
+                  : 'hover:bg-[#4a5439]'
+              }`}
+            >
               <Image
-                src={isActive('/dashboard/settings') ? "/images/settings-yellow.png" : "/images/settings.png"}
+                src={
+                  isActive('/dashboard/settings')
+                    ? '/images/settings-yellow.svg'
+                    : '/images/settings.png'
+                }
                 alt="Settings"
                 width={20}
                 height={20}
                 className="opacity-100 group-hover:hidden"
               />
               <Image
-                src="/images/settings-yellow.png"
+                src="/images/settings-yellow.svg"
                 alt="Settings"
                 width={20}
                 height={20}
                 className="opacity-100 hidden group-hover:block"
               />
-              <p className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/settings') ? 'text-[#eefb75]' : 'text-[#ffffff] group-hover:text-[#eefb75]'} ${isCollapsed ? 'hidden' : 'block'}`}>
+              <p
+                className={`font-normal text-[16px] leading-[20px] ${
+                  isActive('/dashboard/settings')
+                    ? 'text-[#eefb75]'
+                    : 'text-[#ffffff] group-hover:text-[#eefb75]'
+                } ${isCollapsed ? 'hidden' : 'block'}`}
+              >
                 Setting
               </p>
             </Link>
 
             {/* Help */}
-            <Link href="/dashboard/coming-soon" className={`flex gap-[8px] items-center py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 ${isActive('/dashboard/help') ? 'bg-[#4a5439]' : 'hover:bg-[#4a5439]'}`}>
-              <Image
-                src={isActive('/dashboard/help') ? "/images/help-yellow.png" : "/images/help.png"}
-                alt="Help"
-                width={20}
-                height={20}
-                className="opacity-100 group-hover:hidden"
-              />
-              <Image
-                src="/images/help-yellow.png"
-                alt="Help"
-                width={20}
-                height={20}
-                className="opacity-100 hidden group-hover:block"
-              />
-              <p className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/help') ? 'text-[#eefb75]' : 'text-[#ffffff] group-hover:text-[#eefb75]'} ${isCollapsed ? 'hidden' : 'block'}`}>
+            <Link
+              href="/dashboard/coming-soon"
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 ${
+                isActive('/dashboard/help')
+                  ? 'bg-[#4a5439]'
+                  : 'hover:bg-[#4a5439]'
+              }`}
+            >
+              <div className="relative w-[20px] h-[20px]">
+                <Image
+                  src="/images/help.png"
+                  alt="Help"
+                  width={isCollapsed ? 28 : 20}
+                  height={isCollapsed ? 28 : 20}
+                  className={`opacity-100 group-hover:opacity-0 absolute transition-opacity ${
+                    isActive('/dashboard/help') ? 'opacity-0' : ''
+                  }`}
+                />
+                <Image
+                  src="/images/help-yellow.png"
+                  alt="Help"
+                  width={isCollapsed ? 28 : 20}
+                  height={isCollapsed ? 28 : 20}
+                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${
+                    isActive('/dashboard/help') ? 'opacity-100' : ''
+                  }`}
+                />
+              </div>
+              <p
+                className={`font-normal text-[16px] leading-[20px] ${
+                  isActive('/dashboard/help')
+                    ? 'text-[#eefb75]'
+                    : 'text-[#ffffff] group-hover:text-[#eefb75]'
+                } ${isCollapsed ? 'hidden' : 'block'}`}
+              >
                 Help & support
               </p>
             </Link>
           </div>
         </div>
 
+        {/* Collapse button outside scroll area - Now visible on mobile when sidebar is open */}
+        <Image
+          onClick={toggleCollapse}
+          src="/images/narrow.png"
+          alt="Collapse"
+          width={28}
+          height={32}
+          className={`cursor-pointer hover:scale-110 h-auto w-auto z-[10000] transition-transform duration-500 top-[50px] lg:top-[20px] fixed
+          ${isCollapsed ? 'left-[88px] rotate-180' : 'left-[224px]'}
+          ${isMobileOpen ? 'lg:block block' : 'lg:block hidden'}`}
+        />
+
         {/* Spacer */}
-        <div className={`${isCollapsed ? 'w-[70px]' : 'w-[266px]'} transition-all duration-300 ease-in-out hidden lg:block`}></div>
+        <div
+          className={`${
+            isCollapsed ? 'w-[100px]' : 'w-[266px]'
+          } transition-all duration-300 ease-in-out hidden lg:block`}
+        ></div>
       </div>
+     <SearchDrawer
+  isOpen={isSearchOpen}
+  onClose={() => setIsSearchOpen(false)}
+  data={allProperties} // your JSON array
+/>
+
     </>
+
   );
 }

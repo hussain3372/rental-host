@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+// import Link from "next/link";
 
 interface PricingCardProps {
   title: string;
@@ -14,6 +14,9 @@ interface PricingCardProps {
   textColor?: string;
   buttonBg?: string;
   buttonTextColor?: string;
+  padding?: string;
+  onBuyNow?: () => void;   
+
 }
 
 const PricingCard: React.FC<PricingCardProps> = ({
@@ -21,12 +24,14 @@ const PricingCard: React.FC<PricingCardProps> = ({
   description,
   price,
   period,
+  onBuyNow,
   buttonText,
   features,
   bgColor = "bg-black",
   textColor = "text-white",
   buttonBg = "bg-gray-700",
   buttonTextColor = "text-white",
+  padding = "p-[20px] sm:p-[36px]",
 }) => {
   // Check if this is the Professional plan (middle card)
   const isProfessionalPlan = title === "Professional";
@@ -44,7 +49,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
         transform: isHovered ? "translateY(-8px)" : "translateY(0)",
         transition: "all 0.3s ease",
       }}
-      className={`rounded-2xl max-w-[360px] sm:max-w-[384px] shadow-lg p-[20px] sm:p-[36px] border-l-[1px] border-r-[1px] border-t-[2px] border-t ${bgColor} border-white ${textColor} flex flex-col justify-between relative overflow-hidden`}
+      className={`rounded-2xl max-w-[360px] sm:max-w-[384px] shadow-lg border-l-[1px] border-r-[1px] border-t-[2px] ${bgColor} border-white ${textColor} flex flex-col justify-between relative overflow-hidden ${padding}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -72,15 +77,15 @@ const PricingCard: React.FC<PricingCardProps> = ({
 
       {/* Button */}
 
-      <Link
-        href="/coming-soon"
+      <button
+        onClick={onBuyNow}
         className={`mt-6 w-full py-[10px] px-[20px] cursor-pointer rounded-[10px] font-medium relative z-10 transition-all duration-300 flex items-center justify-center ${isHovered
-            ? "bg-[#EFFC76] text-black shadow-[inset_5px_-54px_22px_0px_#00000008,inset_3px_-30px_18px_0px_#0000001A,inset_1px_-14px_14px_0px_#0000002B]"
-            : `${buttonBg} ${buttonTextColor} shadow-[inset_5px_-54px_22px_0px_#00000008,inset_3px_-30px_18px_0px_#0000001A,inset_1px_-14px_14px_0px_#0000002B]`
+          ? "bg-[#EFFC76] text-black shadow-[inset_5px_-54px_22px_0px_#00000008,inset_3px_-30px_18px_0px_#0000001A,inset_1px_-14px_14px_0px_#0000002B]"
+          : `${buttonBg} ${buttonTextColor} shadow-[inset_5px_-54px_22px_0px_#00000008,inset_3px_-30px_18px_0px_#0000001A,inset_1px_-14px_14px_0px_#0000002B]`
           }`}
       >
         {buttonText}
-      </Link>
+      </button>
 
 
 

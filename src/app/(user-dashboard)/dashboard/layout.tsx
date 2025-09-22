@@ -1,4 +1,5 @@
 'use client'
+
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { Sidebar } from "./dashboard-layout/Sidebar";
@@ -17,29 +18,30 @@ export default function MainLayout({ children }: MainLayoutProps) {
   };
 
   return (
-    <div className="relative bg-[#111] h-[100vh]">
+    <div className="relative min-h-[100vh] bg-[#0A0C0B] text-white  overflow-hidden">
       {/* Sidebar */}
       <Sidebar onCollapseChange={handleSidebarCollapseChange} />
 
-      {/* Main content */}
+      {/* Background shape INSIDE the black background */}
+      <div className="absolute left-[20%] bottom-0 w-full flex justify-start sm:block pointer-events-none ">
+        <Image
+          src="/images/shape.png"
+          height={100}
+          width={1000}
+          alt="gradient"
+          className="max-w-none"
+          priority={false}
+        />
+      </div>
+
+      {/* Main content wrapper */}
       <div
-        className={`transition-all duration-300 ease-in-out ${
-          isSidebarCollapsed ? "lg:ml-[70px]" : "lg:ml-[266px]"
+        className={`relative  transition-all duration-300 ease-in-out ${
+          isSidebarCollapsed ? "lg:ml-[100px]" : "lg:ml-[266px]"
         }`}
       >
         <Navbar isCollapsed={isSidebarCollapsed} />
-        <main className="p-6">{children}</main>
-      </div>
-
-      {/* Background shape at the bottom */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[1200px] opacity-30 pointer-events-none -z-10">
-        <Image
-          src="/images/shape.png"
-          alt="gradient"
-          width={1200}
-          height={400}
-          className="w-full h-auto object-contain"
-        />
+        <main className="px-6 pt-[120px] relative">{children}</main>
       </div>
     </div>
   );

@@ -13,6 +13,18 @@ export interface ToggleSwitchProps {
   withIcons?: boolean;
   /** Extra className for styling */
   className?: string;
+
+  /** Width & Height of the toggle track */
+  trackWidth?: string;
+  trackHeight?: string;
+
+  /** Size of the thumb */
+  thumbSize?: string;
+
+  /** Icon size (if withIcons is true) */
+  iconSize?: string;
+    thumbTranslate?: string;
+
 }
 
 const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
@@ -21,6 +33,12 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
   disabled = false,
   withIcons = false,
   className = "",
+  trackWidth = "w-16", // default
+  trackHeight = "h-9", // default
+  thumbSize = "w-7 h-7", // default
+  iconSize = "w-4 h-4", // default
+  thumbTranslate = "translate-x-7",
+
 }) => {
   return (
     <button
@@ -31,21 +49,22 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
         relative inline-flex items-center rounded-full transition-colors duration-300
         ${isOn ? "bg-[#EFFC76]" : "bg-[#EFFC76]"}
         ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
-        w-16 h-9 px-1
+        ${trackWidth} ${trackHeight} px-1
         ${className}
       `}
     >
-      <span
-        className={`
-          flex items-center justify-center w-7 h-7 rounded-full bg-black shadow-md transform transition-transform duration-300
-          ${isOn ? "translate-x-7" : "translate-x-0"}
-        `}
-      >
+     <span
+  className={`
+    flex items-center justify-center rounded-full bg-black shadow-md transform transition-transform duration-300
+    ${thumbSize}
+    ${isOn ? thumbTranslate : "translate-x-0"}
+  `}
+>
         {withIcons &&
           (isOn ? (
-            <Sun className="w-4 h-4 text-yellow-500" />
+            <Sun className={`${iconSize} text-yellow-500`} />
           ) : (
-            <Moon className="w-4 h-4 text-gray-600" />
+            <Moon className={`${iconSize} text-gray-600`} />
           ))}
       </span>
     </button>

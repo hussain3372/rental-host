@@ -1,0 +1,183 @@
+"use client";
+import Link from "next/link"; 
+import { useState, useRef, useEffect } from "react";
+import { useParams } from "next/navigation";
+import Image from "next/image";
+import { allProperties } from "@/app/(main)/search-page/data/properties";
+
+export default function ApplicationDetail() {
+  const { id } = useParams();
+  const applicationId = Number(id);
+  const thumbnailsContainerRef = useRef<HTMLDivElement>(null);
+  const [thumbnailsHeight, setThumbnailsHeight] = useState(0);
+
+  // Get property by ID (using the existing properties data)
+  const application = allProperties.find((property) => property.id === applicationId);
+
+  const [currentStep, setCurrentStep] = useState(0);
+
+  // Effect to sync heights
+  useEffect(() => {
+    const updateHeight = () => {
+      if (thumbnailsContainerRef.current) {
+        const height = thumbnailsContainerRef.current.offsetHeight;
+        setThumbnailsHeight(height);
+      }
+    };
+
+    // Initial measurement
+    updateHeight();
+
+    // Update on window resize
+    window.addEventListener('resize', updateHeight);
+    
+    return () => window.removeEventListener('resize', updateHeight);
+  }, [application]); // Re-run when application changes
+
+  // If application not found
+  if (!application) {
+    return (
+      <div className="flex items-center justify-center">
+        <div className="text-center flex flex-col items-center justify-center">
+          <Image src="/images/empty.png" alt='not found' width={220} height={220}/>
+          <h1 className="text-2xl mb-3 text-white font-medium leading-[28px]">No Applications Yet</h1>
+          <p className="text-white/60 mb-6 max-w-[504px] font-regular text-[18px] leading-[22px]">Start your first application today to begin the process of certifying your property and tracking progress here.</p>
+          <Link 
+            href="/dashboard/application" 
+            className="inline-block yellow-btn w-[150px] text-black px-6 py-3 rounded-lg hover:bg-[#e8f566] transition-colors"
+          >
+            Apply Now
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const images = application.images || [];
+  const totalSteps = images.length;
+
+  const nextStep = () =>
+    setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+  const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
+
+  return (
+    <div className="min-h-screen text-white">
+      {/* Breadcrumb */}
+      <nav className="mb-4">
+        <div className="flex items-center text-[12px] sm:text-[16px] gap-3 font-regular leading-[20px] text-white/40 ">
+          <Link href="/dashboard/applications" className="hover:text-[#EFFC76]">
+            My Applications
+          </Link>
+         <Image src="/images/greater.svg" alt="linked" width={16} height={16} />
+          <span className="text-white font-regular text-[12px] sm:text-[16px] leading-[20px] ">{application.title}</span>
+        </div>
+      </nav>
+
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start mb-2">
+        <h1 className=" text-[16px] sm:text-[24px] font-medium leading-[28px] ">
+          Coastal Hillside Estate with Panoramic City
+        </h1>
+        <button className="text-[#EFFC76] opacity-80 hover:text-[#e8f566] underline cursor-pointer font-medium text-[12px] sm:text-[18px] leading-[22px] ">
+          Edit
+        </button>
+      </div>
+
+      {/* Address */}
+      <p className="text-white/80 font-medium leading-[20px] text-[12px] sm:text-[16px]  mb-[18px]">
+        742 Evergreen Terrace, Springfield, Illinois, USA
+      </p>
+
+      {/* Main Content Area */}
+      <div className="flex flex-col sm:flex-row gap-3 items-start">
+        {/* Main Image Container - Height synced with thumbnails */}
+        <div className=" w-full flex flex-col">
+          {/* Image with dynamic height matching thumbnails */}
+          <div 
+            className="relative w-full  rounded-lg overflow-hidden bg-gray-900"
+            style={{ height: thumbnailsHeight || 'auto' }}
+          >
+            <Image
+              src={images[currentStep] || "/images/placeholder.jpg"}
+              alt={`Property view ${currentStep + 1}`}
+              fill
+              className="object-cover"
+            />
+          </div>
+
+          {/* Navigation Controls - Full width progress bar */}
+        </div>
+
+        {/* Thumbnail Gallery - Reference for height measurement */}
+        <div 
+          ref={thumbnailsContainerRef}
+          className=" w-full sm:w-[145px] max-h-full flex  flex-col justify-center items-center gap-3"
+        >
+          {images.map((image, index) => (
+           
+              <Image
+                onClick={() => setCurrentStep(index)}
+                src={image}
+                key={index}
+                alt={`Thumbnail ${index + 1}`}
+                width={145}
+                height={93}
+                className="object-cover rounded-md"
+              />
+          ))}
+        </div>
+      </div>
+
+          <div className="flex items-center justify-between mt-6 gap-3 sm:gap-[40px] w-full">
+            {/* Left Arrow */}
+            <button
+              onClick={prevStep}
+              disabled={currentStep === 0}
+              className="w-8 h-8 p-2 cursor-pointer rounded border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+            >
+              <Image src="/images/left.svg" alt="back" width={24} height={24} />
+            </button>
+
+            {/* Progress Bar - Takes all remaining space */}
+            <div className="flex items-center gap-3 sm:gap-10 flex-1 ">
+              <span className=" text-white/60 leading-[20px] font-regular text-[16px]  flex-shrink-0">
+                {String(currentStep + 1).padStart(2, "0")}
+              </span>
+              
+              {/* Progress Bar - Full available width */}
+              <div className="w-full h-[1px] bg-white/20 relative ">
+                <div
+                  className="absolute top-0 left-0 h-full bg-[#EFFC76] transition-all duration-300"
+                  style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
+                />
+              </div>
+              
+              <span className="text-sm text-white/60 leading-[20px] font-regular text-[16px]  flex-shrink-0">
+                {String(totalSteps).padStart(2, "0")}
+              </span>
+            </div>
+
+            {/* Right Arrow */}
+            <button
+              onClick={nextStep}
+              disabled={currentStep === totalSteps - 1}
+              className="w-8 h-8 rounded cursor-pointer p-2 border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+            >
+                            <Image src="/images/right.svg" alt="back" width={24} height={24} />
+
+            </button>
+          </div>
+      {/* Description */}
+      <div className="mt-[60px]  max-w-[1134px]">
+        <p className="text-white/80 font-regular text-[16px] sm:text-[18px] tracking-[0%] leading-[22px]">
+          {application.title} at 1234 Maplewood Avenue, Austin, Texas is a fully verified 
+          and certified property. Featuring 4 bedrooms, 3 bathrooms, and a modern kitchen, 
+          this home combines comfort with trust. With a landscaped garden, private patio, 
+          and verified legal documentation, it offers both luxury and peace of mind. Each 
+          listing comes with a digital badge and QR code for instant authenticity checks.
+        </p>
+      </div>
+
+    </div>
+  );
+}

@@ -156,7 +156,7 @@ const CardFooter = ({ title, author }: { title: string; author: string }) => {
                 <h3 className="font-medium sm:text-[28px] text-[22px] sm:leading-[32px] leading-6">
                     {title}
                 </h3>
-                <p className="sm:text-[20px] text-[16px] sm:leading-[24px] leading-4 mt-2 text-[#FFFFFFCC]">
+                <p className="sm:text-[24px] text-[16px] sm:leading-[24px] leading-4 mt-2 text-[#FFFFFFCC]">
                     {author}
                 </p>
             </div>
