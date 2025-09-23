@@ -72,7 +72,7 @@ export default function SubscriptionPlan() {
   };
 
   return (
-    <div className="container-class pt-[106px]">
+    <div className="container-class ">
       <div className="flex items-center justify-between mb-2">
         <h1 className="text-[20px] leading-[24px] font-semibold text-white">
           Settings & Preferences

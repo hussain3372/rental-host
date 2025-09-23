@@ -26,8 +26,8 @@ export function Navbar({ isCollapsed }: NavbarProps) {
           </div>
 
           {/* Right side */}
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard/profile" className="h-10 w-10">
+          <Link href="/dashboard/profile" className="flex items-center gap-3 cursor-pointer">
+            <div className="h-10 w-10">
               <Image
                 src="/images/person.png"
                 alt="profile pic"
@@ -35,14 +35,15 @@ export function Navbar({ isCollapsed }: NavbarProps) {
                 width={32}
                 className="rounded-full object-cover h-10 w-10"
               />
-            </Link>
+            </div>
             <div>
               <p className="font-medium text-[14px] leading-[18px]">John Deo</p>
               <p className="text-[14px] leading-[18px] text-white/60">
                 johndeo@gmail.com
               </p>
             </div>
-          </div>
+          </Link>
+
         </div>
       </nav>
 

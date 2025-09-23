@@ -61,9 +61,8 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
         {/* Sidebar */}
         <div
           ref={sidebarRef}
-          className={`pt-[24px] bg-[#121315] mt-[40px] sm:mt-0 px-[20px] ${
-            isCollapsed ? 'flex items-center w-[100px]' : 'w-[266px]'
-          } border-r h-[100vh] overflow-y-auto overflow-x-hidden border-r-[#222325] fixed flex flex-col
+          className={`pt-[24px] bg-[#121315] mt-[40px] sm:mt-0 px-[20px] ${isCollapsed ? 'flex items-center w-[100px]' : 'w-[266px]'
+            } border-r h-[100vh] overflow-y-auto overflow-x-hidden border-r-[#222325] fixed flex flex-col
           transition-all duration-300 ease-in-out z-30
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} 
           lg:translate-x-0`}
@@ -83,60 +82,57 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
           {/* Search & Notifications */}
           <div className="border-b border-b-[#3f4041] pb-[32px] mb-[32px] ml-[-14px]">
             {/* Search */}
-            <Link
-              href="/search"
-              className={`flex justify-between items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${
-                isActive('/search') ? 'bg-[#4a5439]' : 'hover:bg-[#4a5439]'
-              }`}
+            {/* Search */}
+            <div
+              className={`flex justify-between items-center cursor-pointer mb-[20px]`}
             >
-              <div className="flex gap-[8px] items-center">
-                <div className="relative w-[20px] h-[20px]">
-                  <Image
-                    src="/images/search.png"
-                    alt="Search"
-                    width={isCollapsed ? 28 : 16}
-                    height={isCollapsed ? 28 : 16}
-                    className={`opacity-80 group-hover:opacity-0 absolute transition-opacity ${
-                      isActive('/search') ? 'opacity-0' : ''
-                    }`}
-                  />
-                  <Image
-                    src="/images/search.png"
-                    alt="Search"
-                    width={isCollapsed ? 28 : 16}
-                    height={isCollapsed ? 28 : 16}
-                    className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${
-                      isActive('/search') ? 'opacity-100' : ''
-                    }`}
-                  />
-                </div>
-                <p
-                  className={`font-normal text-[16px] leading-[20px] text-[#ffffff] transition-colors group-hover:text-[#eefb75] ${
-                    isCollapsed ? 'hidden' : 'block'
-                  } ${isActive('/search') ? 'text-[#eefb75]' : ''}`}
-                >
-                  Search
-                </p>
-              </div>
-              <div
-                className={`flex gap-[4px] ${
-                  isCollapsed ? 'hidden' : 'block'
-                }`}
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className={`flex justify-between items-center w-full px-[12px] py-[8px] rounded-[6px] 
+      transition-all duration-200 group ${isActive('/search') ? 'bg-[#4a5439]' : 'hover:bg-[#4a5439]'
+                  }`}
               >
-                <div className="w-[20px] h-[20px] bg-[#3f4041] rounded-[3px] border-b border-b-white flex items-center justify-center">
-                  <span className="text-[#ffffff] text-[10px] font-normal">
-                    K
-                  </span>
+                <div className="flex gap-[8px] items-center">
+                  <div className="relative w-[20px] h-[20px]">
+                    <Image
+                      src="/images/search.png"
+                      alt="Search"
+                      width={isCollapsed ? 28 : 16}
+                      height={isCollapsed ? 28 : 16}
+                      className={`opacity-80 group-hover:opacity-0 absolute transition-opacity ${isActive('/search') ? 'opacity-0' : ''
+                        }`}
+                    />
+                    <Image
+                      src="/images/search.png"
+                      alt="Search"
+                      width={isCollapsed ? 28 : 16}
+                      height={isCollapsed ? 28 : 16}
+                      className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${isActive('/search') ? 'opacity-100' : ''
+                        }`}
+                    />
+                  </div>
+                  <p
+                    className={`font-normal text-[16px] leading-[20px] text-[#ffffff] transition-colors group-hover:text-[#eefb75] ${isCollapsed ? 'hidden' : 'block'
+                      } ${isActive('/search') ? 'text-[#eefb75]' : ''}`}
+                  >
+                    Search
+                  </p>
                 </div>
-              </div>
-            </Link>
+
+                <div className={`flex gap-[4px] ${isCollapsed ? 'hidden' : 'block'}`}>
+                  <div className="w-[20px] h-[20px] bg-[#3f4041] rounded-[3px] border-b border-b-white flex items-center justify-center">
+                    <span className="text-[#ffffff] text-[10px] font-normal">K</span>
+                  </div>
+                </div>
+              </button>
+            </div>
+
 
             {/* Notifications */}
             <Link
               href="/dashboard/notifications"
-              className={`flex justify-between items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 ${
-                isActive('/dashboard/notifications') ? 'bg-[#4a5439]' : 'hover:bg-[#4a5439]'
-              }`}
+              className={`flex justify-between items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 ${isActive('/dashboard/notifications') ? 'bg-[#4a5439]' : 'hover:bg-[#4a5439]'
+                }`}
             >
               <div className="flex gap-[8px] items-center">
                 <div className="relative w-[20px] h-[20px]">
@@ -145,34 +141,30 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                     alt="Notifications"
                     width={isCollapsed ? 28 : 16}
                     height={isCollapsed ? 28 : 16}
-                    className={`opacity-80 group-hover:opacity-0 absolute transition-opacity ${
-                      isActive('/dashboard/notifications') ? 'opacity-0' : ''
-                    }`}
+                    className={`opacity-80 group-hover:opacity-0 absolute transition-opacity ${isActive('/dashboard/notifications') ? 'opacity-0' : ''
+                      }`}
                   />
                   <Image
                     src="/images/notification-yellow.svg"
                     alt="Notifications"
                     width={isCollapsed ? 28 : 14}
                     height={isCollapsed ? 28 : 14}
-                    className={`opacity-0 ml-[1px] mt-[1px] group-hover:opacity-100 absolute transition-opacity ${
-                      isActive('/dashboard/notifications') ? 'opacity-100' : ''
-                    }`}
+                    className={`opacity-0 ml-[1px] mt-[1px] group-hover:opacity-100 absolute transition-opacity ${isActive('/dashboard/notifications') ? 'opacity-100' : ''
+                      }`}
                   />
                 </div>
                 <p
-                  className={`font-normal text-[16px] leading-[20px] ${
-                    isActive('/dashboard/notifications')
+                  className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/notifications')
                       ? 'text-[#eefb75]'
                       : 'text-[#ffffff] group-hover:text-[#eefb75]'
-                  } ${isCollapsed ? 'hidden' : 'block'}`}
+                    } ${isCollapsed ? 'hidden' : 'block'}`}
                 >
                   Notifications
                 </p>
               </div>
               <div
-                className={`w-[20px] h-[20px] bg-[#D84725] rounded-[4px] border-b border-b-white flex items-center justify-center transition-transform duration-200 group-hover:scale-105 ${
-                  isCollapsed ? 'hidden' : 'flex'
-                }`}
+                className={`w-[20px] h-[20px] bg-[#D84725] rounded-[4px] border-b border-b-white flex items-center justify-center transition-transform duration-200 group-hover:scale-105 ${isCollapsed ? 'hidden' : 'flex'
+                  }`}
               >
                 <span className="text-[#ffffff] text-[10px] font-medium">8</span>
               </div>
@@ -184,11 +176,10 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
             {/* Home */}
             <Link
               href="/dashboard"
-              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${
-                isActive('/dashboard')
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard')
                   ? 'bg-[#4a5439]'
                   : 'hover:bg-[#4a5439]'
-              }`}
+                }`}
             >
               <div className="relative w-[20px] h-[20px]">
                 <Image
@@ -196,26 +187,23 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                   alt="Home"
                   width={isCollapsed ? 28 : 16}
                   height={isCollapsed ? 28 : 16}
-                  className={`opacity-100 group-hover:opacity-0 ml-[2px] mt-[2px] absolute transition-opacity ${
-                    isActive('/dashboard') ? 'hidden' : ''
-                  }`}
+                  className={`opacity-100 group-hover:opacity-0 ml-[2px] mt-[2px] absolute transition-opacity ${isActive('/dashboard') ? 'hidden' : ''
+                    }`}
                 />
                 <Image
                   src="/images/home.png"
                   alt="Home"
                   width={isCollapsed ? 28 : 21}
                   height={isCollapsed ? 28 : 21}
-                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${
-                    isActive('/dashboard') ? 'opacity-100' : ''
-                  }`}
+                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${isActive('/dashboard') ? 'opacity-100' : ''
+                    }`}
                 />
               </div>
               <p
-                className={`font-normal text-[16px] leading-[20px] ${
-                  isActive('/dashboard')
+                className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard')
                     ? 'text-[#eefb75]'
                     : 'text-[#ffffff] group-hover:text-[#eefb75]'
-                } ${isCollapsed ? 'hidden' : 'block'}`}
+                  } ${isCollapsed ? 'hidden' : 'block'}`}
               >
                 Home
               </p>
@@ -224,11 +212,10 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
             {/* Applications */}
             <Link
               href="/dashboard/application"
-              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${
-                isActive('/dashboard/application')
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard/application')
                   ? 'bg-[#4a5439] text-[#EFFC76]'
                   : 'hover:bg-[#4a5439]'
-              }`}
+                }`}
             >
               <div className="relative w-[20px] h-[20px]">
                 <Image
@@ -236,26 +223,23 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                   alt="Applications"
                   width={isCollapsed ? 28 : 20}
                   height={isCollapsed ? 28 : 20}
-                  className={`opacity-100 group-hover:opacity-0 absolute transition-opacity ${
-                    isActive('/dashboard/application') ? 'opacity-0' : ''
-                  }`}
+                  className={`opacity-100 group-hover:opacity-0 absolute transition-opacity ${isActive('/dashboard/application') ? 'opacity-0' : ''
+                    }`}
                 />
                 <Image
                   src="/images/application-yellow.png"
                   alt="Applications"
                   width={isCollapsed ? 28 : 20}
                   height={isCollapsed ? 28 : 20}
-                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${
-                    isActive('/dashboard/application') ? 'opacity-100' : ''
-                  }`}
+                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${isActive('/dashboard/application') ? 'opacity-100' : ''
+                    }`}
                 />
               </div>
               <p
-                className={`font-normal text-[16px] leading-[20px] ${
-                  isActive('/dashboard/application')
+                className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/application')
                     ? 'text-[#eefb75]'
                     : 'text-[#ffffff] group-hover:text-[#eefb75]'
-                } ${isCollapsed ? 'hidden' : 'block'}`}
+                  } ${isCollapsed ? 'hidden' : 'block'}`}
               >
                 My Applications
               </p>
@@ -264,11 +248,10 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
             {/* Certificates */}
             <Link
               href="/dashboard/coming-soon"
-              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${
-                isActive('/dashboard/certificates')
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard/certificates')
                   ? 'bg-[#4a5439]'
                   : 'hover:bg-[#4a5439]'
-              }`}
+                }`}
             >
               <div className="relative w-[20px] h-[20px]">
                 <Image
@@ -276,26 +259,23 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                   alt="Certificates"
                   width={isCollapsed ? 28 : 20}
                   height={isCollapsed ? 28 : 20}
-                  className={`opacity-100 group-hover:opacity-0 absolute transition-opacity ${
-                    isActive('/dashboard/certificates') ? 'opacity-0' : ''
-                  }`}
+                  className={`opacity-100 group-hover:opacity-0 absolute transition-opacity ${isActive('/dashboard/certificates') ? 'opacity-0' : ''
+                    }`}
                 />
                 <Image
                   src="/images/certificates-yellow.png"
                   alt="Certificates"
                   width={isCollapsed ? 28 : 20}
                   height={isCollapsed ? 28 : 20}
-                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${
-                    isActive('/dashboard/certificates') ? 'opacity-100' : ''
-                  }`}
+                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${isActive('/dashboard/certificates') ? 'opacity-100' : ''
+                    }`}
                 />
               </div>
               <p
-                className={`font-normal text-[16px] leading-[20px] ${
-                  isActive('/dashboard/certificates')
+                className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/certificates')
                     ? 'text-[#eefb75]'
                     : 'text-[#ffffff] group-hover:text-[#eefb75]'
-                } ${isCollapsed ? 'hidden' : 'block'}`}
+                  } ${isCollapsed ? 'hidden' : 'block'}`}
               >
                 My Certificates
               </p>
@@ -307,11 +287,10 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
             {/* Settings */}
             <Link
               href="/dashboard/subscription-plan"
-              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${
-                isActive('/dashboard/settings')
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard/settings')
                   ? 'bg-[#4a5439]'
                   : 'hover:bg-[#4a5439]'
-              }`}
+                }`}
             >
               <Image
                 src={
@@ -332,11 +311,10 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                 className="opacity-100 hidden group-hover:block"
               />
               <p
-                className={`font-normal text-[16px] leading-[20px] ${
-                  isActive('/dashboard/settings')
+                className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/settings')
                     ? 'text-[#eefb75]'
                     : 'text-[#ffffff] group-hover:text-[#eefb75]'
-                } ${isCollapsed ? 'hidden' : 'block'}`}
+                  } ${isCollapsed ? 'hidden' : 'block'}`}
               >
                 Setting
               </p>
@@ -345,11 +323,10 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
             {/* Help */}
             <Link
               href="/dashboard/coming-soon"
-              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 ${
-                isActive('/dashboard/help')
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 ${isActive('/dashboard/help')
                   ? 'bg-[#4a5439]'
                   : 'hover:bg-[#4a5439]'
-              }`}
+                }`}
             >
               <div className="relative w-[20px] h-[20px]">
                 <Image
@@ -357,26 +334,23 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                   alt="Help"
                   width={isCollapsed ? 28 : 20}
                   height={isCollapsed ? 28 : 20}
-                  className={`opacity-100 group-hover:opacity-0 absolute transition-opacity ${
-                    isActive('/dashboard/help') ? 'opacity-0' : ''
-                  }`}
+                  className={`opacity-100 group-hover:opacity-0 absolute transition-opacity ${isActive('/dashboard/help') ? 'opacity-0' : ''
+                    }`}
                 />
                 <Image
                   src="/images/help-yellow.png"
                   alt="Help"
                   width={isCollapsed ? 28 : 20}
                   height={isCollapsed ? 28 : 20}
-                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${
-                    isActive('/dashboard/help') ? 'opacity-100' : ''
-                  }`}
+                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${isActive('/dashboard/help') ? 'opacity-100' : ''
+                    }`}
                 />
               </div>
               <p
-                className={`font-normal text-[16px] leading-[20px] ${
-                  isActive('/dashboard/help')
+                className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/help')
                     ? 'text-[#eefb75]'
                     : 'text-[#ffffff] group-hover:text-[#eefb75]'
-                } ${isCollapsed ? 'hidden' : 'block'}`}
+                  } ${isCollapsed ? 'hidden' : 'block'}`}
               >
                 Help & support
               </p>
@@ -398,16 +372,15 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
 
         {/* Spacer */}
         <div
-          className={`${
-            isCollapsed ? 'w-[100px]' : 'w-[266px]'
-          } transition-all duration-300 ease-in-out hidden lg:block`}
+          className={`${isCollapsed ? 'w-[100px]' : 'w-[266px]'
+            } transition-all duration-300 ease-in-out hidden lg:block`}
         ></div>
       </div>
-     <SearchDrawer
-  isOpen={isSearchOpen}
-  onClose={() => setIsSearchOpen(false)}
-  data={allProperties} // your JSON array
-/>
+      <SearchDrawer
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        data={allProperties} // your JSON array
+      />
 
     </>
 
