@@ -83,7 +83,7 @@ export default function Status() {
       </div>
 
       {/* Yellow Section */}
-      <div className="bg-[#EFFC76] lg:max-h-[304px] !z-0 w-full lg:max-w-[462px]  relative rounded-[24px] text-black flex flex-col justify-between overflow-hidden">
+      <div className="bg-[#EFFC76] lg:max-h-[299px] !z-0 w-full xl:max-w-[462px]  relative rounded-[24px] text-black flex flex-col justify-between overflow-hidden">
         <div className="p-[20px] flex flex-col justify-between !z-0 relative">
           <h3 className="font-medium text-[28px] leading-[32px] max-w-[391px]">
             Ready for your next property certification?
@@ -102,7 +102,7 @@ export default function Status() {
           alt="design"
           width={193}
           height={193}
-          className="absolute -bottom-3 right-0 w-[193px] h-[193px] object-contain"
+          className="absolute -bottom-3 right-0 w-[193px] h-[193px] z-[-3] object-contain"
         />
       </div>
     </div>

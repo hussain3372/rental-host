@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Menu } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import SearchDrawer from "@/app/shared/SearchDrawer";
+import HelpSupportDrawer from "@/app/(user-dashboard)/dashboard/help-support/HelpSupportDrawer";
+
 import { allProperties } from "@/app/(main)/search-page/data/properties";
 interface SidebarProps {
   onCollapseChange: (isCollapsed: boolean) => void;
@@ -14,6 +16,8 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   const pathname = usePathname();
 
   const toggleCollapse = () => {
@@ -51,33 +55,32 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
   return (
     <>
       {/* Mobile top bar */}
-      <div className="lg:hidden flex items-center z-[100] justify-between px-4 py-3 border-b fixed w-full ">
+      <div className="lg:hidden flex items-center z-[100] justify-between px-4 py-6  fixed w-full ">
         <button onClick={toggleMobileMenu} className="text-white">
           <Menu size={28} />
         </button>
       </div>
 
-      <div className="flex bg-[#121315] relative">
+      <div className="flex max-h-[100vh] bg-[#121315] relative">
         {/* Sidebar */}
         <div
           ref={sidebarRef}
-          className={`pt-[24px] bg-[#121315] mt-[40px] sm:mt-0 px-[20px] ${isCollapsed ? 'flex items-center w-[100px]' : 'w-[266px]'
+          className={` pt-[24px] z-[100] bg-[#121315] mt-0  sm:mt-0 px-[20px] ${isCollapsed ? 'flex items-center w-[100px]' : 'w-[266px]'
             } border-r h-[100vh] overflow-y-auto overflow-x-hidden border-r-[#222325] fixed flex flex-col
           transition-all duration-300 ease-in-out z-30
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} 
           lg:translate-x-0`}
         >
           {/* Header */}
-          <div className="justify-between items-center mb-[48px] flex">
+          <Link onClick={()=>{setIsMobileOpen(false)}} href="/dashboard" className="justify-between items-center mb-[48px] flex">
             <Image
-              onClick={toggleCollapse}
               src="/images/auth-logo.png"
               alt="Logo"
               width={53}
               height={31}
               className="cursor-pointer hover:scale-110 h-auto w-auto transition-transform duration-200"
             />
-          </div>
+          </Link>
 
           {/* Search & Notifications */}
           <div className="border-b border-b-[#3f4041] pb-[32px] mb-[32px] ml-[-14px]">
@@ -129,7 +132,7 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
 
 
             {/* Notifications */}
-            <Link
+            <Link onClick={()=>{setIsMobileOpen(false)}}
               href="/dashboard/notifications"
               className={`flex justify-between items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 ${isActive('/dashboard/notifications') ? 'bg-[#4a5439]' : 'hover:bg-[#4a5439]'
                 }`}
@@ -155,8 +158,8 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                 </div>
                 <p
                   className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/notifications')
-                      ? 'text-[#eefb75]'
-                      : 'text-[#ffffff] group-hover:text-[#eefb75]'
+                    ? 'text-[#eefb75]'
+                    : 'text-[#ffffff] group-hover:text-[#eefb75]'
                     } ${isCollapsed ? 'hidden' : 'block'}`}
                 >
                   Notifications
@@ -174,11 +177,11 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
           {/* Main Navigation */}
           <div className="flex-1 ml-[-14px]">
             {/* Home */}
-            <Link
+            <Link onClick={()=>{setIsMobileOpen(false)}}
               href="/dashboard"
               className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard')
-                  ? 'bg-[#4a5439]'
-                  : 'hover:bg-[#4a5439]'
+                ? 'bg-[#4a5439]'
+                : 'hover:bg-[#4a5439]'
                 }`}
             >
               <div className="relative w-[20px] h-[20px]">
@@ -201,8 +204,8 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
               </div>
               <p
                 className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard')
-                    ? 'text-[#eefb75]'
-                    : 'text-[#ffffff] group-hover:text-[#eefb75]'
+                  ? 'text-[#eefb75]'
+                  : 'text-[#ffffff] group-hover:text-[#eefb75]'
                   } ${isCollapsed ? 'hidden' : 'block'}`}
               >
                 Home
@@ -210,9 +213,10 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
             </Link>
 
             {/* Applications */}
-            <Link
+            <Link onClick={()=>{setIsMobileOpen(false)}}
               href="/dashboard/application"
-              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard/application')
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${
+                isActive('/dashboard/application') || isActive('/dashboard/application/detail/[id]')
                   ? 'bg-[#4a5439] text-[#EFFC76]'
                   : 'hover:bg-[#4a5439]'
                 }`}
@@ -237,8 +241,8 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
               </div>
               <p
                 className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/application')
-                    ? 'text-[#eefb75]'
-                    : 'text-[#ffffff] group-hover:text-[#eefb75]'
+                  ? 'text-[#eefb75]'
+                  : 'text-[#ffffff] group-hover:text-[#eefb75]'
                   } ${isCollapsed ? 'hidden' : 'block'}`}
               >
                 My Applications
@@ -246,9 +250,10 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
             </Link>
 
             {/* Certificates */}
-            <Link
-              href="/dashboard/coming-soon"
-              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard/certificates')
+            <Link onClick={()=>{setIsMobileOpen(false)}}
+              href="/dashboard/certificates"
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${
+                isActive('/dashboard/certificates')
                   ? 'bg-[#4a5439]'
                   : 'hover:bg-[#4a5439]'
                 }`}
@@ -273,8 +278,8 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
               </div>
               <p
                 className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/certificates')
-                    ? 'text-[#eefb75]'
-                    : 'text-[#ffffff] group-hover:text-[#eefb75]'
+                  ? 'text-[#eefb75]'
+                  : 'text-[#ffffff] group-hover:text-[#eefb75]'
                   } ${isCollapsed ? 'hidden' : 'block'}`}
               >
                 My Certificates
@@ -285,11 +290,11 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
           {/* Bottom Section */}
           <div className="pb-[24px] ml-[-14px]">
             {/* Settings */}
-            <Link
+            <Link onClick={()=>{setIsMobileOpen(false)}}
               href="/dashboard/subscription-plan"
               className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard/settings')
-                  ? 'bg-[#4a5439]'
-                  : 'hover:bg-[#4a5439]'
+                ? 'bg-[#4a5439]'
+                : 'hover:bg-[#4a5439]'
                 }`}
             >
               <Image
@@ -312,8 +317,8 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
               />
               <p
                 className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/settings')
-                    ? 'text-[#eefb75]'
-                    : 'text-[#ffffff] group-hover:text-[#eefb75]'
+                  ? 'text-[#eefb75]'
+                  : 'text-[#ffffff] group-hover:text-[#eefb75]'
                   } ${isCollapsed ? 'hidden' : 'block'}`}
               >
                 Setting
@@ -321,11 +326,12 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
             </Link>
 
             {/* Help */}
-            <Link
-              href="/dashboard/coming-soon"
-              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 ${isActive('/dashboard/help')
-                  ? 'bg-[#4a5439]'
-                  : 'hover:bg-[#4a5439]'
+
+            <div
+              onClick={() => setIsDrawerOpen(true)}
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 ${isActive("/dashboard/help")
+                ? "bg-[#4a5439]"
+                : "hover:bg-[#4a5439]"
                 }`}
             >
               <div className="relative w-[20px] h-[20px]">
@@ -334,7 +340,7 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                   alt="Help"
                   width={isCollapsed ? 28 : 20}
                   height={isCollapsed ? 28 : 20}
-                  className={`opacity-100 group-hover:opacity-0 absolute transition-opacity ${isActive('/dashboard/help') ? 'opacity-0' : ''
+                  className={`opacity-100 group-hover:opacity-0 absolute transition-opacity ${isActive("/dashboard/help") ? "opacity-0" : ""
                     }`}
                 />
                 <Image
@@ -342,19 +348,19 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                   alt="Help"
                   width={isCollapsed ? 28 : 20}
                   height={isCollapsed ? 28 : 20}
-                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${isActive('/dashboard/help') ? 'opacity-100' : ''
+                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${isActive("/dashboard/help") ? "opacity-100" : ""
                     }`}
                 />
               </div>
               <p
-                className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/help')
-                    ? 'text-[#eefb75]'
-                    : 'text-[#ffffff] group-hover:text-[#eefb75]'
-                  } ${isCollapsed ? 'hidden' : 'block'}`}
+                className={`font-normal text-[16px] leading-[20px] ${isActive("/dashboard/help")
+                  ? "text-[#eefb75]"
+                  : "text-[#ffffff] group-hover:text-[#eefb75]"
+                  } ${isCollapsed ? "hidden" : "block"}`}
               >
                 Help & support
               </p>
-            </Link>
+            </div>
           </div>
         </div>
 
@@ -365,7 +371,7 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
           alt="Collapse"
           width={28}
           height={32}
-          className={`cursor-pointer hover:scale-110 h-auto w-auto z-[10000] transition-transform duration-500 top-[50px] lg:top-[20px] fixed
+          className={`cursor-pointer hover:scale-110 h-auto w-auto z-[10000] transition-transform duration-500 top-[20px] fixed
           ${isCollapsed ? 'left-[88px] rotate-180' : 'left-[224px]'}
           ${isMobileOpen ? 'lg:block block' : 'lg:block hidden'}`}
         />
@@ -381,7 +387,22 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
         onClose={() => setIsSearchOpen(false)}
         data={allProperties} // your JSON array
       />
-
+      {/* Drawer */}
+      <div
+        className={`fixed inset-0 z-[2000] bg-[#121315CC] flex justify-end transition-opacity duration-500 ${
+          isDrawerOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setIsDrawerOpen(false)}
+      >
+        <div
+          className={`w-full sm:w-[608px] bg-[#0A0C0B] p-7 h-full overflow-y-auto rounded-[12px] border border-[#FFFFFF1F] transform transition-transform duration-300 ease-in-out ${
+            isDrawerOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <HelpSupportDrawer onClose={() => setIsDrawerOpen(false)} />
+        </div>
+      </div>
     </>
 
   );

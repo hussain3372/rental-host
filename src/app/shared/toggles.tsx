@@ -47,7 +47,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
       disabled={disabled}
       className={`
         relative inline-flex items-center rounded-full transition-colors duration-300
-        ${isOn ? "bg-[#EFFC76]" : "bg-[#EFFC76]"}
+        ${isOn ? "bg-[#EFFC76]" : "bg-[#3F4041]"}
         ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         ${trackWidth} ${trackHeight} px-1
         ${className}

@@ -1,16 +1,19 @@
 "use client";
 import { useState } from "react";
+import { forwardRef } from "react";
 import Image from "next/image";
-// import { SubscriptionModal } from "./SubscriptionModal";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 type PaymentOptionsProps = {
     selectedPlan?: string;
     onClose?: () => void;
-    onSubscribe: () => void; 
+    onSubscribe: () => void;
 };
 
-export default function PaymentOptions({  onSubscribe }: PaymentOptionsProps) {
+export default function PaymentOptions({ onSubscribe }: PaymentOptionsProps) {
     const [selected, setSelected] = useState<"card" | "bank">("card");
-    
+    const [expiryDate, setExpiryDate] = useState<Date | null>(null);
+
 
 
     const options = [
@@ -27,6 +30,39 @@ export default function PaymentOptions({  onSubscribe }: PaymentOptionsProps) {
             icon: "/images/atm-card.png",
         },
     ];
+    type CustomDateInputProps = {
+        value?: string;
+        onClick?: () => void;
+        placeholder?: string;
+    };
+
+    const CustomDateInput = forwardRef<HTMLInputElement, CustomDateInputProps>(
+        ({ value, onClick, placeholder }, ref) => (
+            <div className="relative w-full">
+                <input
+                    ref={ref}
+                    value={value}
+                    onClick={onClick}
+                    placeholder={placeholder}
+                    readOnly
+                    className="w-full p-3 pr-10 rounded-[10px] focus:outline-none focus:border-yellow-300 
+          [background:radial-gradient(75%_81%_at_50%_18.4%,#202020_0%,#101010_100%)] 
+          shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)] text-white placeholder-gray-400"
+                />
+                <Image
+                    src="/images/calender.svg"
+                    alt="calendar"
+                    width={20}
+                    height={20}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                />
+            </div>
+        )
+    );
+    CustomDateInput.displayName = "CustomDateInput";
+
+
+
 
     return (
         <>
@@ -34,7 +70,7 @@ export default function PaymentOptions({  onSubscribe }: PaymentOptionsProps) {
                 className="mx-auto p-7 text-white rounded-[12px] 
     border border-[#FFFFFF1F] 
     bg-[#0A0C0B] 
-    shadow-[0_4px_12px_0_rgba(0,0,0,0.12)]"
+    shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
             >
                 <h2 className="text-[20px] leading-6 font-medium mb-3">
                     Complete Your Purchase
@@ -131,18 +167,19 @@ export default function PaymentOptions({  onSubscribe }: PaymentOptionsProps) {
                                 <label className="block text-[14px] leading-[18px] font-medium text-[#FFFFFF] mb-[10px]">
                                     Expiry date
                                 </label>
-                                <input
-                                    type="date"
-                                    placeholder="Select date"
-                                    className="w-full p-3 rounded-[10px] focus:outline-none focus:border-yellow-300 [background:radial-gradient(75%_81%_at_50%_18.4%,#202020_0%,#101010_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)] text-white placeholder-gray-400 [color-scheme:dark]"
+                                <DatePicker
+                                    selected={expiryDate}
+                                    onChange={(date: Date | null) => setExpiryDate(date)}
+                                    customInput={<CustomDateInput />}
+                                    dateFormat="MMM d, yyyy"
+                                    placeholderText="Select date"
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dropdownMode="select"
                                 />
-                                <style jsx>{`
-                input[type="date"]::-webkit-calendar-picker-indicator {
-                  filter: invert(1);
-                  cursor: pointer;
-                }
-              `}</style>
+
                             </div>
+
 
                             <div>
                                 <label className="block text-[14px] leading-[18px] font-medium text-[#FFFFFF] mb-[10px]">

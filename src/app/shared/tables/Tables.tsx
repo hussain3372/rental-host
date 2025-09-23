@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { X, User, Briefcase, Calendar, Activity } from "lucide-react";
+import { X, User, Briefcase, Calendar, Activity, ChevronUp, ChevronDown, Trash2 } from "lucide-react";
 import Image from "next/image";
 
 // ============================================
@@ -55,6 +55,9 @@ interface TableProps<T> {
   showModal?: boolean;
   modalTitle?: string;
   clickable?: boolean;
+  onDelete?: (rows: T[]) => void;
+  onDeleteSingle?: (row: T, index: number) => void;
+  showDeleteButton?: boolean;
 }
 
 // Modal Component
@@ -64,6 +67,82 @@ interface ModalProps {
   title: string;
   data: unknown;
   rowIndex: number;
+}
+
+// Sort dropdown component
+interface SortDropdownProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSort: (direction: 'asc' | 'desc') => void;
+  column: string;
+}
+
+function SortDropdown({ isOpen, onClose, onSort, column }: SortDropdownProps) {
+  if (!isOpen) return null;
+
+  // Determine sort options based on column type
+  const getSortOptions = () => {
+    const columnLower = column.toLowerCase();
+    
+    // Date columns
+    if (columnLower.includes('date') || columnLower.includes('expiry')) {
+      return {
+        asc: { label: 'Oldest First', icon: <ChevronUp size={14} /> },
+        desc: { label: 'Newest First', icon: <ChevronDown size={14} /> }
+      };
+    }
+    
+    // Status columns
+    if (columnLower.includes('status')) {
+      return {
+        asc: { label: 'Approved First', icon: <ChevronUp size={14} /> },
+        desc: { label: 'Pending First', icon: <ChevronDown size={14} /> }
+      };
+    }
+    
+    // Ownership columns
+    if (columnLower.includes('ownership')) {
+      return {
+        asc: { label: 'Manager First', icon: <ChevronUp size={14} /> },
+        desc: { label: 'Owner First', icon: <ChevronDown size={14} /> }
+      };
+    }
+    
+    // Default alphabetical for text columns
+    return {
+      asc: { label: 'A to Z', icon: <ChevronUp size={14} /> },
+      desc: { label: 'Z to A', icon: <ChevronDown size={14} /> }
+    };
+  };
+
+  const sortOptions = getSortOptions();
+
+  return (
+    <div className="absolute top-full left-0 mt-1 bg-[#2d2d2d] border border-gray-600 rounded-lg shadow-lg z-50 min-w-[140px]">
+      <div className="py-1">
+        <button
+          onClick={() => {
+            onSort('asc');
+            onClose();
+          }}
+          className="w-full px-3 py-2 text-left text-white hover:bg-gray-700 flex items-center gap-2 text-sm"
+        >
+          {sortOptions.asc.icon}
+          {sortOptions.asc.label}
+        </button>
+        <button
+          onClick={() => {
+            onSort('desc');
+            onClose();
+          }}
+          className="w-full px-3 py-2 text-left text-white hover:bg-gray-700 flex items-center gap-2 text-sm"
+        >
+          {sortOptions.desc.icon}
+          {sortOptions.desc.label}
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function Modal({ isOpen, onClose, title, data, rowIndex }: ModalProps) {
@@ -167,7 +246,7 @@ function Modal({ isOpen, onClose, title, data, rowIndex }: ModalProps) {
 }
 
 // ============================================
-// ENHANCED TABLE COMPONENT WITH HORIZONTAL SCROLLING
+// ENHANCED TABLE COMPONENT WITH SORTING AND DELETE
 // ============================================
 
 export function Table<T extends Record<string, unknown>>({
@@ -178,6 +257,9 @@ export function Table<T extends Record<string, unknown>>({
   showModal = true,
   modalTitle = "Row Details",
   clickable = true,
+  onDelete,
+  onDeleteSingle,
+  showDeleteButton = false,
 }: TableProps<T>) {
   
   const [modalState, setModalState] = useState<{
@@ -190,6 +272,23 @@ export function Table<T extends Record<string, unknown>>({
     index: -1
   });
 
+  const [displayData, setDisplayData] = useState<T[]>(data);
+  const [activeSortDropdown, setActiveSortDropdown] = useState<string | null>(null);
+  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
+  const [selectAll, setSelectAll] = useState(false);
+
+  // Update display data when original data changes
+  useEffect(() => {
+    setDisplayData([...data]);
+    setSelectedRows(new Set());
+    setSelectAll(false);
+  }, [data]);
+
+  // Update selectAll checkbox when selectedRows changes
+  useEffect(() => {
+    setSelectAll(selectedRows.size === displayData.length && displayData.length > 0);
+  }, [selectedRows, displayData]);
+
   // Generate unique table ID for CSS targeting
   const tableId = `table-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -198,17 +297,14 @@ export function Table<T extends Record<string, unknown>>({
     const statusLower = status.toLowerCase();
     let badgeClasses = "inline-flex px-2 py-1 rounded-full text-xs font-medium ";
     
-    if (statusLower === 'verified'||statusLower === 'approved') {
+    if (statusLower === 'verified' || statusLower === 'approved') {
       badgeClasses += "bg-[#2d2d2d] text-[#EFFC76] py-2 px-3";
-    //   badgeClasses += " border border-green-700";
-    } else if (statusLower === 'near expiry'||statusLower === 'pending') {
-            badgeClasses += "bg-[#2d2d2d] text-[#FFB52B] py-2 px-3";
-    } else if (statusLower === 'expired'||statusLower === 'rejected') {
-                  badgeClasses += "bg-[#2d2d2d] text-[#FF5050] py-2 px-3";
-
+    } else if (statusLower === 'near expiry' || statusLower === 'pending') {
+      badgeClasses += "bg-[#2d2d2d] text-[#FFB52B] py-2 px-3";
+    } else if (statusLower === 'expired' || statusLower === 'rejected') {
+      badgeClasses += "bg-[#2d2d2d] text-[#FF5050] py-2 px-3";
     } else {
-        badgeClasses += "bg-[#2d2d2d] text-[#EFFC76] py-2 px-3";
-
+      badgeClasses += "bg-[#2d2d2d] text-[#EFFC76] py-2 px-3";
     }
     
     return (
@@ -231,12 +327,143 @@ export function Table<T extends Record<string, unknown>>({
     return String(value ?? '');
   };
 
+  // Sorting function - sorts ALL data, not just visible data
+  const handleSort = (column: string, direction: 'asc' | 'desc') => {
+    const columnLower = column.toLowerCase();
+    
+    const sorted = [...displayData].sort((a, b) => {
+      const aValue = a[column];
+      const bValue = b[column];
+      
+      // Handle null/undefined values
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return direction === 'asc' ? 1 : -1;
+      if (bValue == null) return direction === 'asc' ? -1 : 1;
+      
+      // Date sorting
+      if (columnLower.includes('date') || columnLower.includes('expiry')) {
+        const dateA = new Date(String(aValue));
+        const dateB = new Date(String(bValue));
+        
+        // If dates are invalid, fall back to string comparison
+        if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+          const strA = String(aValue).toLowerCase();
+          const strB = String(bValue).toLowerCase();
+          return direction === 'asc' ? strA.localeCompare(strB) : strB.localeCompare(strA);
+        }
+        
+        return direction === 'asc' ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+      }
+      
+      // Status sorting - custom priority order
+      if (columnLower.includes('status')) {
+        const statusPriority: { [key: string]: number } = {
+          'approved': 1,
+          'verified': 1,
+          'pending': 2,
+          'in progress': 2,
+          'pending review': 2,
+          'near expiry': 3,
+          'rejected': 4,
+          'expired': 4
+        };
+        
+        const aStatus = String(aValue).toLowerCase();
+        const bStatus = String(bValue).toLowerCase();
+        const aPriority = statusPriority[aStatus] || 5;
+        const bPriority = statusPriority[bStatus] || 5;
+        
+        if (direction === 'asc') {
+          return aPriority - bPriority || aStatus.localeCompare(bStatus);
+        } else {
+          return bPriority - aPriority || bStatus.localeCompare(aStatus);
+        }
+      }
+      
+      // Ownership sorting - managers always at top when "Manager First" is selected
+      if (columnLower.includes('ownership')) {
+        const aOwnership = String(aValue).toLowerCase();
+        const bOwnership = String(bValue).toLowerCase();
+        
+        // When Manager First (asc), managers always come first
+        if (direction === 'asc') {
+          if (aOwnership === 'manager' && bOwnership !== 'manager') return -1;
+          if (bOwnership === 'manager' && aOwnership !== 'manager') return 1;
+          if (aOwnership === 'manager' && bOwnership === 'manager') return 0;
+          
+          // For non-managers: Owner comes before Agent
+          const ownershipOrder = { 'owner': 1, 'agent': 2 };
+          const aOrder = ownershipOrder[aOwnership as keyof typeof ownershipOrder] || 3;
+          const bOrder = ownershipOrder[bOwnership as keyof typeof ownershipOrder] || 3;
+          return aOrder - bOrder;
+        } else {
+          // When Owner First (desc), managers still come first, then Owner, then Agent
+          if (aOwnership === 'manager' && bOwnership !== 'manager') return -1;
+          if (bOwnership === 'manager' && aOwnership !== 'manager') return 1;
+          if (aOwnership === 'manager' && bOwnership === 'manager') return 0;
+          
+          // For non-managers: Agent comes before Owner in desc
+          const ownershipOrder = { 'agent': 1, 'owner': 2 };
+          const aOrder = ownershipOrder[aOwnership as keyof typeof ownershipOrder] || 3;
+          const bOrder = ownershipOrder[bOwnership as keyof typeof ownershipOrder] || 3;
+          return aOrder - bOrder;
+        }
+      }
+      
+      // Default alphabetical sorting for other columns
+      const aString = String(aValue).toLowerCase();
+      const bString = String(bValue).toLowerCase();
+      
+      return direction === 'asc' ? aString.localeCompare(bString) : bString.localeCompare(aString);
+    });
+    
+    setDisplayData(sorted);
+    // Clear selections when sorting
+    setSelectedRows(new Set());
+    setSelectAll(false);
+  };
+
+  // Selection handlers
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedRows(new Set(Array.from({ length: displayData.length }, (_, i) => i)));
+    } else {
+      setSelectedRows(new Set());
+    }
+    setSelectAll(checked);
+  };
+
+  const handleSelectRow = (index: number, checked: boolean) => {
+    const newSelected = new Set(selectedRows);
+    if (checked) {
+      newSelected.add(index);
+    } else {
+      newSelected.delete(index);
+    }
+    setSelectedRows(newSelected);
+  };
+
+  const handleDeleteSelected = () => {
+    if (onDelete && selectedRows.size > 0) {
+      const selectedData = Array.from(selectedRows).map(index => displayData[index]);
+      onDelete(selectedData);
+      setSelectedRows(new Set());
+    }
+  };
+
+  const handleDeleteSingle = (row: T, index: number, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent row click
+    if (onDeleteSingle) {
+      onDeleteSingle(row, index);
+    }
+  };
+
   // Generate dynamic CSS for row colors
   const generateRowCSS = useCallback(() => {
     let css = "";
     
     // Generate CSS for each row with proper background colors
-    data.forEach((_, idx) => {
+    displayData.forEach((_, idx) => {
       let bgColor = control.rowBgColor || "#ffffff";
       
       // Apply nth-child colors
@@ -288,7 +515,7 @@ export function Table<T extends Record<string, unknown>>({
     });
 
     return css;
-  }, [data, control, tableId]);
+  }, [displayData, control, tableId]);
 
   // Use useEffect to inject CSS
   useEffect(() => {
@@ -302,6 +529,18 @@ export function Table<T extends Record<string, unknown>>({
       }
     };
   }, [generateRowCSS]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setActiveSortDropdown(null);
+    };
+
+    if (activeSortDropdown) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [activeSortDropdown]);
 
   // Handle empty data
   if (!data || data.length === 0) {
@@ -323,7 +562,7 @@ export function Table<T extends Record<string, unknown>>({
     );
   }
 
-  const keys = Object.keys(data[0]);
+  const keys = Object.keys(displayData[0]);
   const paddingSize = control.compact ? "8px 12px" : "12px 16px";
 
   const getBorderWidth = () => {
@@ -334,24 +573,24 @@ export function Table<T extends Record<string, unknown>>({
   };
 
   const handleRowClick = (row: T, index: number) => {
-  // Only process clicks if table is clickable
-  if (!clickable) return;
-  
-  // Always call the user-defined onRowClick if provided
-  if (onRowClick) {
-    onRowClick(row, index);
-    return; // Exit early - let the user handle everything
-  }
-  
-  // Fallback to modal only if no custom onRowClick is provided
-  if (showModal) {
-    setModalState({
-      isOpen: true,
-      data: row,
-      index: index
-    });
-  }
-};
+    // Only process clicks if table is clickable
+    if (!clickable) return;
+    
+    // Always call the user-defined onRowClick if provided
+    if (onRowClick) {
+      onRowClick(row, index);
+      return; // Exit early - let the user handle everything
+    }
+    
+    // Fallback to modal only if no custom onRowClick is provided
+    if (showModal) {
+      setModalState({
+        isOpen: true,
+        data: row,
+        index: index
+      });
+    }
+  };
 
   const closeModal = () => {
     setModalState({
@@ -385,108 +624,195 @@ export function Table<T extends Record<string, unknown>>({
             : "none",
         }}
       >
-          <div className="p-5">
-        <table
-          id={tableId}
-          className="p-5"
-          style={{
-            width: "100%",
-            minWidth: "max-content", // Ensure table doesn't collapse on small screens
-            borderCollapse: "collapse",
-            backgroundColor:"transparent",
-            fontSize: control.fontSize || 14,
-            textAlign: control.textAlign || "left",
-            // backgroundColor:"black"
-          }}
-        >
-
-            
-        <thead>
-  <tr
-    style={{
-      backgroundColor: control.headerBgColor || "#333",
-    }}
-  >
-    {keys.map((key, index) => (
-      <th
-        key={key}
-        style={{
-          padding: paddingSize,
-          fontWeight: 700,
-          color: "white",
-          textAlign: control.textAlign || "left",
-          fontSize:"12px",
-          lineHeight:"16px",
-          whiteSpace: "nowrap",
-
-          // Rounded corners only on first and last header
-          borderTopLeftRadius: index === 0 ? (control.borderRadius || 8) : 0,
-          borderTopRightRadius:
-            index === keys.length - 1 ? (control.borderRadius || 8) : 0,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-          }}
-        >
-          {key}
-          <Image src="/images/menu.png" alt="menu" height={16} width={16} />
-        </div>
-      </th>
-    ))}
-  </tr>
-</thead>
-
-
-          <tbody className="!bg-transparent">
-            {data.map((row, idx) => (
+        <div className="p-5">
+          <table
+            id={tableId}
+            className="p-5"
+            style={{
+              width: "100%",
+              minWidth: "max-content",
+              borderCollapse: "collapse",
+              backgroundColor:"transparent",
+              fontSize: control.fontSize || 14,
+              textAlign: control.textAlign || "left",
+            }}
+          >
+            <thead>
               <tr
-              className="rounded-md !bg-transparent"
-                key={idx}
                 style={{
-                  // Only show pointer cursor if table is clickable
-                //   cursor: clickable && (control.hover || onRowClick || showModal) ? "pointer" : "default",
-                  // backgroundColor:"#121315"
+                  backgroundColor: control.headerBgColor || "#333",
                 }}
-                onClick={() => handleRowClick(row, idx)}
               >
-                {keys.map((key) => (
-                  <td
-                    key={key}
-                    // className="w-0"
+                {/* Checkbox column for selection - only show if delete is enabled */}
+                {showDeleteButton && (
+                  <th
                     style={{
                       padding: paddingSize,
-                      fontWeight: 400,
-                        fontSize:"14px",
-                        lineHeight:"18px",
-                    // width:"0px",
-                      color:"#FFFFFF99",
-                      whiteSpace: "nowrap", // Prevent cell content from wrapping
+                      fontWeight: 700,
+                      color: "white",
+                      fontSize:"12px",
+                      lineHeight:"16px",
+                      whiteSpace: "nowrap",
+                      width: "40px",
+                      borderTopLeftRadius: control.borderRadius || 8,
                     }}
                   >
-                    {renderCellContent(key, row[key])}
-                  </td>
+                    <input
+                      type="checkbox"
+                      checked={selectAll}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
+                      className="w-4 h-4 accent-[#EFFC76]"
+                    />
+                  </th>
+                )}
+                
+                {keys.map((key, index) => (
+                  <th
+                    key={key}
+                    style={{
+                      padding: paddingSize,
+                      fontWeight: 700,
+                      color: "white",
+                      textAlign: control.textAlign || "left",
+                      fontSize:"12px",
+                      lineHeight:"16px",
+                      whiteSpace: "nowrap",
+                      position: "relative",
+                      // Adjust border radius based on whether checkbox column exists
+                      borderTopLeftRadius: !showDeleteButton && index === 0 ? (control.borderRadius || 8) : 0,
+                      borderTopRightRadius:
+                        index === keys.length - 1 && !showDeleteButton ? (control.borderRadius || 8) : 0,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        cursor: "pointer"
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveSortDropdown(activeSortDropdown === key ? null : key);
+                      }}
+                    >
+                      {key}
+                      <Image src="/images/menu.png" alt="menu" height={16} width={16} />
+                    </div>
+                    <SortDropdown
+                      isOpen={activeSortDropdown === key}
+                      onClose={() => setActiveSortDropdown(null)}
+                      onSort={(direction) => handleSort(key, direction)}
+                      column={key}
+                    />
+                  </th>
                 ))}
+                
+                {/* Delete action column - only show if delete is enabled */}
+                {showDeleteButton && (
+                  <th
+                    style={{
+                      padding: paddingSize,
+                      fontWeight: 700,
+                      color: "white",
+                      fontSize:"12px",
+                      lineHeight:"16px",
+                      whiteSpace: "nowrap",
+                      width: "80px",
+                      borderTopRightRadius: control.borderRadius || 8,
+                    }}
+                  >
+                    <button
+                      onClick={handleDeleteSelected}
+                      disabled={selectedRows.size === 0}
+                      className="flex items-center cursor-pointer gap-1 px-2 py-1 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded text-xs"
+                    >
+                      <Trash2 size={12} />
+                      Delete
+                    </button>
+                  </th>
+                )}
               </tr>
-            ))}
-          </tbody>
-        </table>
-          </div>
+            </thead>
+
+            <tbody className="!bg-transparent">
+              {displayData.map((row, idx) => (
+                <tr
+                  className="rounded-md !bg-transparent"
+                  key={idx}
+                  style={{
+                    cursor: clickable && (control.hover || onRowClick || showModal) ? "pointer" : "default",
+                  }}
+                  onClick={() => handleRowClick(row, idx)}
+                >
+                  {/* Checkbox column - only show if delete is enabled */}
+                  {showDeleteButton && (
+                    <td
+                      style={{
+                        padding: paddingSize,
+                        width: "40px",
+                      }}
+                      onClick={(e) => e.stopPropagation()} // Prevent row click
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedRows.has(idx)}
+                        onChange={(e) => handleSelectRow(idx, e.target.checked)}
+                        className="w-4 h-4 accent-[#EFFC76]"
+                      />
+                    </td>
+                  )}
+                  
+                  {keys.map((key) => (
+                    <td
+                      key={key}
+                      style={{
+                        padding: paddingSize,
+                        fontWeight: 400,
+                        fontSize:"14px",
+                        lineHeight:"18px",
+                        color:"#FFFFFF99",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {renderCellContent(key, row[key])}
+                    </td>
+                  ))}
+                  
+                  {/* Delete action column - only show if delete is enabled */}
+                  {showDeleteButton && (
+                    <td
+                      style={{
+                        padding: paddingSize,
+                        width: "80px",
+                      }}
+                    >
+                      <button
+                        onClick={(e) => handleDeleteSingle(row, idx, e)}
+                        className="flex cursor-pointer items-center gap-1 px-2 py-1 bg-red-600 hover:bg-red-700 rounded text-xs text-white"
+                      >
+                        <Trash2 size={12} />
+                        Delete
+                      </button>
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* Modal - Only show if table is clickable and no any custom click */}
+      {/* Modal - Only show if table is clickable and no custom click handler */}
       {clickable && showModal && !onRowClick && modalState.isOpen && modalState.data && (
-  <Modal
-    isOpen={modalState.isOpen}
-    onClose={closeModal}
-    title={modalTitle}
-    data={modalState.data}
-    rowIndex={modalState.index}
-  />
-)}
+        <Modal
+          isOpen={modalState.isOpen}
+          onClose={closeModal}
+          title={modalTitle}
+          data={modalState.data}
+          rowIndex={modalState.index}
+        />
+      )}
     </div>
   );
 }

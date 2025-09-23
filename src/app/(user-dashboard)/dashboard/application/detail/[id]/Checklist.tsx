@@ -64,10 +64,10 @@ export default function Checklist() {
                 <Image src="/images/id.png" alt='ID' width={100} height={60}/>
                 <div>
                     <h3 className='font-medium text-[12px] sm:text-[18px] leading-[16px] sm:leading-[22px] text-white  xl:w-[353px]'>Government-issued ID</h3>
-                    <h4 className='text-white/60 font-medium text-[10px] sm:text-[16px] leading-[20px] pt-2'>12.3kb</h4>
+                    <h4 className='text-white/60 font-medium text-[16px] leading-[20px] pt-2'>12.3kb</h4>
                 </div>
                 <button onClick={() => handleDownload("/images/id.png")} className='cursor-pointer'>
-                <Image src="/images/download.png" alt='downoload' width={40} height={40} />
+                <Image src="/images/download.svg" alt='downoload' width={40} height={40} />
                 </button>
             </div>
             <div className='bg-[#121315] p-3 rounded-lg flex gap-5 '>
@@ -77,7 +77,7 @@ export default function Checklist() {
                     <h4 className='text-white/60 font-medium text-[16px] leading-[20px] pt-2'>12.3kb</h4>
                 </div>
                 <button onClick={() => handleDownload("/images/id.png")} className='cursor-pointer'>
-                <Image src="/images/download.png" alt='downoload' width={40} height={40} />
+                <Image src="/images/download.svg" alt='downoload' width={40} height={40} />
                 </button>
             </div>
             <div className='bg-[#121315] p-3 rounded-lg flex gap-5 '>
@@ -87,7 +87,7 @@ export default function Checklist() {
                     <h4 className='text-white/60 font-medium text-[16px] leading-[20px] pt-2'>12.3kb</h4>
                 </div>
                 <button onClick={() => handleDownload("/images/id.png")} className='cursor-pointer'>
-                <Image src="/images/download.png" alt='downoload' width={40} height={40} />
+                <Image src="/images/download.svg" alt='downoload' width={40} height={40} />
                 </button>
             </div>
             <div className='bg-[#121315] p-3 rounded-lg flex gap-5 '>
@@ -97,7 +97,7 @@ export default function Checklist() {
                     <h4 className='text-white/60 font-medium text-[16px] leading-[20px] pt-2'>12.3kb</h4>
                 </div>
                 <button  className='cursor-pointer'>
-                <Image  src="/images/download.png" alt='downoload' width={40} height={40} />
+                <Image  src="/images/download.svg" alt='downoload' width={40} height={40} />
                 </button>
             </div>
           </div>

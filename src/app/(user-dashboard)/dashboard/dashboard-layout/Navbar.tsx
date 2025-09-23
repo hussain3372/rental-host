@@ -48,14 +48,15 @@ export function Navbar({ isCollapsed }: NavbarProps) {
       </nav>
 
       {/* Mobile Navbar */}
-      <nav className="fixed top-0 left-0 w-full text-white bg-[#111] lg:hidden z-50">
+      <nav className="fixed top-0 left-0 w-full text-white bg-[#111] lg:hidden py-3 z-50">
         <div className="flex justify-between items-center px-4 py-3">
           {/* Left side */}
           <div className=""></div>
 
           {/* Right side */}
-          <div className="flex items-center gap-2">
-            <Link href="/dashboard/profile">
+          <Link href="/dashboard/profile">
+
+            <div className="flex items-center gap-2">
               <Image
                 src="/images/person.png"
                 alt="profile pic"
@@ -63,12 +64,12 @@ export function Navbar({ isCollapsed }: NavbarProps) {
                 width={32}
                 className="rounded-full object-cover"
               />
-            </Link>
-            <div className="flex flex-col">
-              <p className="text-[13px] font-medium">John Deo</p>
-              <p className="text-[12px] text-white/60">johndeo@gmail.com</p>
+              <div className="flex flex-col">
+                <p className="text-[13px] font-medium">John Deo</p>
+                <p className="text-[12px] text-white/60">johndeo@gmail.com</p>
+              </div>
             </div>
-          </div>
+          </Link>
         </div>
       </nav>
     </>

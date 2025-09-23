@@ -29,15 +29,17 @@ export default function SearchDrawer({ isOpen, onClose, data }: SearchDrawerProp
     setResults(filtered);
   }, [searchQuery, data]);
 
-  if (!isOpen) return null;
-
   return (
     <div
-      className="fixed inset-0 z-[2000] bg-[#121315CC] flex justify-end"
+      className={`fixed inset-0 z-[2000] bg-[#121315CC] flex justify-end transition-opacity duration-300 ${
+        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
       onClick={onClose}
     >
       <div
-        className="w-full sm:w-[608px] bg-[#0A0C0B] p-7 h-full overflow-y-auto rounded-[12px] border border-[#FFFFFF1F]"
+        className={`w-full sm:w-[608px] bg-[#0A0C0B] p-7 h-full overflow-y-auto rounded-[12px] border border-[#FFFFFF1F] transform transition-transform duration-300 ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Input */}
@@ -59,7 +61,7 @@ export default function SearchDrawer({ isOpen, onClose, data }: SearchDrawerProp
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-6 top-1/2 -translate-y-1/2 text-[#FFFFFF99]  cursor-pointer"
+              className="absolute right-6 top-1/2 -translate-y-1/2 text-[#FFFFFF99] cursor-pointer"
             >
               ✕
             </button>
@@ -67,42 +69,36 @@ export default function SearchDrawer({ isOpen, onClose, data }: SearchDrawerProp
         </div>
 
        <div>
-  {searchQuery ? (
-    results.length > 0 ? (
-      <ul className="flex flex-col gap-3">
-        {results.map((item) => (
-          <li
-            key={item.id}
-            className="flex items-center gap-5 p-3 bg-[rgba(255,255,255,0.08)] rounded-[12px]"
-          >
-            {/* Card Image */}
-            <div className="w-[60px] h-[60px] flex-shrink-0 rounded-[100px] overflow-hidden">
-              <Image
-                src={item.images[0] || "/images/search.png"}
-                alt={item.title}
-                width={60}
-                height={60}
-                className="object-cover w-full h-full"
-              />
-            </div>
+  {(searchQuery ? results : data).length > 0 ? (
+    <ul className="flex flex-col gap-3">
+      {(searchQuery ? results : data).map((item) => (
+        <li
+          key={item.id}
+          className="flex items-center gap-5 p-3 bg-[rgba(255,255,255,0.08)] rounded-[12px]"
+        >
+          {/* Card Image */}
+          <div className="w-[60px] h-[60px] flex-shrink-0 rounded-[100px] overflow-hidden">
+            <Image
+              src={item.images[0] || "/images/search.png"}
+              alt={item.title}
+              width={60}
+              height={60}
+              className="object-cover w-full h-full"
+            />
+          </div>
 
-            {/* Card Content */}
-            <div className="flex-1">
-              <p className="text-white font-semibold text-lg">{item.title}</p>
-              <p className="text-[#FFFFFF99] text-[14px] leading-[18px] font-normal">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              </p>
-            </div>
-          </li>
-        ))}
-      </ul>
-    ) : (
-<p className="text-white">
-  No results found for &quot;{searchQuery}&quot;
-</p>
-    )
+          {/* Card Content */}
+          <div className="flex-1">
+            <p className="text-white font-semibold text-lg">{item.title}</p>
+            <p className="text-[#FFFFFF99] text-[14px] leading-[18px] font-normal">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </p>
+          </div>
+        </li>
+      ))}
+    </ul>
   ) : (
-    <p className="text-white">Enter a query to search the website</p>
+    <p className="text-white">No results found</p>
   )}
 </div>
 

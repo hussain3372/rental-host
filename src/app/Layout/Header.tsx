@@ -57,7 +57,7 @@ export default function Navbar() {
                 Home
               </Link>
               <Link
-                href="/coming-soon"
+                href="/landing"
                 className={`text-[20px] cursor-pointer pro-medium leading-5 hover:text-[#FFFFFF] relative group transition-colors duration-300
                 ${pathname === "/industry" ? "text-[#FFFFFF]" : "text-[#FFFFFF99]"}
                 group-hover:text-[#FFFFFF]`}
@@ -65,7 +65,7 @@ export default function Navbar() {
                 Pricing
               </Link>
               <Link
-                href="/coming-soon"
+                href="/property-detail"
                 className={`text-[20px] cursor-pointer pro-medium leading-5 hover:text-[#FFFFFF] relative group transition-colors duration-300
                 ${pathname === "/about" ? "text-[#FFFFFF]" : "text-[#FFFFFF99]"}
                 group-hover:text-[#FFFFFF]`}

@@ -4,8 +4,7 @@ import Image from 'next/image';
 export default function Certification() {
   return (
     <div>
-       <div className='bg-[#EFFC76] pr-3 rounded-3xl  mx-auto text-black flex flex-col xl:flex-row  justify-between !items-center md:items-start overflow-hidden '>
-        
+       <div className='bg-[#EFFC76] pt-4 px-4  rounded-3xl  mx-auto text-black flex flex-col xl:flex-row  justify-between !items-center md:items-start overflow-hidden '>
         {/* Content Section */}
         <div className='p-2 sm:p-5 flex-1 space-y-2 sm:space-y-3'>
           <h3 className="font-bold text-[16px] sm:text-[28px] leading-[20px] sm:leading-[32px] ">
@@ -28,7 +27,7 @@ export default function Certification() {
             alt='design' 
             width={154}
             height={154}
-            className='sm:mt-[-70px]'
+            className='sm:mt-[-70px] hidden sm:block'
             
           />
           <Image 

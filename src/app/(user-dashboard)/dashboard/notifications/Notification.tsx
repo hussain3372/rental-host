@@ -65,7 +65,7 @@ export default function NotificationsPage() {
 
             </div>
 
-            <p className="text-4 leading-5 text-[#FFFFFF99] font-normal mb-[42px]">
+            <p className="text-4 leading-5 text-[#FFFFFF99] font-normal mb-[40px]">
                 Stay updated with your latest application and certificate activities.
             </p>
 

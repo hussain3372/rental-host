@@ -114,23 +114,27 @@ export default function SubscriptionPlan() {
 
 
       {/* Filter Drawer */}
-      {showPayment && (
-        <div
-          className="fixed inset-0 flex justify-end bg-black/70 z-[2000]"
-          onClick={() => setShowPayment(false)}
-        >
-          <div
-            className="relative w-full sm:w-[608px] max-h-screen bg-[#121315] shadow-lg overflow-y-auto z-[2010]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <ApplyNowFilter
-              selectedPlan={selectedPlan ?? ""}
-              onClose={() => setShowPayment(false)}
-              onSubscribe={handleSubscribe} // ✅ pass subscribe callback
-            />
-          </div>
-        </div>
-      )}
+     {/* Drawer always mounted, only animate */}
+<div
+  className={`fixed inset-0 flex justify-end bg-black/70 z-[2000] transition-opacity duration-300 ${
+    showPayment ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+  }`}
+  onClick={() => setShowPayment(false)}
+>
+  <div
+    className={`relative w-full sm:w-[608px] max-h-screen bg-[#121315] shadow-lg overflow-y-auto z-[2010] transform transition-transform duration-300 ease-in-out ${
+      showPayment ? "translate-x-0" : "translate-x-full"
+    }`}
+    onClick={(e) => e.stopPropagation()}
+  >
+    <ApplyNowFilter
+      selectedPlan={selectedPlan ?? ""}
+      onClose={() => setShowPayment(false)}
+      onSubscribe={handleSubscribe} // ✅ pass subscribe callback
+    />
+  </div>
+</div>
+
 
       {/* Modal */}
       <SubscriptionModal

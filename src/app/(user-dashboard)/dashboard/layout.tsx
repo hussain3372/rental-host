@@ -41,7 +41,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         }`}
       >
         <Navbar isCollapsed={isSidebarCollapsed} />
-        <main className="px-6 pt-[120px] relative">{children}</main>
+        <main className=" px-4 sm:px-6 pt-[99px] sm:pt-[120px] relative">{children}</main>
       </div>
     </div>
   );

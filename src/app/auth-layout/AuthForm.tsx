@@ -3,6 +3,7 @@ import { Eye } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import toast from "react-hot-toast";
+// import { Modal } from "../shared/modals";
 
 interface FormData {
   email: string;
@@ -184,7 +185,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
     "reset-password": {
       title: "Create New Password",
       subtitle: "Create a new password for your account.",
-      buttonText: "Update Password",
+      buttonText: "Reset Password",
     },
   };
 
@@ -210,9 +211,10 @@ const AuthForm: React.FC<AuthFormProps> = ({
   };
 
   const handleResend = () => {
-    toast.success("Code resent");
+    toast.success("Your OTP has been resent");
     setTimeLeft(120); // restart
     setShowResend(false);
+    
   };
 
   const renderFields = () => {
@@ -220,6 +222,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
       case "login":
         return (
           <>
+
             <div className=" pt-[20px] max-w-[1100px] sm:pt-[40px]">
               <label className="text-white font-medium leading-[18px] text-sm ">
                 Email
@@ -383,7 +386,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
               <div
                 className="font-semibold max-w-[602px] text-[18px] leading-[22px] text-[#EFFC76] text-center pt-[40px] flex !justify-center"
               >
-                <button onClick={handleResend} disabled={!showResend} className={`"text-center underline ${showResend?"cursor-pointer":"cursor-not-allowed opacity-50"}"`}> Resend Link </button>
+                <button onClick={handleResend} disabled={!showResend} className={`"text-center  underline ${showResend?"!cursor-pointer":"cursor-not-allowed opacity-50"}"`}> Resend Code </button>
               </div>
           </div>
         );

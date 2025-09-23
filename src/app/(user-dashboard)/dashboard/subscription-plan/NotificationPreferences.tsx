@@ -1,16 +1,19 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import ToggleSwitch from "@/app/shared/toggles";
-
+import ToggleSwitch from "@/app/shared/Toggles";
+import { TwoFAModal } from "./TwoFAModal";
+import EmailVerifyDrawer from "./VerifyEmailDrawer";
+import { AuthenticationEnable } from "./AuthenticationEnable";
+import ChangePasswordDrawer from "./ChangePasswordDrawer"
 interface PreferenceItemProps {
   title: string;
   description: string;
   hasToggle?: boolean;
   hasArrow?: boolean;
+  onArrowClick?: () => void;
   toggleState?: boolean;
   onToggleChange?: () => void;
-
   trackWidth?: string;
   trackHeight?: string;
   thumbSize?: string;
@@ -30,13 +33,45 @@ const PreferenceItem: React.FC<PreferenceItemProps> = ({
   thumbSize,
   iconSize,
   thumbTranslate,
+  onArrowClick,
 }) => (
-  <div className="flex items-center justify-between ">
-    <div className="flex-1">
-      <h4 className="text-white text-[16px] leading-[20px] font-medium mb-2 pt-3">{title}</h4>
-      <p className="text-[#FFFFFF99] text-[16px] leading-5 font-normal pb-5">{description}</p>
+  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    {/* Title + description */}
+    <div className="flex-1 relative w-full">
+      <div className="flex justify-between items-center sm:block">
+        <h4 className="text-white text-[16px] leading-[20px] font-medium mb-2 pt-3">
+          {title}
+        </h4>
+
+        <div className="sm:hidden">
+          {hasToggle && toggleState !== undefined && onToggleChange && (
+            <ToggleSwitch
+              isOn={toggleState}
+              onToggle={onToggleChange}
+              trackWidth={trackWidth}
+              trackHeight={trackHeight}
+              thumbSize={thumbSize}
+              iconSize={iconSize}
+              thumbTranslate={thumbTranslate}
+            />
+          )}
+          {hasArrow && (
+            <Image
+              src="/images/arrow-right.png"
+              alt="arrow right"
+              width={20}
+              height={20}
+              className="text-[#FFFFFF99]"
+            />
+          )}
+        </div>
+      </div>
+
+      <p className="text-[#FFFFFF99] text-[16px] leading-5 font-normal pb-5">
+        {description}
+      </p>
     </div>
-    <div className="ml-4 flex-shrink-0">
+    <div className="hidden sm:flex ml-4 flex-shrink-0">
       {hasToggle && toggleState !== undefined && onToggleChange && (
         <ToggleSwitch
           isOn={toggleState}
@@ -45,9 +80,8 @@ const PreferenceItem: React.FC<PreferenceItemProps> = ({
           trackHeight={trackHeight}
           thumbSize={thumbSize}
           iconSize={iconSize}
-          thumbTranslate={thumbTranslate}  
+          thumbTranslate={thumbTranslate}
         />
-
       )}
       {hasArrow && (
         <Image
@@ -55,7 +89,9 @@ const PreferenceItem: React.FC<PreferenceItemProps> = ({
           alt="arrow right"
           width={20}
           height={20}
-          className="text-[#FFFFFF99]"
+
+          className="text-[#FFFFFF99] cursor-pointer"
+          onClick={onArrowClick}
         />
       )}
     </div>
@@ -68,6 +104,29 @@ const NotificationPreferences: React.FC = () => {
   const [pushNotifications, setPushNotifications] = useState(true);
   const [twoFactorAuth, setTwoFactorAuth] = useState(true);
 
+  const [is2FAModalOpen, setIs2FAModalOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isPasswordDrawerOpen, setIsPasswordDrawerOpen] = useState(false);
+
+  const [email] = useState("johndeo@gmail.com");
+
+  const handleVerifyOtp = (otp: string) => {
+    console.log("Entered OTP:", otp);
+
+    // close drawer first
+    setIsDrawerOpen(false);
+
+    // open success modal
+    setIsAuthModalOpen(true);
+  };
+
+
+  const handleContinueFromModal = () => {
+    setIs2FAModalOpen(false);
+    setIsDrawerOpen(true);
+  };
+
   return (
     <div className="container-class space-y-5 py-5">
       {/* Notification Preferences Card */}
@@ -75,7 +134,7 @@ const NotificationPreferences: React.FC = () => {
         <h3 className="text-white text-[18px] leading-[22px] font-medium mb-5">
           Notification Preferences
         </h3>
-        <div className="h-px bg-gray-700 mb-3"></div> 
+        <div className="h-px bg-gray-700 mb-3"></div>
 
         <div className="space-y-0">
           <PreferenceItem
@@ -117,6 +176,7 @@ const NotificationPreferences: React.FC = () => {
             title="Change Password"
             description="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
             hasArrow
+          // onArrowClick={() => setIs2FAModalOpen(true)}
           />
 
           <PreferenceItem
@@ -124,15 +184,86 @@ const NotificationPreferences: React.FC = () => {
             description="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
             hasToggle
             toggleState={twoFactorAuth}
-            onToggleChange={() => setTwoFactorAuth(!twoFactorAuth)}
+            onToggleChange={() => {
+              if (twoFactorAuth) {
+                // If currently ON and user tries to turn OFF
+                setTwoFactorAuth(false); // Optimistically update UI
+                setIs2FAModalOpen(true); // Open modal for confirmation
+              } else {
+                // If currently OFF and user turns ON → enable directly
+                setTwoFactorAuth(true);
+              }
+            }}
             trackWidth="w-[32px]"
             trackHeight="h-[18px]"
             thumbSize="w-4 h-4"
             iconSize="w-3 h-3"
             thumbTranslate="translate-x-2.5"
           />
+
+
         </div>
       </div>
+      <TwoFAModal
+        isOpen={is2FAModalOpen}
+        onClose={() => {
+          setIs2FAModalOpen(false);
+          setTwoFactorAuth(true); 
+        }}
+        onConfirm={handleContinueFromModal} 
+      />
+
+
+      {isDrawerOpen && (
+        <div
+          className="fixed inset-0 bg-[#121315CC] z-[2021] flex justify-end transition-opacity duration-300"
+          onClick={() => setIsDrawerOpen(false)} 
+        >
+          {/* Drawer Panel */}
+          <div
+            className="w-full sm:w-[480px] md:w-[608px] p-7 h-full bg-[#0A0C0B] overflow-auto border border-[#FFFFFF1F] rounded-l-[12px] shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
+            onClick={(e) => e.stopPropagation()} 
+          >
+            <EmailVerifyDrawer
+              initialEmail={email}
+              onClose={() => setIsDrawerOpen(false)}
+              onVerify={handleVerifyOtp}
+            />
+          </div>
+        </div>
+      )}
+      {/* Step 3 - Authentication Enabled Modal */}
+      <AuthenticationEnable
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onConfirm={() => {
+          console.log("2FA setup completed");
+          setIsAuthModalOpen(false);
+          setIsPasswordDrawerOpen(true); // ✅ open password drawer
+        }}
+      />
+      {/* Step 4 - Change Password Drawer */}
+      {isPasswordDrawerOpen && (
+        <div
+          className="fixed inset-0 bg-[#121315CC] z-[2022] flex justify-end transition-opacity duration-300"
+          onClick={() => setIsPasswordDrawerOpen(false)} // close on overlay click
+        >
+          {/* Drawer Panel */}
+          <div
+            className="w-full sm:w-[480px] md:w-[608px] p-7 h-full bg-[#0A0C0B] overflow-auto border border-[#FFFFFF1F] rounded-l-[12px] shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
+            onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
+          >
+            <ChangePasswordDrawer
+              onSave={(current, newPass) => {
+                console.log("Password updated:", current, newPass);
+                setIsPasswordDrawerOpen(false);
+              }}
+              onClose={() => setIsPasswordDrawerOpen(false)}
+            />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

@@ -111,7 +111,7 @@ export default function ApplicationDetail() {
         {/* Thumbnail Gallery - Reference for height measurement */}
         <div 
           ref={thumbnailsContainerRef}
-          className=" w-full sm:w-[145px] max-h-full flex  flex-col justify-center items-center gap-3"
+          className=" w-full max-w-[300px] sm:w-[145px] max-h-full flex  sm:flex-col justify-center items-center gap-3"
         >
           {images.map((image, index) => (
            
@@ -168,7 +168,7 @@ export default function ApplicationDetail() {
             </button>
           </div>
       {/* Description */}
-      <div className="mt-[60px]  max-w-[1134px]">
+      <div className="mt-[60px] max-w-[1134px]">
         <p className="text-white/80 font-regular text-[16px] sm:text-[18px] tracking-[0%] leading-[22px]">
           {application.title} at 1234 Maplewood Avenue, Austin, Texas is a fully verified 
           and certified property. Featuring 4 bedrooms, 3 bathrooms, and a modern kitchen, 
