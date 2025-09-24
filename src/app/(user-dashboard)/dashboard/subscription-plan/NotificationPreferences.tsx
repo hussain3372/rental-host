@@ -216,8 +216,8 @@ const NotificationPreferences: React.FC = () => {
         >
           {/* Drawer Panel */}
           <div
-            className="w-full sm:w-[480px] md:w-[608px] p-7 h-full bg-[#0A0C0B] overflow-auto border border-[#FFFFFF1F] rounded-l-[12px] shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
-            onClick={(e) => e.stopPropagation()}
+            className="w-full  lg:max-w-[608px] md:max-w-[500px]  max-w-[280px] p-5 sm:p-7 h-full bg-[#0A0C0B] overflow-auto border border-[#FFFFFF1F] rounded-l-[12px] shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
+            onClick={(e) => e.stopPropagation()} 
           >
             <EmailVerifyDrawer
               initialEmail={email}
@@ -245,7 +245,7 @@ const NotificationPreferences: React.FC = () => {
         >
           {/* Drawer Panel */}
           <div
-            className="w-full sm:w-[480px] md:w-[608px] p-7 h-full bg-[#0A0C0B] overflow-auto border border-[#FFFFFF1F] rounded-l-[12px] shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
+            className="w-full  lg:max-w-[608px] md:max-w-[500px]  max-w-[280px] p-5 sm:p-7 h-full bg-[#0A0C0B] overflow-auto border border-[#FFFFFF1F] rounded-l-[12px] shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
             onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
           >
             <ChangePasswordDrawer

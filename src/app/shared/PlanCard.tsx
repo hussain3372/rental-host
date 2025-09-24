@@ -89,7 +89,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
 
 
 
-      <div className={`bg-gradient-to-r -ml-0 flex text-center my-[32px] w-[250px] sm:w-[312px] h-[1px] from-transparent via-white to-transparent relative z-10 ${isHovered ? "opacity-80" : "opacity-100"
+      <div className={`bg-gradient-to-r -ml-0 flex text-center my-[32px] w-[250px] sm:w-[365px] h-[1px] from-transparent via-white to-transparent relative z-10 ${isHovered ? "opacity-80" : "opacity-100"
         }`}></div>
 
       {/* Features */}

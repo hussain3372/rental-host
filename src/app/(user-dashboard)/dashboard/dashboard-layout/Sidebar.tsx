@@ -395,7 +395,7 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
         onClick={() => setIsDrawerOpen(false)}
       >
         <div
-          className={`w-full sm:w-[608px] bg-[#0A0C0B] p-7 h-full overflow-y-auto rounded-[12px] border border-[#FFFFFF1F] transform transition-transform duration-300 ease-in-out ${
+          className={`w-full lg:max-w-[608px] md:max-w-[500px]  max-w-[280px] p-5 sm:p-7 bg-[#0A0C0B]  h-full overflow-y-auto rounded-[12px] border border-[#FFFFFF1F] transform transition-transform duration-300 ease-in-out ${
             isDrawerOpen ? "translate-x-0" : "translate-x-full"
           }`}
           onClick={(e) => e.stopPropagation()}

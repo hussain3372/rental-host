@@ -84,56 +84,54 @@ export default function SubscriptionPlan() {
       </p>
 
       {/* Cards */}
-     <div className="container-class flex flex-col xl:flex-row items-center justify-between gap-[20px]">
-  {plans.map((plan) => (
-    <PricingCard
-      key={plan.key}
-      title={plan.title}
-      description={plan.description}
-      price={plan.price}
-      period="per month"
-      buttonText={subscribedPlan === plan.key ? "Unsubscribe" : "Buy Now"} // ✅ dynamic
-      onBuyNow={() => handleBuyNow(plan.key)}
-      features={plan.features}
-      bgColor={
-        subscribedPlan === plan.key
-          ? `
+      <div className="flex flex-col xl:flex-row items-center justify-between gap-[20px] ">
+        {plans.map((plan) => (
+          <PricingCard
+            key={plan.key}
+            title={plan.title}
+            description={plan.description}
+            price={plan.price}
+            period="per month"
+            buttonText={subscribedPlan === plan.key ? "Unsubscribe" : "Buy Now"} 
+            onBuyNow={() => handleBuyNow(plan.key)}
+            features={plan.features}
+            bgColor={
+              subscribedPlan === plan.key
+                ? `
             rounded-[16px]
             bg-[radial-gradient(94.08%_110.06%_at_50%_5.92%,rgba(239,252,118,0.12)_0%,rgba(18,19,21,0.40)_100%)]
             shadow-[0_2px_4px_0_rgba(0,0,0,0.29),0_8px_8px_0_rgba(0,0,0,0.26),0_17px_10px_0_rgba(0,0,0,0.15),0_31px_12px_0_rgba(0,0,0,0.04),0_48px_13px_0_rgba(0,0,0,0.01),0_-3px_7px_0_rgba(0,0,0,0.20)_inset,1px_-14px_14px_0_rgba(0,0,0,0.17)_inset,3px_-30px_18px_0_rgba(0,0,0,0.10)_inset,5px_-54px_22px_0_rgba(0,0,0,0.03)_inset,0_1px_0_1px_rgba(255,255,255,0.15)_inset]
           `
-          : "bg-[#121315]" // default inactive
-      }
-       textColor="text-white"
-  buttonBg={subscribedPlan === plan.key ? "bg-[#EFFC76]" : "bg-[#2D2D2D]"} // ✅ dynamic button color
-  buttonTextColor={subscribedPlan === plan.key ? "text-black" : "text-white"} // ✅ text adjusts
-  padding="p-[20px]"
-/>
-  ))}
-</div>
+                : "bg-[#121315]" // default inactive
+            }
+            textColor="text-white"
+            buttonBg={subscribedPlan === plan.key ? "bg-[#EFFC76]" : "bg-[#2D2D2D]"} // ✅ dynamic button color
+            buttonTextColor={subscribedPlan === plan.key ? "text-black" : "text-white"} // ✅ text adjusts
+            padding="p-[20px]"
+          />
+        ))}
+      </div>
 
 
       {/* Filter Drawer */}
-     {/* Drawer always mounted, only animate */}
-<div
-  className={`fixed inset-0 flex justify-end bg-black/70 z-[2000] transition-opacity duration-300 ${
-    showPayment ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-  }`}
-  onClick={() => setShowPayment(false)}
->
-  <div
-    className={`relative w-full sm:w-[608px] max-h-screen bg-[#121315] shadow-lg overflow-y-auto z-[2010] transform transition-transform duration-300 ease-in-out ${
-      showPayment ? "translate-x-0" : "translate-x-full"
-    }`}
-    onClick={(e) => e.stopPropagation()}
-  >
-    <ApplyNowFilter
-      selectedPlan={selectedPlan ?? ""}
-      onClose={() => setShowPayment(false)}
-      onSubscribe={handleSubscribe} // ✅ pass subscribe callback
-    />
-  </div>
-</div>
+      {/* Drawer always mounted, only animate */}
+      <div
+        className={`fixed inset-0 flex justify-end bg-black/70 z-[2000] transition-opacity duration-300 ${showPayment ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
+        onClick={() => setShowPayment(false)}
+      >
+        <div
+          className={`relative w-full sm:max-w-[608px]  max-w-[260px] max-h-screen bg-[#121315] shadow-lg overflow-y-auto z-[2010] transform transition-transform duration-300 ease-in-out ${showPayment ? "translate-x-0" : "translate-x-full"
+            }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <ApplyNowFilter
+            selectedPlan={selectedPlan ?? ""}
+            onClose={() => setShowPayment(false)}
+            onSubscribe={handleSubscribe} // ✅ pass subscribe callback
+          />
+        </div>
+      </div>
 
 
       {/* Modal */}

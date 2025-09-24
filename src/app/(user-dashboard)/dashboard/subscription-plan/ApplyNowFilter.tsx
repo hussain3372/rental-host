@@ -86,14 +86,14 @@ export default function PaymentOptions({ onSubscribe }: PaymentOptionsProps) {
                         <div
                             key={option.id}
                             onClick={() => setSelected(option.id as "card" | "bank")}
-                            className={`flex items-center justify-between p-3 cursor-pointer transition-all 
+                            className={`flex flex-col sm:flex-row items-center sm:justify-between p-3 cursor-pointer transition-all
         ${selected === option.id
                                     ? "rounded-lg border border-[rgba(239,252,118,0.60)] bg-[rgba(239,252,118,0.08)]"
                                     : "rounded-[10px] bg-[radial-gradient(75%_81%_at_50%_18.4%,#202020_0%,#101010_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.10)]"
                                 }`}
                         >
                             {/* Icon */}
-                            <div className="w-[64px] h-[64px] flex items-center justify-center rounded-[12px] bg-[rgba(255,255,255,0.12)]">
+                            <div className="w-[64px] h-[64px] sm:w-[64px] sm:h-[64px] flex items-center justify-center rounded-[12px] bg-[rgba(255,255,255,0.12)] mb-3 sm:mb-0">
                                 <Image
                                     src={option.icon}
                                     alt={option.title}
@@ -103,7 +103,7 @@ export default function PaymentOptions({ onSubscribe }: PaymentOptionsProps) {
                             </div>
 
                             {/* Title & Description */}
-                            <div className="flex-1 px-4">
+                            <div className="flex-1 px-0 sm:px-4 text-center sm:text-left mb-3 sm:mb-0">
                                 <h3 className="text-[16px] font-normal leading-5 text-white">
                                     {option.title}
                                 </h3>
@@ -115,7 +115,7 @@ export default function PaymentOptions({ onSubscribe }: PaymentOptionsProps) {
                             {/* Radio Circle */}
                             <div
                                 className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition
-            ${selected === option.id ? "border-[#EFFC76]" : "border-gray-500"}`}
+          ${selected === option.id ? "border-[#EFFC76]" : "border-gray-500"}`}
                             >
                                 {selected === option.id && (
                                     <div className="w-2.5 h-2.5 bg-[#EFFC76] rounded-full"></div>
@@ -124,6 +124,7 @@ export default function PaymentOptions({ onSubscribe }: PaymentOptionsProps) {
                         </div>
                     ))}
                 </div>
+
 
                 {/* Conditional fields */}
                 {selected === "card" && (
@@ -270,9 +271,11 @@ export default function PaymentOptions({ onSubscribe }: PaymentOptionsProps) {
                 )}
 
                 <button
-                    onClick={onSubscribe} className="  w-full mt-8 py-4 rounded-lg  bg-[#EFFC76] text-[#121315] 
+                    onClick={onSubscribe} className="  w-full mt-8 py-[16px] px-10 rounded-[8px]  bg-[#EFFC76] text-[#121315] 
     text-[18px] leading-[22px] font-semibold cursor-pointer
-   box-shadow: 0 -2px 3px 0 rgba(0, 0, 0, 0.29) inset, 0 -6px 6px 0 rgba(0, 0, 0, 0.26) inset, 0 -14px 8px 0 rgba(0, 0, 0, 0.15) inset, 0 -25px 10px 0 rgba(0, 0, 0, 0.04) inset, 0 -39px 11px 0 rgba(0, 0, 0, 0.01) inset; "
+box-shadow: 0 -2px 3px 0 rgba(0, 0, 0, 0.29) inset, 0 -6px 6px 0 rgba(0, 0, 0, 0.26) inset, 0 -14px 8px 0 rgba(0, 0, 0, 0.15) inset, 0 -25px 10px 0 rgba(0, 0, 0, 0.04) inset, 0 -39px 11px 0 rgba(0, 0, 0, 0.01) inset;
+   
+   "
                 >
                     Subscribe
                 </button>

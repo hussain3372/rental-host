@@ -89,31 +89,33 @@ export default function NotificationsPage() {
 
 
                 <div className="flex items-center gap-5 px-4 py-2 rounded-md bg-[#121315] cursor-pointer max-w-[201px]">
-                    <input
-                        type="checkbox"
-                        checked={allRead}
-                        onChange={() => setAllRead(!allRead)}
-                        className={`
-        appearance-none w-[18px] h-[18px] rounded-[4px] cursor-pointer
-        border border-[rgba(255,255,255,0.40)]
-        bg-[rgba(255,255,255,0.12)]
-        shadow-[inset_1px_1px_4px_rgba(0,0,0,0.20)]
-        relative
-
-        checked:bg-[rgba(239,252,118,0.08)]
-        checked:border-[rgba(239,252,118,0.60)]
-        checked:before:content-['✔']
-        checked:before:absolute
-        checked:before:text-white
-        checked:before:text-xs
-        checked:before:top-[1px]
-        checked:before:left-[4px]
-      `}
-                    />
+                    <label className="relative w-[18px] h-[18px] flex items-center justify-center">
+                        <input
+                            type="checkbox"
+                            checked={allRead}
+                            onChange={() => setAllRead(!allRead)}
+                            className="appearance-none w-full h-full rounded-[4px] border border-[rgba(255,255,255,0.4)] bg-[rgba(255,255,255,0.12)] cursor-pointer shadow-[inset_1px_1px_4px_rgba(0,0,0,0.2)] checked:bg-[rgba(239,252,118,0.08)] checked:border-[rgba(239,252,118,0.6)]"
+                        />
+                        {allRead && (
+                            <svg
+                                className="w-3 h-3 absolute pointer-events-none"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="white"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                        )}
+                    </label>
                     <span className="text-sm sm:text-base font-medium leading-5 text-white">
                         Mark All as Read
                     </span>
                 </div>
+
+
             </div>
 
             <div className="space-y-4">
@@ -157,10 +159,10 @@ export default function NotificationsPage() {
 
 
                             <div className="flex-1">
-                                <h2 className="font-semibold text-base sm:text-lg leading-5 mb-2">
+                                <h2 className="font-semibold text-4 leading-5 mb-2">
                                     {notif.title}
                                 </h2>
-                                <p className="font-normal text-sm sm:text-base leading-[20px] text-[#FFFFFF99] w-full max-w-[737px]">
+                                <p className="font-normal text-[16px] leading-[20px] text-[#FFFFFF99] w-full max-w-[737px]">
                                     {notif.message}
                                 </p>
                             </div>

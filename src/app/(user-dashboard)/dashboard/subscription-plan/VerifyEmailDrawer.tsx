@@ -10,7 +10,7 @@ type VerifyEmailDrawerProps = {
 
 export default function EmailVerifyDrawer({
     initialEmail,
-    
+
     onVerify,
 }: VerifyEmailDrawerProps) {
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -91,7 +91,7 @@ export default function EmailVerifyDrawer({
                 </p>
 
                 {/* OTP Inputs */}
-                <div className="flex gap-4 ">
+                <div className="flex gap-2 sm:gap-4">
                     {otp.map((digit, index) => (
                         <input
                             key={index}
@@ -99,9 +99,11 @@ export default function EmailVerifyDrawer({
                             type="text"
                             maxLength={1}
                             placeholder="0"
-                            className={`flex-1 min-w-[48px] max-w-[80px] aspect-square bg-gradient-to-b from-[#202020] to-[#101010] border ${errors ? "border-red-500" : "border-[#404040]"} 
-        rounded-xl text-center text-white text-lg font-semibold 
-        focus:border-yellow-400 focus:outline-none transition-colors`}
+                            className={`flex-1 min-w-[34px] sm:min-w-[48px] max-w-[60px] sm:max-w-[78px] aspect-square 
+        bg-gradient-to-b from-[#202020] to-[#101010] 
+        border ${errors ? "border-red-500" : "border-[#404040]"} 
+        rounded-xl text-center text-white text-lg sm:text-lg font-semibold 
+        focus:border-[#EFFC76] focus:outline-none transition-colors`}
                             value={digit}
                             onChange={(e) => handleOtpChange(index, e.target.value)}
                             onKeyDown={(e) => handleOtpKeyDown(index, e)}
@@ -121,8 +123,8 @@ export default function EmailVerifyDrawer({
                         onClick={handleResend}
                         disabled={!showResend}
                         className={`underline text-[16px] font-semibold ${showResend
-                                ? "text-[#EFFC76] cursor-pointer"
-                                : "text-gray-400 cursor-not-allowed"
+                            ? "text-[#EFFC76] cursor-pointer"
+                            : "text-gray-400 cursor-not-allowed"
                             }`}
                     >
                         Resend Code
