@@ -5,7 +5,7 @@ import { TwoFAModal } from "./TwoFAModal";
 import EmailVerifyDrawer from "./VerifyEmailDrawer";
 import { AuthenticationEnable } from "./AuthenticationEnable";
 import ChangePasswordDrawer from "./ChangePasswordDrawer";
-import ToggleSwitch from "../../../shared/Toggles";
+import ToggleSwitch from "@/app/shared/Toggles";
 interface PreferenceItemProps {
   title: string;
   description: string;

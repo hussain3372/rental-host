@@ -1074,17 +1074,17 @@ export default function Applications() {
   };
 
   // Functions to open modal for deletions with proper typing
-  const openDeleteModal = (selectedRows: TableRowData[]) => {
-    setSelectedRows(selectedRows);
-    setModalType('multiple');
-    setIsModalOpen(true);
-  };
+  // const openDeleteModal = (selectedRows: TableRowData[]) => {
+  //   setSelectedRows(selectedRows);
+  //   setModalType('multiple');
+  //   setIsModalOpen(true);
+  // };
 
-  const openDeleteSingleModal = (row: TableRowData, index: number) => {
-    setSingleRowToDelete({row, index});
-    setModalType('single');
-    setIsModalOpen(true);
-  };
+  // const openDeleteSingleModal = (row: TableRowData, index: number) => {
+  //   setSingleRowToDelete({row, index});
+  //   setModalType('single');
+  //   setIsModalOpen(true);
+  // };
 
   // Handle confirmation from modal
   const handleModalConfirm = () => {
@@ -1360,9 +1360,9 @@ export default function Applications() {
           <Table
             data={paginatedData}
             control={tableControl}
-            showDeleteButton={true}
-            onDelete={openDeleteModal as DeleteRowHandler}
-            onDeleteSingle={openDeleteSingleModal as DeleteSingleRowHandler}
+            // showDeleteButton={true}
+            // onDelete={openDeleteModal as DeleteRowHandler}
+            // onDeleteSingle={openDeleteSingleModal as DeleteSingleRowHandler}
             showModal={true}
             clickable={true}
             onRowClick={(row: TableRowData, index: number) => {

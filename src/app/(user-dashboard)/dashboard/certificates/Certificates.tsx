@@ -83,9 +83,9 @@ const getVariantFromStatus = (
 
 const Certificates: React.FC = () => {
     return (
-        <div className="container-class  text-white pb-5">
+        <div className=" text-white pb-5">
             {/* Header Section */}
-            <div className="flex items-start justify-between mb-2">
+            <div className="flex flex-col gap-3 sm:gap-0 sm:flex-row items-start justify-between mb-2">
                 <div>
                     <h1 className="text-[20px] leading-[24px] font-semibold text-white mb-2">
                         Earned Certificates
@@ -104,18 +104,18 @@ const Certificates: React.FC = () => {
                 {staticProperties.map((property) => (
                     <Link href={`/dashboard/certificates/detail/${property.id}`} key={property.id}>
                         <div className="flex bg-[#121315] rounded-lg group flex-col cursor-pointer">
-                            <div className=" shadow-md overflow-hidden max-w-[373px]">
+                            <div className=" shadow-md overflow-hidden ">
                                 <div className="relative  w-full">
                                     <Image
                                         src={property.images[0]}
                                         alt={property.title}
                                         width={373}
                                         height={300}
-                                        className="object-cover"
+                                        className="object-cover w-full"
                                     />
                                 </div>
                             </div>
-                            <div className="flex pb-4 px-4 flex-col max-w-[373px]">
+                            <div className="flex pb-4 px-4 flex-col ">
                                 <div className="flex items-center justify-between mt-5">
                                     <h3 className="text-[18px] leading-[22px] text-white font-medium">{property.title}</h3>
                                     <StatusPill

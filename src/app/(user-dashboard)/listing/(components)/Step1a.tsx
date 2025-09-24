@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react";
 
 export default function Step1a() {
   return (
-    <>
+    <div className="flex flex-col !justify-center">
       <h2 className="text-2xl flex font-bold mt-2 mb-4">Enter Your Property Information</h2>
       <p className="text-gray-400 mb-8">
         Provide basic details about your property to begin the certification process.
@@ -49,6 +49,6 @@ export default function Step1a() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -32,6 +32,18 @@ export default function MultiStepForm() {
     }
   };
 
+  const handlePrev = () => {
+  if (step === 2 && subStep === 1) {
+    setStep(1);
+    setSubStep(2); // go back to subStep 2 of step 1
+  } else if (step === 1 && subStep === 2) {
+    setSubStep(1);
+  } else if (step > 1) {
+    setStep((prev) => prev - 1);
+  }
+};
+
+  
   const handleNext = () => {
     if (step === 1 && subStep === 1) {
       setSubStep(2);
@@ -42,7 +54,6 @@ export default function MultiStepForm() {
       setStep((prev) => (prev < 5 ? prev + 1 : prev));
     }
   };
-
   return (
     <div className="min-h-screen bg-black text-white flex px-10">
       <div className="w-full flex rounded-xl overflow-hidden shadow-[0_0_40px_rgba(255,255,255,0.1)]">
@@ -114,16 +125,21 @@ export default function MultiStepForm() {
             </div>
           <div className="flex-1">{renderStepContent()}</div>
 
-          {step <= 5 && (
-            <div className="mt-10">
+            <div className="mt-10 flex gap-3">
+              <button
+                onClick={handlePrev}
+                className="px-8 py-3 text-[18px] bg-gradient-to-b yellow-btn text-black font-semibold rounded-md shadow-lg hover:opacity-90"
+              >
+                Back
+              </button>
               <button
                 onClick={handleNext}
-                className="px-8 py-3 bg-gradient-to-b from-yellow-300 to-yellow-500 text-black font-semibold rounded-md shadow-lg hover:opacity-90"
+                className="px-8 py-3 text-[18px]  bg-gradient-to-b yellow-btn text-black font-semibold rounded-md shadow-lg hover:opacity-90"
               >
                 Continue
               </button>
             </div>
-          )}
+
         </div>
       </div>
     </div>

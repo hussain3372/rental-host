@@ -790,18 +790,18 @@ export default function Tracking() {
   };
 
   // Fixed: Function to open modal for multiple deletions
-  const openDeleteModal = (selectedRows: CertificationDataItem[]) => {
-    setSelectedRows(selectedRows);
-    setModalType('multiple');
-    setIsModalOpen(true);
-  };
+  // const openDeleteModal = (selectedRows: CertificationDataItem[]) => {
+  //   setSelectedRows(selectedRows);
+  //   setModalType('multiple');
+  //   setIsModalOpen(true);
+  // };
 
-  // Fixed: Function to open modal for single deletion
-  const openDeleteSingleModal = (row: CertificationDataItem, index: number) => {
-    setSingleRowToDelete({row, index});
-    setModalType('single');
-    setIsModalOpen(true);
-  };
+  // // Fixed: Function to open modal for single deletion
+  // const openDeleteSingleModal = (row: CertificationDataItem, index: number) => {
+  //   setSingleRowToDelete({row, index});
+  //   setModalType('single');
+  //   setIsModalOpen(true);
+  // };
 
   // Fixed: Handle confirmation from modal
   const handleModalConfirm = () => {
@@ -1045,9 +1045,9 @@ export default function Tracking() {
               <Table
                 data={filteredCertificationData}
                 control={tableControl}
-                showDeleteButton={true}
-                onDelete={openDeleteModal} // Pass function to open modal
-                onDeleteSingle={openDeleteSingleModal} // Pass function to open modal for single deletion
+                // showDeleteButton={true}
+                // onDelete={openDeleteModal} // Pass function to open modal
+                // onDeleteSingle={openDeleteSingleModal} // Pass function to open modal for single deletion
                 showModal={false}
                 modalTitle="Property Details"
               />
