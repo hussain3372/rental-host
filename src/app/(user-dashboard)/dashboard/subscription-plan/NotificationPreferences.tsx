@@ -1,11 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import ToggleSwitch from "@/app/shared/Toggles";
 import { TwoFAModal } from "./TwoFAModal";
 import EmailVerifyDrawer from "./VerifyEmailDrawer";
 import { AuthenticationEnable } from "./AuthenticationEnable";
-import ChangePasswordDrawer from "./ChangePasswordDrawer"
+import ChangePasswordDrawer from "./ChangePasswordDrawer";
+import ToggleSwitch from "../../../shared/Toggles";
 interface PreferenceItemProps {
   title: string;
   description: string;
@@ -89,7 +89,6 @@ const PreferenceItem: React.FC<PreferenceItemProps> = ({
           alt="arrow right"
           width={20}
           height={20}
-
           className="text-[#FFFFFF99] cursor-pointer"
           onClick={onArrowClick}
         />
@@ -97,7 +96,6 @@ const PreferenceItem: React.FC<PreferenceItemProps> = ({
     </div>
   </div>
 );
-
 
 const NotificationPreferences: React.FC = () => {
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -120,7 +118,6 @@ const NotificationPreferences: React.FC = () => {
     // open success modal
     setIsAuthModalOpen(true);
   };
-
 
   const handleContinueFromModal = () => {
     setIs2FAModalOpen(false);
@@ -147,7 +144,8 @@ const NotificationPreferences: React.FC = () => {
             trackHeight="h-[18px]"
             thumbSize="w-4 h-4"
             iconSize="w-3 h-3"
-            thumbTranslate="translate-x-2.5" />
+            thumbTranslate="translate-x-2.5"
+          />
 
           <PreferenceItem
             title="Push Notifications"
@@ -159,8 +157,8 @@ const NotificationPreferences: React.FC = () => {
             trackHeight="h-[18px]"
             thumbSize="w-4 h-4"
             iconSize="w-3 h-3"
-            thumbTranslate="translate-x-2.5" />
-
+            thumbTranslate="translate-x-2.5"
+          />
         </div>
       </div>
 
@@ -169,14 +167,14 @@ const NotificationPreferences: React.FC = () => {
         <h3 className="text-white text-[18px] leading-[22px] font-medium mb-5">
           Security Preferences
         </h3>
-        <div className="h-px bg-gray-700"></div> {/* ✅ keep only heading bottom line */}
-
+        <div className="h-px bg-gray-700"></div>{" "}
+        {/* ✅ keep only heading bottom line */}
         <div className="space-y-0">
           <PreferenceItem
             title="Change Password"
             description="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
             hasArrow
-          // onArrowClick={() => setIs2FAModalOpen(true)}
+            // onArrowClick={() => setIs2FAModalOpen(true)}
           />
 
           <PreferenceItem
@@ -200,29 +198,26 @@ const NotificationPreferences: React.FC = () => {
             iconSize="w-3 h-3"
             thumbTranslate="translate-x-2.5"
           />
-
-
         </div>
       </div>
       <TwoFAModal
         isOpen={is2FAModalOpen}
         onClose={() => {
           setIs2FAModalOpen(false);
-          setTwoFactorAuth(true); 
+          setTwoFactorAuth(true);
         }}
-        onConfirm={handleContinueFromModal} 
+        onConfirm={handleContinueFromModal}
       />
-
 
       {isDrawerOpen && (
         <div
           className="fixed inset-0 bg-[#121315CC] z-[2021] flex justify-end transition-opacity duration-300"
-          onClick={() => setIsDrawerOpen(false)} 
+          onClick={() => setIsDrawerOpen(false)}
         >
           {/* Drawer Panel */}
           <div
             className="w-full sm:w-[480px] md:w-[608px] p-7 h-full bg-[#0A0C0B] overflow-auto border border-[#FFFFFF1F] rounded-l-[12px] shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
-            onClick={(e) => e.stopPropagation()} 
+            onClick={(e) => e.stopPropagation()}
           >
             <EmailVerifyDrawer
               initialEmail={email}
@@ -263,7 +258,6 @@ const NotificationPreferences: React.FC = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import BlackButton from "@/app/shared/BlackButton";
 import PricingCard from "@/app/shared/PlanCard";
-import ToggleSwitch from "@/app/shared/Toggles";
+import ToggleSwitch from "../../shared/Toggles";
 
 export default function Plans() {
   const [isOn, setIsOn] = useState(false);
