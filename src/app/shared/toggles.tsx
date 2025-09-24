@@ -23,8 +23,7 @@ export interface ToggleSwitchProps {
 
   /** Icon size (if withIcons is true) */
   iconSize?: string;
-    thumbTranslate?: string;
-
+  thumbTranslate?: string;
 }
 
 const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
@@ -38,7 +37,6 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
   thumbSize = "w-7 h-7", // default
   iconSize = "w-4 h-4", // default
   thumbTranslate = "translate-x-7",
-
 }) => {
   return (
     <button
@@ -53,13 +51,13 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
         ${className}
       `}
     >
-     <span
-  className={`
+      <span
+        className={`
     flex items-center justify-center rounded-full bg-black shadow-md transform transition-transform duration-300
     ${thumbSize}
     ${isOn ? thumbTranslate : "translate-x-0"}
   `}
->
+      >
         {withIcons &&
           (isOn ? (
             <Sun className={`${iconSize} text-yellow-500`} />
