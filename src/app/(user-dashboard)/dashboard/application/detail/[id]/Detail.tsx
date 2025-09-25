@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link"; 
+import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
@@ -30,7 +30,7 @@ export default function ApplicationDetail() {
 
     // Update on window resize
     window.addEventListener('resize', updateHeight);
-    
+
     return () => window.removeEventListener('resize', updateHeight);
   }, [application]); // Re-run when application changes
 
@@ -39,11 +39,11 @@ export default function ApplicationDetail() {
     return (
       <div className="flex items-center justify-center">
         <div className="text-center flex flex-col items-center justify-center">
-          <Image src="/images/empty.png" alt='not found' width={220} height={220}/>
+          <Image src="/images/empty.png" alt='not found' width={220} height={220} />
           <h1 className="text-2xl mb-3 text-white font-medium leading-[28px]">No Applications Yet</h1>
           <p className="text-white/60 mb-6 max-w-[504px] font-regular text-[18px] leading-[22px]">Start your first application today to begin the process of certifying your property and tracking progress here.</p>
-          <Link 
-            href="/dashboard/application" 
+          <Link
+            href="/dashboard/application"
             className="inline-block yellow-btn w-[150px] text-black px-6 py-3 rounded-lg hover:bg-[#e8f566] transition-colors"
           >
             Apply Now
@@ -68,7 +68,7 @@ export default function ApplicationDetail() {
           <Link href="/dashboard/applications" className="hover:text-[#EFFC76]">
             My Applications
           </Link>
-         <Image src="/images/greater.svg" alt="linked" width={16} height={16} />
+          <Image src="/images/greater.svg" alt="linked" width={16} height={16} />
           <span className="text-white font-regular text-[12px] sm:text-[16px] leading-[20px] ">{application.title}</span>
         </div>
       </nav>
@@ -93,10 +93,14 @@ export default function ApplicationDetail() {
         {/* Main Image Container - Height synced with thumbnails */}
         <div className=" w-full flex flex-col">
           {/* Image with dynamic height matching thumbnails */}
-          <div 
-            className="relative w-full  rounded-lg overflow-hidden bg-gray-900"
-            style={{ height: thumbnailsHeight || 'auto' }}
+          <div
+            className={`
+    relative w-full rounded-lg overflow-hidden bg-gray-900
+    ${thumbnailsHeight ? "hidden sm:block" : ""} 
+  `}
+            style={{ height: thumbnailsHeight || "auto" }}
           >
+            {/* Desktop/Tablet → Height synced */}
             <Image
               src={images[currentStep] || "/images/placeholder.jpg"}
               alt={`Property view ${currentStep + 1}`}
@@ -105,75 +109,87 @@ export default function ApplicationDetail() {
             />
           </div>
 
+          {/* Mobile → Aspect ratio */}
+          <div className="relative w-full aspect-[16/10] rounded-lg overflow-hidden bg-gray-900 sm:hidden">
+            <Image
+              src={images[currentStep] || "/images/placeholder.jpg"}
+              alt={`Property view ${currentStep + 1}`}
+              fill
+              className="object-cover"
+            />
+          </div>
+
+
           {/* Navigation Controls - Full width progress bar */}
         </div>
 
         {/* Thumbnail Gallery - Reference for height measurement */}
-        <div 
+        <div
           ref={thumbnailsContainerRef}
           className=" w-full max-w-[300px] sm:w-[145px] max-h-full flex  sm:flex-col justify-center items-center gap-3"
         >
           {images.map((image, index) => (
-           
+
+            <div key={index} className="relative aspect-[16/10] w-full sm:max-w-[145px]]">
               <Image
                 onClick={() => setCurrentStep(index)}
                 src={image}
-                key={index}
                 alt={`Thumbnail ${index + 1}`}
-                width={145}
-                height={93}
-                className="object-cover rounded-md"
+                fill
+                className="object-cover rounded-md cursor-pointer"
               />
+            </div>
+
           ))}
         </div>
       </div>
 
-          <div className="flex items-center justify-between mt-6 gap-3 sm:gap-[40px] w-full">
-            {/* Left Arrow */}
-            <button
-              onClick={prevStep}
-              disabled={currentStep === 0}
-              className="w-8 h-8 p-2 cursor-pointer rounded border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
-            >
-              <Image src="/images/left.svg" alt="back" width={24} height={24} />
-            </button>
+      <div className="flex items-center justify-between mt-6 gap-3 sm:gap-[40px] w-full">
+        {/* Left Arrow */}
+        <button
+          onClick={prevStep}
+          disabled={currentStep === 0}
+          className="w-8 h-8 p-2 cursor-pointer rounded border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+        >
+          <Image src="/images/left.svg" alt="back" width={24} height={24} />
+        </button>
 
-            {/* Progress Bar - Takes all remaining space */}
-            <div className="flex items-center gap-3 sm:gap-10 flex-1 ">
-              <span className=" text-white/60 leading-[20px] font-regular text-[16px]  flex-shrink-0">
-                {String(currentStep + 1).padStart(2, "0")}
-              </span>
-              
-              {/* Progress Bar - Full available width */}
-              <div className="w-full h-[1px] bg-white/20 relative ">
-                <div
-                  className="absolute top-0 left-0 h-full bg-[#EFFC76] transition-all duration-300"
-                  style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
-                />
-              </div>
-              
-              <span className="text-sm text-white/60 leading-[20px] font-regular text-[16px]  flex-shrink-0">
-                {String(totalSteps).padStart(2, "0")}
-              </span>
-            </div>
+        {/* Progress Bar - Takes all remaining space */}
+        <div className="flex items-center gap-3 sm:gap-10 flex-1 ">
+          <span className=" text-white/60 leading-[20px] font-regular text-[16px]  flex-shrink-0">
+            {String(currentStep + 1).padStart(2, "0")}
+          </span>
 
-            {/* Right Arrow */}
-            <button
-              onClick={nextStep}
-              disabled={currentStep === totalSteps - 1}
-              className="w-8 h-8 rounded cursor-pointer p-2 border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
-            >
-                            <Image src="/images/right.svg" alt="back" width={24} height={24} />
-
-            </button>
+          {/* Progress Bar - Full available width */}
+          <div className="w-full h-[1px] bg-white/20 relative ">
+            <div
+              className="absolute top-0 left-0 h-full bg-[#EFFC76] transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
+            />
           </div>
+
+          <span className="text-sm text-white/60 leading-[20px] font-regular text-[16px]  flex-shrink-0">
+            {String(totalSteps).padStart(2, "0")}
+          </span>
+        </div>
+
+        {/* Right Arrow */}
+        <button
+          onClick={nextStep}
+          disabled={currentStep === totalSteps - 1}
+          className="w-8 h-8 rounded cursor-pointer p-2 border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+        >
+          <Image src="/images/right.svg" alt="back" width={24} height={24} />
+
+        </button>
+      </div>
       {/* Description */}
       <div className="mt-[60px] max-w-[1134px]">
-        <p className="text-white/80 font-regular text-[16px] sm:text-[18px] tracking-[0%] leading-[22px]">
-          {application.title} at 1234 Maplewood Avenue, Austin, Texas is a fully verified 
-          and certified property. Featuring 4 bedrooms, 3 bathrooms, and a modern kitchen, 
-          this home combines comfort with trust. With a landscaped garden, private patio, 
-          and verified legal documentation, it offers both luxury and peace of mind. Each 
+        <p className="text-white/80 font-regular text-[16px] sm:text-[18px] tracking-[0%] leading-[22px] text-justify">
+          {application.title} at 1234 Maplewood Avenue, Austin, Texas is a fully verified
+          and certified property. Featuring 4 bedrooms, 3 bathrooms, and a modern kitchen,
+          this home combines comfort with trust. With a landscaped garden, private patio,
+          and verified legal documentation, it offers both luxury and peace of mind. Each
           listing comes with a digital badge and QR code for instant authenticity checks.
         </p>
       </div>

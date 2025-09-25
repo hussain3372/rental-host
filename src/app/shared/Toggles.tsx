@@ -44,12 +44,14 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
       onClick={() => !disabled && onToggle(!isOn)}
       disabled={disabled}
       className={`
-        relative inline-flex items-center rounded-full transition-colors duration-300
-        ${isOn ? "bg-[#EFFC76]" : "bg-[#3F4041]"}
-        ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
-        ${trackWidth} ${trackHeight} px-1
-        ${className}
-      `}
+  relative inline-flex items-center rounded-full transition-colors duration-300
+  ${isOn ? "bg-[#EFFC76]" : "bg-[#FAFAD2]"}
+  ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+  ${trackWidth} ${trackHeight} px-1
+  ${className}
+`}
+
+
     >
       <span
         className={`

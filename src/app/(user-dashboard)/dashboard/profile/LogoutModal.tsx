@@ -45,7 +45,8 @@ export const LogoutModal: React.FC<LogoutModalProps> = ({ isOpen, onClose, onCon
           </div>
           <button
             onClick={handleConfirm} 
-            className="w-full mt-8 py-4 rounded-lg bg-[#EFFC76] text-[#121315] text-[18px] leading-[22px] font-semibold cursor-pointer"
+            className="w-full mt-8 py-4 rounded-[8px] bg-[#EFFC76] text-[#121315] text-[18px] box-shadow: 0 -2px 3px 0 rgba(0, 0, 0, 0.29) inset, 0 -6px 6px 0 rgba(0, 0, 0, 0.26) inset, 0 -14px 8px 0 rgba(0, 0, 0, 0.15) inset, 0 -25px 10px 0 rgba(0, 0, 0, 0.04) inset, 0 -39px 11px 0 rgba(0, 0, 0, 0.01) inset;
+ leading-[22px] font-semibold cursor-pointer"
           >
             Logout
           </button>

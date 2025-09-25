@@ -42,9 +42,9 @@ export default function Status() {
   ];
 
   return (
-    <div className=" flex flex-col xl:flex-row gap-[24px]">
+    <div className=" flex flex-col xl:flex-row gap-[17px]">
       {/* Cards Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-[20px] flex-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-[12px] flex-1">
         {application.map((item) => (
           <div
             key={item.id}
@@ -83,9 +83,9 @@ export default function Status() {
       </div>
 
       {/* Yellow Section */}
-      <div className="bg-[#EFFC76] lg:max-h-[299px] !z-0 w-full xl:max-w-[462px]  relative rounded-[24px] text-black flex flex-col justify-between overflow-hidden">
+      <div className="bg-[#EFFC76] lg:max-h-[304px] !z-0 w-full xl:max-w-[397px]  relative rounded-[24px] text-black flex flex-col justify-between overflow-hidden">
         <div className="p-[20px] flex flex-col justify-between !z-0 relative">
-          <h3 className="font-medium text-[28px] leading-[32px] max-w-[391px]">
+          <h3 className="font-bold text-[28px] leading-[32px] max-w-[309px]">
             Ready for your next property certification?
           </h3>
           <p className="max-w-[252px] font-medium text-[16px] pt-3 leading-[20px] opacity-60">

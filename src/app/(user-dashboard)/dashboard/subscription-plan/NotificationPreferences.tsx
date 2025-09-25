@@ -5,7 +5,8 @@ import { TwoFAModal } from "./TwoFAModal";
 import EmailVerifyDrawer from "./VerifyEmailDrawer";
 import { AuthenticationEnable } from "./AuthenticationEnable";
 import ChangePasswordDrawer from "./ChangePasswordDrawer";
-import ToggleSwitch from "@/app/shared/Toggles";
+import ToggleSwitch from "@/app/shared/toggles";
+
 interface PreferenceItemProps {
   title: string;
   description: string;
@@ -98,14 +99,15 @@ const PreferenceItem: React.FC<PreferenceItemProps> = ({
 );
 
 const NotificationPreferences: React.FC = () => {
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [pushNotifications, setPushNotifications] = useState(true);
-  const [twoFactorAuth, setTwoFactorAuth] = useState(true);
+  const [emailNotifications, setEmailNotifications] = useState(false);
+  const [pushNotifications, setPushNotifications] = useState(false);
+  const [twoFactorAuth, setTwoFactorAuth] = useState(false);
 
   const [is2FAModalOpen, setIs2FAModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isPasswordDrawerOpen, setIsPasswordDrawerOpen] = useState(false);
+  // const [isOn, setIsOn] = useState(false);
 
   const [email] = useState("johndeo@gmail.com");
 
@@ -119,10 +121,10 @@ const NotificationPreferences: React.FC = () => {
     setIsAuthModalOpen(true);
   };
 
-  const handleContinueFromModal = () => {
-    setIs2FAModalOpen(false);
-    setIsDrawerOpen(true);
-  };
+  // const handleContinueFromModal = () => {
+  //   setIs2FAModalOpen(false);
+  //   setIsDrawerOpen(true);
+  // };
 
   return (
     <div className="container-class space-y-5 py-5">
@@ -183,15 +185,14 @@ const NotificationPreferences: React.FC = () => {
             hasToggle
             toggleState={twoFactorAuth}
             onToggleChange={() => {
-              if (twoFactorAuth) {
-                // If currently ON and user tries to turn OFF
-                setTwoFactorAuth(false); // Optimistically update UI
-                setIs2FAModalOpen(true); // Open modal for confirmation
-              } else {
-                // If currently OFF and user turns ON → enable directly
-                setTwoFactorAuth(true);
-              }
-            }}
+  if (!twoFactorAuth) {
+   
+    setIs2FAModalOpen(true);
+  } else {
+  
+    setTwoFactorAuth(false);
+  }
+}}
             trackWidth="w-[32px]"
             trackHeight="h-[18px]"
             thumbSize="w-4 h-4"
@@ -201,13 +202,18 @@ const NotificationPreferences: React.FC = () => {
         </div>
       </div>
       <TwoFAModal
-        isOpen={is2FAModalOpen}
-        onClose={() => {
-          setIs2FAModalOpen(false);
-          setTwoFactorAuth(true);
-        }}
-        onConfirm={handleContinueFromModal}
-      />
+  isOpen={is2FAModalOpen}
+  onClose={() => {
+    setIs2FAModalOpen(false);
+    // ❌ don’t auto-enable here, only close
+  }}
+  onConfirm={() => {
+    setIs2FAModalOpen(false);
+    setTwoFactorAuth(true); // ✅ enable only after confirm
+    setIsDrawerOpen(true);  // open next drawer if needed
+  }}
+/>
+
 
       {isDrawerOpen && (
         <div

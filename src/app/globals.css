@@ -68,3 +68,6 @@ body {
 .react-datepicker-wrapper{
   width: 100%;
 }
+html {
+  scroll-behavior: smooth;
+}

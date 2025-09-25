@@ -94,9 +94,11 @@ const Certificates: React.FC = () => {
                         Access the certificates you&apos;ve achieved. Download official copies or share them as proof of your accomplishments.
                     </p>
                 </div>
-                <button className="bg-[#EFFC76] text-black px-[20px] py-[12px] rounded-[8px] font-semibold text-[16px] leading-[20px] hover:bg-[#E5F266] transition-colors duration-300">
+                <Link href="/listing">
+                <button className="yellow-btn cursor-pointer text-black px-[20px] py-[12px] rounded-[8px] font-semibold text-[16px] leading-[20px] hover:bg-[#E5F266] transition-colors duration-300">
                     Apply Now
                 </button>
+                </Link>
             </div>
 
             {/* Properties Grid */}

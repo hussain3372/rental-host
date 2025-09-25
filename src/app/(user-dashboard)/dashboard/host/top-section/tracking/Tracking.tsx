@@ -70,7 +70,7 @@
 //     },
 //   ]);
 
-//   const [applicationData, setApplicationData] = useState([
+//   const [applicationData] = useState([
 //     {
 //       "Application ID": "APP-001",
 //       "Property Name": "Coastal Hillside Estate",
@@ -186,7 +186,7 @@
 //   const handleDeleteApplications = (selectedRows: any[]) => {
 //     // Remove selected rows from application data
 //     const updatedData = applicationData.filter(item => !selectedRows.includes(item));
-//     setApplicationData(updatedData);
+//   (updatedData);
     
 //     // Optional: Show success message
 //   };
@@ -194,7 +194,7 @@
 //   // const handleDeleteSingleApplication = (row: any, index: number) => {
 //   //   // Remove single row from application data
 //   //   const updatedData = applicationData.filter((_, idx) => idx !== index);
-//   //   setApplicationData(updatedData);
+//   // (updatedData);
     
 //   //   // Optional: Show success message
 //   // };
@@ -667,7 +667,7 @@ export default function Tracking() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState<CertificationDataItem[]>([]); // Store selected rows for deletion
   const [singleRowToDelete, setSingleRowToDelete] = useState<{row: CertificationDataItem, index: number} | null>(null); // Store single row for deletion
-  const [modalType, setModalType] = useState<'single' | 'multiple'>('multiple'); // Track if deleting single or multiple
+  const [modalType, ] = useState<'single' | 'multiple'>('multiple'); // Track if deleting single or multiple
   
   const [applicationFilters, setApplicationFilters] = useState({
     application: "",
@@ -712,7 +712,7 @@ export default function Tracking() {
     },
   ]);
 
-  const [applicationData, setApplicationData] = useState<ApplicationDataItem[]>([
+  const [applicationData, ] = useState<ApplicationDataItem[]>([
     {
       "Application ID": "APP-001",
       "Property Name": "Coastal Hillside Estate",

@@ -2,14 +2,13 @@
 import React from 'react'
 import SubscriptionPlan from "./SubscriptionCard"
 import NotificationPreferences from "./NotificationPreferences"
-// import ApplyNowFilter from "./ApplyNowFilter"
-
+import BillingHistoryTable from "./BillingHistoryTable"
 export default function page() {
   return (
     <>
-      <SubscriptionPlan/>
-      <NotificationPreferences/>
-      {/* <ApplyNowFilter/> */}
-      </>
+      <SubscriptionPlan />
+      <BillingHistoryTable />
+      <NotificationPreferences />
+    </>
   )
 }

@@ -83,7 +83,7 @@ function SortDropdown({ isOpen, onClose, onSort, column }: SortDropdownProps) {
   // Determine sort options based on column type
   const getSortOptions = () => {
     const columnLower = column.toLowerCase();
-    
+
     // Date columns
     if (columnLower.includes('date') || columnLower.includes('expiry')) {
       return {
@@ -91,7 +91,7 @@ function SortDropdown({ isOpen, onClose, onSort, column }: SortDropdownProps) {
         desc: { label: 'Newest First', icon: <ChevronDown size={14} /> }
       };
     }
-    
+
     // Status columns
     if (columnLower.includes('status')) {
       return {
@@ -99,7 +99,7 @@ function SortDropdown({ isOpen, onClose, onSort, column }: SortDropdownProps) {
         desc: { label: 'Pending First', icon: <ChevronDown size={14} /> }
       };
     }
-    
+
     // Ownership columns
     if (columnLower.includes('ownership')) {
       return {
@@ -107,7 +107,7 @@ function SortDropdown({ isOpen, onClose, onSort, column }: SortDropdownProps) {
         desc: { label: 'Owner First', icon: <ChevronDown size={14} /> }
       };
     }
-    
+
     // Default alphabetical for text columns
     return {
       asc: { label: 'A to Z', icon: <ChevronUp size={14} /> },
@@ -170,7 +170,7 @@ function Modal({ isOpen, onClose, title, data, rowIndex }: ModalProps) {
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
       style={{
@@ -179,7 +179,7 @@ function Modal({ isOpen, onClose, title, data, rowIndex }: ModalProps) {
         animation: "fadeIn 0.2s ease-out"
       }}
     >
-      <div 
+      <div
         className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden"
         style={{
           animation: "slideIn 0.3s ease-out",
@@ -187,7 +187,7 @@ function Modal({ isOpen, onClose, title, data, rowIndex }: ModalProps) {
         }}
       >
         {/* Header */}
-        <div 
+        <div
           className="px-6 py-4 border-b border-gray-200 flex items-center justify-between"
           style={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" }}
         >
@@ -215,7 +215,7 @@ function Modal({ isOpen, onClose, title, data, rowIndex }: ModalProps) {
                   {key}
                 </label>
               </div>
-              <div 
+              <div
                 className="text-gray-900 bg-gray-50 rounded-lg px-3 py-2"
                 style={{
                   fontFamily: typeof value === "object" ? "monospace" : "inherit",
@@ -261,7 +261,7 @@ export function Table<T extends Record<string, unknown>>({
   onDeleteSingle,
   showDeleteButton = false,
 }: TableProps<T>) {
-  
+
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     data: T | null;
@@ -295,23 +295,26 @@ export function Table<T extends Record<string, unknown>>({
   // Function to render status badges
   const renderStatusBadge = (status: string) => {
     const statusLower = status.toLowerCase();
-    let badgeClasses = "inline-flex px-2 py-1 rounded-full text-xs font-medium ";
-    
-    if (statusLower === 'verified' || statusLower === 'approved') {
+    let badgeClasses =
+      "inline-flex px-2 py-1 rounded-full text-xs font-medium ";
+
+    if (statusLower === "verified" || statusLower === "approved" || statusLower === "active") {
+      // ✅ Active added here
       badgeClasses += "bg-[#2d2d2d] text-[#EFFC76] py-2 px-3";
-    } else if (statusLower === 'near expiry' || statusLower === 'pending') {
+    } else if (
+      statusLower === "near expiry" ||
+      statusLower === "pending" ||
+      statusLower === "inactive"
+    ) {
+      // ✅ Inactive added here
       badgeClasses += "bg-[#2d2d2d] text-[#FFB52B] py-2 px-3";
-    } else if (statusLower === 'expired' || statusLower === 'rejected') {
+    } else if (statusLower === "expired" || statusLower === "rejected") {
       badgeClasses += "bg-[#2d2d2d] text-[#FF5050] py-2 px-3";
     } else {
       badgeClasses += "bg-[#2d2d2d] text-[#EFFC76] py-2 px-3";
     }
-    
-    return (
-      <span className={badgeClasses} style={{fontWeight:"400"}} >
-        {status}
-      </span>
-    );
+
+    return <span className={badgeClasses}>{status}</span>;
   };
 
   // Function to render cell content
@@ -319,42 +322,42 @@ export function Table<T extends Record<string, unknown>>({
     if (key.toLowerCase() === 'status' && typeof value === 'string') {
       return renderStatusBadge(value);
     }
-    
+
     if (typeof value === 'object' && value !== null) {
       return JSON.stringify(value);
     }
-    
+
     return String(value ?? '');
   };
 
   // Sorting function - sorts ALL data, not just visible data
   const handleSort = (column: string, direction: 'asc' | 'desc') => {
     const columnLower = column.toLowerCase();
-    
+
     const sorted = [...displayData].sort((a, b) => {
       const aValue = a[column];
       const bValue = b[column];
-      
+
       // Handle null/undefined values
       if (aValue == null && bValue == null) return 0;
       if (aValue == null) return direction === 'asc' ? 1 : -1;
       if (bValue == null) return direction === 'asc' ? -1 : 1;
-      
+
       // Date sorting
       if (columnLower.includes('date') || columnLower.includes('expiry')) {
         const dateA = new Date(String(aValue));
         const dateB = new Date(String(bValue));
-        
+
         // If dates are invalid, fall back to string comparison
         if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
           const strA = String(aValue).toLowerCase();
           const strB = String(bValue).toLowerCase();
           return direction === 'asc' ? strA.localeCompare(strB) : strB.localeCompare(strA);
         }
-        
+
         return direction === 'asc' ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
       }
-      
+
       // Status sorting - custom priority order
       if (columnLower.includes('status')) {
         const statusPriority: { [key: string]: number } = {
@@ -367,30 +370,30 @@ export function Table<T extends Record<string, unknown>>({
           'rejected': 4,
           'expired': 4
         };
-        
+
         const aStatus = String(aValue).toLowerCase();
         const bStatus = String(bValue).toLowerCase();
         const aPriority = statusPriority[aStatus] || 5;
         const bPriority = statusPriority[bStatus] || 5;
-        
+
         if (direction === 'asc') {
           return aPriority - bPriority || aStatus.localeCompare(bStatus);
         } else {
           return bPriority - aPriority || bStatus.localeCompare(aStatus);
         }
       }
-      
+
       // Ownership sorting - managers always at top when "Manager First" is selected
       if (columnLower.includes('ownership')) {
         const aOwnership = String(aValue).toLowerCase();
         const bOwnership = String(bValue).toLowerCase();
-        
+
         // When Manager First (asc), managers always come first
         if (direction === 'asc') {
           if (aOwnership === 'manager' && bOwnership !== 'manager') return -1;
           if (bOwnership === 'manager' && aOwnership !== 'manager') return 1;
           if (aOwnership === 'manager' && bOwnership === 'manager') return 0;
-          
+
           // For non-managers: Owner comes before Agent
           const ownershipOrder = { 'owner': 1, 'agent': 2 };
           const aOrder = ownershipOrder[aOwnership as keyof typeof ownershipOrder] || 3;
@@ -401,7 +404,7 @@ export function Table<T extends Record<string, unknown>>({
           if (aOwnership === 'manager' && bOwnership !== 'manager') return -1;
           if (bOwnership === 'manager' && aOwnership !== 'manager') return 1;
           if (aOwnership === 'manager' && bOwnership === 'manager') return 0;
-          
+
           // For non-managers: Agent comes before Owner in desc
           const ownershipOrder = { 'agent': 1, 'owner': 2 };
           const aOrder = ownershipOrder[aOwnership as keyof typeof ownershipOrder] || 3;
@@ -409,14 +412,14 @@ export function Table<T extends Record<string, unknown>>({
           return aOrder - bOrder;
         }
       }
-      
+
       // Default alphabetical sorting for other columns
       const aString = String(aValue).toLowerCase();
       const bString = String(bValue).toLowerCase();
-      
+
       return direction === 'asc' ? aString.localeCompare(bString) : bString.localeCompare(aString);
     });
-    
+
     setDisplayData(sorted);
     // Clear selections when sorting
     setSelectedRows(new Set());
@@ -461,19 +464,19 @@ export function Table<T extends Record<string, unknown>>({
   // Generate dynamic CSS for row colors
   const generateRowCSS = useCallback(() => {
     let css = "";
-    
+
     // Generate CSS for each row with proper background colors
     displayData.forEach((_, idx) => {
       let bgColor = control.rowBgColor || "#ffffff";
-      
+
       // Apply nth-child colors
       if (control.nthChildColors && control.nthChildColors.length > 0) {
         const nthColors = control.nthChildColors || [];
         const nthStart = control.nthChildStart || 1;
         const nthStep = control.nthChildStep || 1;
-        
+
         const rowNumber = idx + 1;
-        
+
         if (rowNumber < nthStart) {
           bgColor = control.rowBgColor || "#ffffff";
         } else {
@@ -547,8 +550,8 @@ export function Table<T extends Record<string, unknown>>({
     return (
       <div>
         {title && (
-          <h2 style={{ 
-            marginBottom: 10, 
+          <h2 style={{
+            marginBottom: 10,
             fontSize: 18,
             fontWeight: 600
           }}>
@@ -575,13 +578,13 @@ export function Table<T extends Record<string, unknown>>({
   const handleRowClick = (row: T, index: number) => {
     // Only process clicks if table is clickable
     if (!clickable) return;
-    
+
     // Always call the user-defined onRowClick if provided
     if (onRowClick) {
       onRowClick(row, index);
       return; // Exit early - let the user handle everything
     }
-    
+
     // Fallback to modal only if no custom onRowClick is provided
     if (showModal) {
       setModalState({
@@ -603,18 +606,18 @@ export function Table<T extends Record<string, unknown>>({
   return (
     <div style={{ marginBottom: 15 }}>
       {title && (
-        <h2 style={{ 
-          marginBottom: 10, 
+        <h2 style={{
+          marginBottom: 10,
           fontSize: 18,
           fontWeight: 600
         }}>
           {title}
         </h2>
       )}
-      
+
       {/* Wrapper div for horizontal scrolling */}
-      <div 
-        style={{ 
+      <div
+        style={{
           overflowX: "auto",
           width: "100%",
           borderRadius: control.borderRadius ? `${control.borderRadius}px` : "0",
@@ -632,7 +635,7 @@ export function Table<T extends Record<string, unknown>>({
               width: "100%",
               minWidth: "max-content",
               borderCollapse: "collapse",
-              backgroundColor:"transparent",
+              backgroundColor: "transparent",
               fontSize: control.fontSize || 14,
               textAlign: control.textAlign || "left",
             }}
@@ -650,8 +653,8 @@ export function Table<T extends Record<string, unknown>>({
                       padding: paddingSize,
                       fontWeight: 700,
                       color: "white",
-                      fontSize:"12px",
-                      lineHeight:"16px",
+                      fontSize: "12px",
+                      lineHeight: "16px",
                       whiteSpace: "nowrap",
                       width: "40px",
                       borderTopLeftRadius: control.borderRadius || 8,
@@ -665,7 +668,7 @@ export function Table<T extends Record<string, unknown>>({
                     />
                   </th>
                 )}
-                
+
                 {keys.map((key, index) => (
                   <th
                     key={key}
@@ -674,8 +677,8 @@ export function Table<T extends Record<string, unknown>>({
                       fontWeight: 700,
                       color: "white",
                       textAlign: control.textAlign || "left",
-                      fontSize:"12px",
-                      lineHeight:"16px",
+                      fontSize: "12px",
+                      lineHeight: "16px",
                       whiteSpace: "nowrap",
                       position: "relative",
                       // Adjust border radius based on whether checkbox column exists
@@ -707,7 +710,7 @@ export function Table<T extends Record<string, unknown>>({
                     />
                   </th>
                 ))}
-                
+
                 {/* Delete action column - only show if delete is enabled */}
                 {showDeleteButton && (
                   <th
@@ -715,8 +718,8 @@ export function Table<T extends Record<string, unknown>>({
                       padding: paddingSize,
                       fontWeight: 700,
                       color: "white",
-                      fontSize:"12px",
-                      lineHeight:"16px",
+                      fontSize: "12px",
+                      lineHeight: "16px",
                       whiteSpace: "nowrap",
                       width: "80px",
                       borderTopRightRadius: control.borderRadius || 8,
@@ -762,23 +765,23 @@ export function Table<T extends Record<string, unknown>>({
                       />
                     </td>
                   )}
-                  
+
                   {keys.map((key) => (
                     <td
                       key={key}
                       style={{
                         padding: paddingSize,
                         fontWeight: 400,
-                        fontSize:"14px",
-                        lineHeight:"18px",
-                        color:"#FFFFFF99",
+                        fontSize: "14px",
+                        lineHeight: "18px",
+                        color: "#FFFFFF99",
                         whiteSpace: "nowrap",
                       }}
                     >
                       {renderCellContent(key, row[key])}
                     </td>
                   ))}
-                  
+
                   {/* Delete action column - only show if delete is enabled */}
                   {showDeleteButton && (
                     <td

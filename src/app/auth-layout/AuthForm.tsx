@@ -230,7 +230,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
               <input
                 type="email"
                 placeholder="Enter email"
-                className={`w-full xl:min-w-[640px] text-[14px] mt-[10px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.email ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
+                className={`w-full   text-[14px] mt-[10px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.email ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 text-white  focus:outline-none transition-colors`}
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
               />
@@ -244,7 +244,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
                 <input
                   type={!showPassword ? "text" : "password"}
                   placeholder="Enter password"
-                  className={`w-full xl:min-w-[640px] text-[14px]  mt-[10px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.password ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 pr-12 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
+                  className={`w-full  text-[14px]  mt-[10px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.password ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 pr-12 text-white  focus:outline-none transition-colors`}
                   value={formData.password}
                   onChange={(e) =>
                     handleInputChange("password", e.target.value)
@@ -285,7 +285,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
               <input
                 type="email"
                 placeholder="Enter email"
-                className={`w-full mt-[10px] text-[14px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.email ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
+                className={`w-full mt-[10px] text-[14px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.email ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 text-white  focus:outline-none transition-colors`}
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
               />
@@ -299,7 +299,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
                 <input
                   type={!showPassword ? "text" : "password"}
                   placeholder="Enter password"
-                  className={`w-full mt-[10px] text-[14px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.password ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 pr-12 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
+                  className={`w-full mt-[10px] text-[14px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.password ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 pr-12 text-white  focus:outline-none transition-colors`}
                   value={formData.password}
                   onChange={(e) =>
                     handleInputChange("password", e.target.value)
@@ -321,18 +321,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
                     <Eye size={20} />
                   )}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolut cursor-pointer right-4 top-1/2 transform -translate-y-1/2 "
-                >
-                  {!showPassword ?  <Image
-                      src="/images/eye-off.png"
-                      alt="hide password"
-                      width={20}
-                      height={20}
-                    /> : <Eye size={20} />}
-                </button>
+               
               </div>
               {errors.password && (
                 <p className="text-red-500 text-sm mt-1">{errors.password}</p>
@@ -348,7 +337,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
             <input
               type="email"
               placeholder="Enter email"
-              className={`w-full mt-[10px] text-[14px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.email ? 'border-red-500' : 'border-[#404040]'} rounded-lg px-4 py-3 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
+              className={`w-full mt-[10px] text-[14px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.email ? 'border-red-500' : 'border-[#404040]'} rounded-lg px-4 py-3 text-white  focus:outline-none transition-colors`}
               value={formData.email}
               onChange={(e) => handleInputChange("email", e.target.value)}
             />
@@ -369,7 +358,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
                   type="text"
                   maxLength={1}
                   placeholder="0"
-                  className={`w-[93px] mt-[60px] h-[64px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.otp ? 'border-red-500' : 'border-[#404040]'} rounded-xl text-center text-white text-lg font-semibold focus:border-yellow-400 focus:outline-none transition-colors`}
+                  className={`w-[93px] mt-[60px] h-[64px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.otp ? 'border-red-500' : 'border-[#404040]'} rounded-xl text-center text-white text-lg font-semibold  focus:outline-none transition-colors`}
                   value={digit}
                   onChange={(e) => handleOtpChange(index, e.target.value)}
                   onKeyDown={(e) => handleOtpKeyDown(index, e)}
@@ -400,7 +389,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
                 <input
                   type={!showPassword ? "text" : "password"}
                   placeholder="Enter new password"
-                  className={`w-full mt-[10px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.password ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 pr-12 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
+                  className={`w-full mt-[10px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.password ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 pr-12 text-white  focus:outline-none transition-colors`}
                   value={formData.password}
                   onChange={(e) =>
                     handleInputChange("password", e.target.value)
@@ -429,7 +418,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm new password"
-                  className={`w-full bg-gradient-to-b mt-[10px] from-[#202020] to-[#101010] border ${errors.confirmPassword ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 pr-12 text-white focus:border-yellow-400 focus:outline-none transition-colors`}
+                  className={`w-full bg-gradient-to-b mt-[10px] from-[#202020] to-[#101010] border ${errors.confirmPassword ? 'border-red-500' : 'border-[#404040]'} rounded-xl px-4 py-3 pr-12 text-white  focus:outline-none transition-colors`}
                   value={formData.confirmPassword || ""}
                   onChange={(e) =>
                     handleInputChange("confirmPassword", e.target.value)
@@ -550,13 +539,15 @@ const AuthForm: React.FC<AuthFormProps> = ({
           </div>
         </div>
       )}
-      <button
-        type="submit"
-        disabled={loading}
-        className=" bg-[#EFFC76] yellow-btn mt-[40px]  cursor-pointer text-[#101010] py-4 px-[40px] inline rounded-xl  transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-inner font-semibold text-[18px] leading-[22px]"
-      >
-        {loading ? "Please wait..." : currentConfig.buttonText}
-      </button>
+     <button
+  type="submit"
+  disabled={loading}
+  className={`bg-[#EFFC76] yellow-btn mt-[40px] cursor-pointer text-[#101010] py-4 px-[40px] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-inner font-semibold text-[18px] leading-[22px] 
+    ${mode === "login" ? "w-full" : "inline"}`}
+>
+  {loading ? "Please wait..." : currentConfig.buttonText}
+</button>
+
       <div className={`py-[60px] ${mode==="signup"||mode==="login"||mode==="forgot"?"block":"hidden"}`}>
        <p className="text-white/60 font-regular text-[16px] leading-[20px]">   {mode === "signup" ? "Already have an account?" : mode === "forgot" ? "Remember your password?" : "Don't have an account?"} <Link className="text-[#EFFC76] font-bold" href={mode==="signup"||mode==="forgot"?"/auth/login":"/auth/signup"}>{ mode==="signup"?"Login":mode==="forgot"?"Login":"Signup"}</Link> </p>
       </div>

@@ -9,7 +9,7 @@ export default function ProfilePage() {
     const [email, setEmail] = useState("john@gmail.com");
     const [isEditable] = useState(false);
     const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-    const [profileImage, setProfileImage] = useState("/images/person.png");
+    const [profileImage, setProfileImage] = useState("/images/profile-pic.png");
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 

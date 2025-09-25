@@ -1,25 +1,164 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-// import Link from "next/link";
 
 interface PricingCardProps {
+  // Required props
   title: string;
   description: string;
   price: string;
   period: string;
   buttonText: string;
   features: string[];
+  onBuyNow?: () => void;
+  
+  // === CARD CONTAINER STYLING ===
+  /** Card background color */
   bgColor?: string;
+  /** Card text color */
   textColor?: string;
-  buttonBg?: string;
-  buttonTextColor?: string;
+  /** Card padding */
   padding?: string;
-  onBuyNow?: () => void;   
-
+  /** Card maximum width */
+  cardMaxWidth?: string;
+  /** Card border radius */
+  cardRadius?: string;
+  /** Card shadow */
+  cardShadow?: string;
+  /** Card border styling */
+  borderStyle?: string;
+  
+  // === HEADER SECTION ===
+  /** Title font size (e.g., 'text-[20px]' or 'text-xl') */
+  titleClass?: string;
+  /** Title font weight (e.g., 'font-semibold' or 'font-[600]') */
+  titleWeight?: string;
+  /** Title text color */
+  titleColor?: string;
+  /** Additional title classes */
+  titleClasses?: string;
+  /** Description font size */
+  descriptionClass?: string;
+  /** Description font weight */
+  descriptionWeight?: string;
+  /** Description text color */
+  descriptionColor?: string;
+  /** Additional description classes */
+  descriptionClasses?: string;
+  /** Space between title and description */
+  headerSpacing?: string;
+  
+  // === PRICE SECTION ===
+  /** Price font size */
+  priceSize?: string;
+  /** Price font weight */
+  priceWeight?: string;
+  /** Price text color */
+  priceColor?: string;
+  /** Additional price classes */
+  priceClasses?: string;
+  /** Period font size */
+  periodSize?: string;
+  /** Period font weight */
+  periodWeight?: string;
+  /** Period text color */
+  periodColor?: string;
+  /** Additional period classes */
+  periodClasses?: string;
+  /** Space above price section */
+  priceSpacing?: string;
+  /** Space between price and period */
+  pricePeriodSpacing?: string;
+  
+  // === BUTTON SECTION ===
+  /** Show/hide button */
+  showButton?: boolean;
+  /** Button background color */
+  buttonBg?: string;
+  /** Button text color */
+  buttonTextColor?: string;
+  /** Button font size */
+  buttonClass?: string;
+  /** Button font weight */
+  buttonWeight?: string;
+  /** Button padding */
+  buttonPadding?: string;
+  /** Button border radius */
+  buttonRadius?: string;
+  /** Button width */
+  buttonWidth?: string;
+  /** Space above button */
+  buttonSpacing?: string;
+  /** Additional button classes */
+  buttonClasses?: string;
+  /** Button hover background */
+  hoverButtonBg?: string;
+  /** Button hover text color */
+  hoverButtonText?: string;
+  
+  // === FEATURES SECTION ===
+  /** Feature list font size */
+  featureSize?: string;
+  /** Feature list font weight */
+  featureWeight?: string;
+  /** Feature list text color */
+  featureColor?: string;
+  /** Space between features */
+  featureSpacing?: string;
+  /** Additional feature classes */
+  featureClasses?: string;
+  /** Show check icons */
+  showFeatureIcons?: boolean;
+  /** Check icon source */
+  checkIconSrc?: string;
+  /** Check icon width */
+  featureIconWidth?: number;
+  /** Check icon height */
+  featureIconHeight?: number;
+  /** Feature hover effect */
+  featureHoverEffect?: boolean;
+  /** Space between icon and text */
+  featureIconSpacing?: string;
+  
+  // === DIVIDER SECTION ===
+  /** Show/hide divider */
+  showDivider?: boolean;
+  /** Divider styling classes */
+  dividerStyle?: string;
+  /** Divider spacing (margin) */
+  dividerSpacing?: string;
+  /** Divider width */
+  dividerWidth?: string;
+  /** Divider height */
+  dividerHeight?: string;
+  
+  // === HOVER EFFECTS ===
+  /** Enable all hover effects */
+  enableHoverEffects?: boolean;
+  /** Hover transform effect */
+  hoverTransform?: string;
+  /** Hover transition duration */
+  hoverTransition?: string;
+  /** Hover border color */
+  hoverBorderColor?: string;
+  /** Default border color */
+  defaultBorderColor?: string;
+  /** Show hover overlay */
+  hoverOverlay?: boolean;
+  /** Hover overlay gradient */
+  overlayGradient?: string;
+  
+  // === SPECIAL EFFECTS ===
+  /** Mark as professional plan */
+  isProfessionalPlan?: boolean;
+  /** Enable professional glow effect */
+  professionalGlow?: boolean;
+  /** Professional border color when not hovered */
+  professionalBorderDefault?: string;
 }
 
 const PricingCard: React.FC<PricingCardProps> = ({
+  // Required props
   title,
   description,
   price,
@@ -27,82 +166,189 @@ const PricingCard: React.FC<PricingCardProps> = ({
   onBuyNow,
   buttonText,
   features,
+  
+  // Card container defaults
   bgColor = "bg-black",
   textColor = "text-white",
+  padding = "p-[20px] sm:p-[36px]",
+  cardMaxWidth = "max-w-[276px] sm:max-w-[384px]",
+  cardRadius = "rounded-2xl",
+  cardShadow = "shadow-lg",
+  borderStyle = "border-l-[1px] border-r-[1px] border-t-[2px] border-white",
+  
+  // Header defaults
+  titleClass = "text-[24px] leading-[28px]",
+  titleWeight = "font-semibold",
+  titleColor = "",
+  titleClasses = "",
+  descriptionClass = "text-[16px] leading-[20px]",
+  descriptionWeight = "font-medium",
+  descriptionColor = "text-[#FFFFFFCC]",
+  descriptionClasses = "",
+  headerSpacing = "pt-1",
+  
+  // Price defaults
+  priceSize = "text-[60px] leading-[68px]",
+  priceWeight = "font-semibold",
+  priceColor = "text-[#EFFC76]",
+  priceClasses = "",
+  periodSize = "text-[16px] leading-[20px]",
+  periodWeight = "font-medium",
+  periodColor = "text-[#FFFFFFCC]",
+  periodClasses = "",
+  priceSpacing = "mt-[32px]",
+  pricePeriodSpacing = "pt-1",
+  
+  // Button defaults
+  showButton = true,
   buttonBg = "bg-gray-700",
   buttonTextColor = "text-white",
-  padding = "p-[20px] sm:p-[36px]",
+  buttonClass = "text-[16px]",
+  buttonWeight = "font-semibold",
+  buttonPadding = "py-[10px] px-[20px]",
+  buttonRadius = "rounded-[10px]",
+  buttonWidth = "w-full",
+  buttonSpacing = "mt-6",
+  buttonClasses = "",
+  hoverButtonBg = "bg-[#EFFC76]",
+  hoverButtonText = "text-black",
+  
+  // Features defaults
+  featureSize = "text-[16px] leading-[20px]",
+  featureWeight = "font-medium",
+  featureColor = "",
+  featureSpacing = "space-y-2",
+  featureClasses = "",
+  showFeatureIcons = true,
+  checkIconSrc = "/images/check.png",
+  featureIconWidth = 18,
+  featureIconHeight = 13,
+  featureHoverEffect = true,
+  featureIconSpacing = "space-x-[8px]",
+  
+  // Divider defaults
+  showDivider = true,
+  dividerStyle = "bg-gradient-to-r from-transparent via-white to-transparent",
+  dividerSpacing = "my-[32px]",
+  dividerWidth = "w-[250px] sm:w-[365px]",
+  dividerHeight = "h-[1px]",
+  
+  // Hover defaults
+  enableHoverEffects = true,
+  hoverTransform = "translateY(-8px)",
+  hoverTransition = "all 0.3s ease",
+  hoverBorderColor = "#EFFC76",
+  defaultBorderColor = "#2f3030",
+  hoverOverlay = true,
+  overlayGradient = "bg-gradient-to-b from-[#EFFC76]/10 to-transparent opacity-30",
+  
+  // Special effects defaults
+  isProfessionalPlan = title === "Professional",
+  professionalGlow = true,
+  professionalBorderDefault = "#737852",
 }) => {
-  // Check if this is the Professional plan (middle card)
-  const isProfessionalPlan = title === "Professional";
   const [isHovered, setIsHovered] = useState(false);
 
-  const professionalBorderColor = isHovered ? "#EFFC76" : "#737852";
-  const defaultBorderColor = isHovered ? "#EFFC76" : "#2f3030";
+  const professionalBorderColor = isHovered ? hoverBorderColor : professionalBorderDefault;
+  const normalBorderColor = isHovered ? hoverBorderColor : defaultBorderColor;
+  const currentBorderColor = isProfessionalPlan ? professionalBorderColor : normalBorderColor;
+
+  const cardStyle = {
+  ...(enableHoverEffects
+    ? {
+        borderTopColor: currentBorderColor,
+        borderRightColor: currentBorderColor,
+        borderLeftColor: currentBorderColor,
+        transform: isHovered ? hoverTransform : "translateY(0)",
+        transition: hoverTransition,
+      }
+    : {}),
+  backgroundColor: bgColor?.startsWith("#") ? bgColor : undefined, // 👈 add this
+};
+
+
+
 
   return (
     <div
-      style={{
-        borderTopColor: isProfessionalPlan ? professionalBorderColor : defaultBorderColor,
-        borderRightColor: isProfessionalPlan ? professionalBorderColor : defaultBorderColor,
-        borderLeftColor: isProfessionalPlan ? professionalBorderColor : defaultBorderColor,
-        transform: isHovered ? "translateY(-8px)" : "translateY(0)",
-        transition: "all 0.3s ease",
-      }}
-      className={`rounded-2xl max-w-[276px] sm:max-w-[384px] shadow-lg border-l-[1px] border-r-[1px] border-t-[2px] ${bgColor} border-white ${textColor} flex flex-col justify-between relative overflow-hidden ${padding}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      style={cardStyle}
+      className={`${cardRadius} ${cardMaxWidth} ${cardShadow} ${borderStyle} ${
+    bgColor?.startsWith("#") ? "" : bgColor
+  } ${textColor} flex flex-col justify-between relative overflow-hidden ${padding}`}
+      onMouseEnter={enableHoverEffects ? () => setIsHovered(true) : undefined}
+      onMouseLeave={enableHoverEffects ? () => setIsHovered(false) : undefined}
     >
       {/* Hover effect overlay */}
-      {isHovered && (
-        <div className="absolute inset-0 bg-gradient-to-b from-[#EFFC76]/10 to-transparent opacity-30 z-0"></div>
+      {hoverOverlay && isHovered && (
+        <div className={`absolute inset-0 ${overlayGradient} z-0`}></div>
       )}
 
       {/* Glow effect for professional plan */}
-      {isProfessionalPlan && isHovered && (
+      {isProfessionalPlan && professionalGlow && isHovered && (
         <div className="absolute inset-0 rounded-2xl shadow-[0_0_25px_rgba(239,252,118,0.3)] z-0"></div>
       )}
 
       {/* Header */}
       <div className="relative z-10">
-        <h3 className="text-[24px] leading-[28px] font-semibold">{title}</h3>
-        <p className="text-[16px] leading-[20px] font-medium pt-1 text-[#FFFFFFCC]">{description}</p>
+        <h3 className={`${titleClass} ${titleWeight} ${titleColor} ${titleClasses}`}>
+          {title}
+        </h3>
+        <p className={`${descriptionClass} ${descriptionWeight} ${descriptionColor} ${descriptionClasses} ${headerSpacing}`}>
+          {description}
+        </p>
       </div>
 
       {/* Price */}
-      <div className="mt-[32px] relative z-10">
-        <p className="text-[60px] leading-[68px] font-semibold text-[#EFFC76]">{price}</p>
-        <span className="text-[16px] leading-[20px] pt-1 font-medium text-[#FFFFFFCC]">{period}</span>
+      <div className={`${priceSpacing} relative z-10`}>
+        <p className={`${priceSize} ${priceWeight} ${priceColor} ${priceClasses}`}>
+          {price}
+        </p>
+        <span className={`${periodSize} ${periodWeight} ${periodColor} ${periodClasses} ${pricePeriodSpacing}`}>
+          {period}
+        </span>
       </div>
 
       {/* Button */}
-
-      <button
-        onClick={onBuyNow}
-        className={`mt-6 w-full py-[10px]  px-[20px] cursor-pointer rounded-[10px] font-semibold relative z-10 transition-all duration-300 flex items-center justify-center ${isHovered
-          ? "bg-[#EFFC76] text-black shadow-[inset_5px_-54px_22px_0px_#00000008,inset_3px_-30px_18px_0px_#0000001A,inset_1px_-14px_14px_0px_#0000002B]"
-          : `${buttonBg} ${buttonTextColor} shadow-[inset_5px_-54px_22px_0px_#00000008,inset_3px_-30px_18px_0px_#0000001A,inset_1px_-14px_14px_0px_#0000002B]`
+      {showButton && (
+        <button
+          onClick={onBuyNow}
+          className={`${buttonSpacing} ${buttonWidth} ${buttonPadding} ${buttonRadius} ${buttonClass} ${buttonWeight} ${buttonClasses} cursor-pointer transition-all duration-300 flex items-center justify-center relative z-10 ${
+            isHovered && enableHoverEffects
+              ? `${hoverButtonBg} ${hoverButtonText} shadow-[inset_5px_-54px_22px_0px_#00000008,inset_3px_-30px_18px_0px_#0000001A,inset_1px_-14px_14px_0px_#0000002B]`
+              : `${buttonBg} ${buttonTextColor} shadow-[inset_5px_-54px_22px_0px_#00000008,inset_3px_-30px_18px_0px_#0000001A,inset_1px_-14px_14px_0px_#0000002B]`
           }`}
-      >
-        {buttonText}
-      </button>
+        >
+          {buttonText}
+        </button>
+      )}
 
-
-
-      <div className={`bg-gradient-to-r -ml-0 flex text-center my-[32px] w-[250px] sm:w-[365px] h-[1px] from-transparent via-white to-transparent relative z-10 ${isHovered ? "opacity-80" : "opacity-100"
+      {/* Divider */}
+      {showDivider && (
+        <div className={`${dividerStyle} -ml-0 flex text-center ${dividerSpacing} ${dividerWidth} ${dividerHeight} relative z-10 ${
+          isHovered ? "opacity-80" : "opacity-100"
         }`}></div>
+      )}
 
       {/* Features */}
-      <ul className="space-y-2 text-sm relative z-10 max-w-[312px]">
+      <ul className={`${featureSpacing} text-sm relative z-10 max-w-[312px]`}>
         {features.map((feature, idx) => (
           <li
             key={idx}
-            className="flex items-start text-[16px] leading-[20px] font-medium space-x-[8px] transition-transform duration-300 hover:translate-x-1"
+            className={`flex items-center ${featureSize} ${featureWeight} ${featureColor} ${featureClasses} ${featureIconSpacing} ${
+              featureHoverEffect ? "transition-transform duration-300 hover:translate-x-1" : ""
+            }`}
           >
-            <Image width={18} height={13} src="/images/check.png" alt="check" className="mt-1" />
-            <span className="flex-1 whitespace-normal lg:whitespace-nowrap"> {feature} </span>
+            {showFeatureIcons && (
+              <Image 
+                width={featureIconWidth} 
+                height={featureIconHeight} 
+                src={checkIconSrc} 
+                alt="check" 
+                className="mt-1" 
+              />
+            )}
+            <span className="flex-1 whitespace-normal lg:whitespace-nowrap">{feature}</span>
           </li>
-
         ))}
       </ul>
     </div>

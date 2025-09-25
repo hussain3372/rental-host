@@ -63,18 +63,18 @@ const CertifiedProperties = () => {
                         </Link>
                     </div> */}
                     <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-4 ">
-  <p className="text-[#FFFFFF99] font-medium text-[14px] leading-[22px] sm:text-[18px] mt-6 flex-1 w-full max-w-[688px]">
-    Browse through a trusted selection of properties that meet the
-    highest standards of quality, authenticity, and reliability.
-  </p>
+                        <p className="text-[#FFFFFF99] font-medium text-[14px] leading-[22px] sm:text-[18px] mt-6 flex-1 w-full max-w-[688px]">
+                            Browse through a trusted selection of properties that meet the
+                            highest standards of quality, authenticity, and reliability.
+                        </p>
 
-  <Link
-    href="/coming-soon"
-    className="text-[#EFFC76] font-normal underline whitespace-nowrap text-[20px] leading-[24px]"
-  >
-    Explore More
-  </Link>
-</div>
+                        <Link
+                            href="/coming-soon"
+                            className="text-[#EFFC76] font-normal underline whitespace-nowrap text-[20px] leading-[24px]"
+                        >
+                            Explore More
+                        </Link>
+                    </div>
 
                 </div>
 

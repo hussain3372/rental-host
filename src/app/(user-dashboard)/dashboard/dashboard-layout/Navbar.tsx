@@ -13,17 +13,20 @@ export function Navbar({ isCollapsed }: NavbarProps) {
       <nav
         className={` z-[1000] w-full bg-[#0A0C0B] fixed text-white hidden lg:block transition-all pl-5 pr-5  py-4 duration-300 ease-in-out`}
         style={{
-          width: isCollapsed ? "calc(100vw - 150px)" : "calc(100vw - 279px)",
+          width: isCollapsed ? "calc(100vw - 139px )" : "calc(100vw - 279px)",
         }}
       >
         <div className="flex justify-between items-center  border-b border-b-[#3b3d3c]  ">
           {/* Left side */}
-          <div className="">
-            <h1 className="font-medium text-[24px]">Good Morning, Alex</h1>
-            <p className="text-[16px] pb-5 leading-[20px] text-white/60 pt-1">
-              It&apos;s Tuesday, 21 December 2024
-            </p>
-          </div>
+         <div
+  className={`${isCollapsed ? "ml-[10px]" : "ml-0"}`}
+>
+  <h1 className="font-medium text-[24px]">Good Morning, Alex</h1>
+  <p className="text-[16px] pb-5 leading-[20px] font-normal text-white/60 pt-1">
+    It&apos;s Tuesday, 21 December 2024
+  </p>
+</div>
+
 
           {/* Right side */}
           <Link href="/dashboard/profile" className="flex items-center gap-3 cursor-pointer">
@@ -38,7 +41,7 @@ export function Navbar({ isCollapsed }: NavbarProps) {
             </div>
             <div>
               <p className="font-medium text-[14px] leading-[18px]">John Deo</p>
-              <p className="text-[14px] leading-[18px] text-white/60">
+              <p className="text-[14px] leading-[18px] font-normal text-white/60">
                 johndeo@gmail.com
               </p>
             </div>
@@ -66,7 +69,7 @@ export function Navbar({ isCollapsed }: NavbarProps) {
               />
               <div className="flex flex-col">
                 <p className="text-[13px] font-medium">John Deo</p>
-                <p className="text-[12px] text-white/60">johndeo@gmail.com</p>
+                <p className="text-[12px] font-normal text-white/60">johndeo@gmail.com</p>
               </div>
             </div>
           </Link>

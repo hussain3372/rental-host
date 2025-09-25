@@ -14,14 +14,26 @@ const LandingPage = () => {
   return (
     <div>
       <HeroSection />
-      <CardSection />
-      <ValuePropositionsSection/>
-      <CertifiedProperties/>
-      <Testimonial/>
-      <Plans/>
-      <FaqSection/>
-      <Unlock/>
-    </div>
+      <div className="scroll-smooth">
+        <section id="how-it-works" className="scroll-mt-[120px]">
+          <CardSection />
+        </section>
+      </div>
+      <ValuePropositionsSection />
+      <div className="scroll-smooth">
+        <section id="hosts" className="scroll-mt-[120px]">
+          <CertifiedProperties />
+        </section>
+      </div>
+      <Testimonial />
+      <div className="scroll-smooth">
+        <section id="plans" className="scroll-mt-[120px]">
+          <Plans />
+        </section>
+      </div>
+      <FaqSection />
+      <Unlock />
+    </div >
   );
 };
 

@@ -24,6 +24,7 @@ export default function SubscriptionPlan() {
         "Basic property details verification",
         "Easy submission process",
       ],
+      titleClass: "text-[20px] leading-[24px]",
     },
     {
       key: "Professional",
@@ -36,6 +37,7 @@ export default function SubscriptionPlan() {
         "Priority listing visibility",
         "Enhanced property details",
       ],
+      titleClass: "text-[20px] leading-[24px]",
     },
     {
       key: "Enterprise",
@@ -48,6 +50,7 @@ export default function SubscriptionPlan() {
         "Advanced verification tools",
         "Premium placement",
       ],
+      titleClass: "text-[20px] leading-[24px]",
     },
   ];
 
@@ -80,7 +83,8 @@ export default function SubscriptionPlan() {
       </div>
       <p className="text-4 leading-5 text-[#FFFFFF99] font-normal mb-[40px] max-w-[573px] w-full">
         Manage your personal details, security, notifications, and billing all
-        in one place. Customize your experience and keep your account up to date.
+        in one place. Customize your experience and keep your account up to
+        date.
       </p>
 
       {/* Cards */}
@@ -92,7 +96,7 @@ export default function SubscriptionPlan() {
             description={plan.description}
             price={plan.price}
             period="per month"
-            buttonText={subscribedPlan === plan.key ? "Unsubscribe" : "Buy Now"} 
+            buttonText={subscribedPlan === plan.key ? "Unsubscribe" : "Buy Now"}
             onBuyNow={() => handleBuyNow(plan.key)}
             features={plan.features}
             bgColor={
@@ -105,24 +109,31 @@ export default function SubscriptionPlan() {
                 : "bg-[#121315]" // default inactive
             }
             textColor="text-white"
-            buttonBg={subscribedPlan === plan.key ? "bg-[#EFFC76]" : "bg-[#2D2D2D]"} // ✅ dynamic button color
-            buttonTextColor={subscribedPlan === plan.key ? "text-black" : "text-white"} // ✅ text adjusts
+            buttonBg={
+              subscribedPlan === plan.key ? "bg-[#EFFC76]" : "bg-[#2D2D2D]"
+            } // ✅ dynamic button color
+            buttonTextColor={
+              subscribedPlan === plan.key ? "text-black" : "text-white"
+            } // ✅ text adjusts
             padding="p-[20px]"
+            titleClass={plan.titleClass}
           />
         ))}
       </div>
 
-
       {/* Filter Drawer */}
-      {/* Drawer always mounted, only animate */}
       <div
-        className={`fixed inset-0 flex justify-end bg-black/70 z-[2000] transition-opacity duration-300 ${showPayment ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 flex justify-end bg-black/70 z-[2000] transition-opacity duration-300 ${
+          showPayment
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
         onClick={() => setShowPayment(false)}
       >
         <div
-          className={`relative w-full sm:max-w-[608px]  max-w-[260px] max-h-screen bg-[#121315] shadow-lg overflow-y-auto z-[2010] transform transition-transform duration-300 ease-in-out ${showPayment ? "translate-x-0" : "translate-x-full"
-            }`}
+          className={`relative w-full sm:max-w-[608px]  max-w-[260px] max-h-screen bg-[#121315] shadow-lg overflow-y-auto z-[2010] transform transition-transform duration-300 ease-in-out ${
+            showPayment ? "translate-x-0" : "translate-x-full"
+          }`}
           onClick={(e) => e.stopPropagation()}
         >
           <ApplyNowFilter
@@ -132,7 +143,6 @@ export default function SubscriptionPlan() {
           />
         </div>
       </div>
-
 
       {/* Modal */}
       <SubscriptionModal
