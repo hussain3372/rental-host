@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "cache": "^3.0.0",
+    "clear": "^0.1.0",
     "framer-motion": "^12.23.18",
     "lucide-react": "^0.544.0",
     "next": "15.5.2",

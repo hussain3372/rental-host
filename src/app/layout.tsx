@@ -4,7 +4,7 @@ import "./globals.css";
 import { Manrope } from "next/font/google";
 import  { Toaster } from "react-hot-toast";
 
-const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
+const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" }); 
 
 export const metadata: Metadata = {
   title: "Rental Host",
