@@ -97,7 +97,7 @@ export default function Applications() {
     headerTextColor: "white",
     rowBgColor: "black",
     rowTextColor: "#e5e7eb",
-    hoverBgColor: "black",
+    hoverBgColor: "#2D2D2D",
     hoverTextColor: "#ffffff",
     fontSize: 13,
     textAlign: "left" as const,
@@ -238,9 +238,9 @@ export default function Applications() {
         />
       )}
 
-      <div className="bg-[#121315] rounded-lg relative z-[10] overflow-hidden mt-5">
+      <div className=" bg-[#121315] rounded-lg relative z-[10] overflow-hidden ">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-7">
+        <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-7 ">
           <h2 className="text-white text-[16px] font-semibold leading-[20px]">
             Billing History
           </h2>

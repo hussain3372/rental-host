@@ -44,7 +44,7 @@ export default function ReviewSubmission() {
       </p>
 
       {/* Property Details */}
-      <div className=" border border-[#2e2f31] rounded-xl mb-6 p-5">
+      <div className=" border bg-[#121315] border-[#2e2f31] rounded-xl mb-6 p-5">
         <div className="flex justify-between items-center border-b border-b-[#2e2f31] pb-3  mb-[28px]">
           <h3 className="font-semibold">Property Details</h3>
           {editing === "property" ? (

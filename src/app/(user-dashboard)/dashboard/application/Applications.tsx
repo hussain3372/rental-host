@@ -808,8 +808,8 @@ interface CertificationData {
 
 // Define proper types for table rows and delete operations
 type TableRowData = Omit<CertificationData, "id">;
-// type DeleteRowHandler = (selectedRows: TableRowData[]) => void;
-// type DeleteSingleRowHandler = (row: TableRowData, index: number) => void;
+type DeleteRowHandler = (selectedRows: TableRowData[]) => void;
+type DeleteSingleRowHandler = (row: TableRowData, index: number) => void;
 
 export default function Applications() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -821,7 +821,7 @@ export default function Applications() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState<TableRowData[]>([]);
   const [singleRowToDelete, setSingleRowToDelete] = useState<{row: TableRowData, index: number} | null>(null);
-  const [modalType, ] = useState<'single' | 'multiple'>('multiple');
+  const [modalType, setModalType] = useState<'single' | 'multiple'>('multiple');
   
   const [certificationFilters, setCertificationFilters] = useState({
     ownership: "",
@@ -1043,7 +1043,6 @@ export default function Applications() {
       // Find the matching full data item by comparing properties (excluding id)
       const fullDataItem = filteredCertificationData.find(fullItem => {
         const { id, ...fullWithoutId } = fullItem;
-        console.log(id);
         return JSON.stringify(fullWithoutId) === JSON.stringify(displayRow);
       });
       return fullDataItem?.id;
@@ -1172,13 +1171,9 @@ export default function Applications() {
 
   // Transform data to exclude ID from display but keep it for navigation
   const displayData = useMemo(() => {
-  return filteredCertificationData.map(({ id, ...rest }) => {
-    console.log("ID:", id); // Use id here
-    return rest;            // Still return data without id
-  });
-}, [filteredCertificationData]);
+    return filteredCertificationData.map(({ id, ...rest }) => rest);
+  }, [filteredCertificationData]);
 
-  
   // Pagination logic
   const totalPages = Math.ceil(displayData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;

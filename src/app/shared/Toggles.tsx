@@ -57,7 +57,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
         className={`
     flex items-center justify-center rounded-full bg-black shadow-md transform transition-transform duration-300
     ${thumbSize}
-    ${isOn ? thumbTranslate : "translate-x-0"}
+    ${isOn ? thumbTranslate : "-translate-x-0.5"}
   `}
       >
         {withIcons &&

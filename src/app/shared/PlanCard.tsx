@@ -11,6 +11,8 @@ interface PricingCardProps {
   buttonText: string;
   features: string[];
   onBuyNow?: () => void;
+  isSelected?: boolean;
+  showBorder?: boolean;
   
   // === CARD CONTAINER STYLING ===
   /** Card background color */
@@ -27,6 +29,14 @@ interface PricingCardProps {
   cardShadow?: string;
   /** Card border styling */
   borderStyle?: string;
+  
+  // === BORDER COLORS ===
+  /** Default border color */
+  defaultBorderColor?: string;
+  /** Hover border color */
+  hoverBorderColor?: string;
+  /** Professional plan border color (optional) */
+  professionalBorderColor?: string;
   
   // === HEADER SECTION ===
   /** Title font size (e.g., 'text-[20px]' or 'text-xl') */
@@ -139,10 +149,6 @@ interface PricingCardProps {
   hoverTransform?: string;
   /** Hover transition duration */
   hoverTransition?: string;
-  /** Hover border color */
-  hoverBorderColor?: string;
-  /** Default border color */
-  defaultBorderColor?: string;
   /** Show hover overlay */
   hoverOverlay?: boolean;
   /** Hover overlay gradient */
@@ -153,8 +159,6 @@ interface PricingCardProps {
   isProfessionalPlan?: boolean;
   /** Enable professional glow effect */
   professionalGlow?: boolean;
-  /** Professional border color when not hovered */
-  professionalBorderDefault?: string;
 }
 
 const PricingCard: React.FC<PricingCardProps> = ({
@@ -163,6 +167,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
   description,
   price,
   period,
+  showBorder = true,
   onBuyNow,
   buttonText,
   features,
@@ -171,10 +176,15 @@ const PricingCard: React.FC<PricingCardProps> = ({
   bgColor = "bg-black",
   textColor = "text-white",
   padding = "p-[20px] sm:p-[36px]",
-  cardMaxWidth = "max-w-[276px] sm:max-w-[384px]",
+  cardMaxWidth = "w-full max-w-[365px]",
   cardRadius = "rounded-2xl",
   cardShadow = "shadow-lg",
   borderStyle = "border-l-[1px] border-r-[1px] border-t-[2px] border-white",
+  
+  // Border color defaults
+  defaultBorderColor = "#2f3030",
+  hoverBorderColor = "#EFFC76",
+  professionalBorderColor = "#737852",
   
   // Header defaults
   titleClass = "text-[24px] leading-[28px]",
@@ -230,51 +240,54 @@ const PricingCard: React.FC<PricingCardProps> = ({
   showDivider = true,
   dividerStyle = "bg-gradient-to-r from-transparent via-white to-transparent",
   dividerSpacing = "my-[32px]",
-  dividerWidth = "w-[250px] sm:w-[365px]",
+  dividerWidth = "w-[250px] sm:w-[304px]",
   dividerHeight = "h-[1px]",
   
   // Hover defaults
   enableHoverEffects = true,
   hoverTransform = "translateY(-8px)",
   hoverTransition = "all 0.3s ease",
-  hoverBorderColor = "#EFFC76",
-  defaultBorderColor = "#2f3030",
   hoverOverlay = true,
   overlayGradient = "bg-gradient-to-b from-[#EFFC76]/10 to-transparent opacity-30",
   
   // Special effects defaults
-  isProfessionalPlan = title === "Professional",
+  isProfessionalPlan = false,
   professionalGlow = true,
-  professionalBorderDefault = "#737852",
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const professionalBorderColor = isHovered ? hoverBorderColor : professionalBorderDefault;
-  const normalBorderColor = isHovered ? hoverBorderColor : defaultBorderColor;
-  const currentBorderColor = isProfessionalPlan ? professionalBorderColor : normalBorderColor;
+  // Determine border color based on props
+  const getBorderColor = () => {
+    if (!enableHoverEffects) return defaultBorderColor;
+    
+    if (isHovered) {
+      return hoverBorderColor;
+    }
+    
+    return isProfessionalPlan ? professionalBorderColor : defaultBorderColor;
+  };
 
   const cardStyle = {
-  ...(enableHoverEffects
-    ? {
-        borderTopColor: currentBorderColor,
-        borderRightColor: currentBorderColor,
-        borderLeftColor: currentBorderColor,
-        transform: isHovered ? hoverTransform : "translateY(0)",
-        transition: hoverTransition,
-      }
-    : {}),
-  backgroundColor: bgColor?.startsWith("#") ? bgColor : undefined, // 👈 add this
-};
-
-
-
+    ...(enableHoverEffects
+      ? {
+          borderTopColor: getBorderColor(),
+          borderRightColor: getBorderColor(),
+          borderLeftColor: getBorderColor(),
+          transform: isHovered ? hoverTransform : "translateY(0)",
+          transition: hoverTransition,
+        }
+      : {}),
+    backgroundColor: bgColor?.startsWith("#") ? bgColor : undefined,
+  };
 
   return (
     <div
       style={cardStyle}
-      className={`${cardRadius} ${cardMaxWidth} ${cardShadow} ${borderStyle} ${
-    bgColor?.startsWith("#") ? "" : bgColor
-  } ${textColor} flex flex-col justify-between relative overflow-hidden ${padding}`}
+      className={`${cardRadius} ${cardMaxWidth}  ${
+        showBorder ? borderStyle : ``
+      }  ${cardShadow} ${borderStyle} ${
+        bgColor?.startsWith("#") ? "" : bgColor
+      } ${textColor} flex flex-col justify-between relative overflow-hidden ${padding}`}
       onMouseEnter={enableHoverEffects ? () => setIsHovered(true) : undefined}
       onMouseLeave={enableHoverEffects ? () => setIsHovered(false) : undefined}
     >
@@ -322,12 +335,16 @@ const PricingCard: React.FC<PricingCardProps> = ({
         </button>
       )}
 
-      {/* Divider */}
-      {showDivider && (
-        <div className={`${dividerStyle} -ml-0 flex text-center ${dividerSpacing} ${dividerWidth} ${dividerHeight} relative z-10 ${
-          isHovered ? "opacity-80" : "opacity-100"
-        }`}></div>
-      )}
+  
+{showDivider && (
+  <div
+    className={`${dividerStyle} ${dividerSpacing} ${dividerHeight} ${dividerWidth} -ml-3 mx-auto relative z-10 ${
+      isHovered ? "opacity-80" : "opacity-100"
+    }`}
+  ></div>
+)}
+
+
 
       {/* Features */}
       <ul className={`${featureSpacing} text-sm relative z-10 max-w-[312px]`}>

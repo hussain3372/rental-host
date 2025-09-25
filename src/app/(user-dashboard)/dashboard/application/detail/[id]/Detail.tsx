@@ -61,11 +61,11 @@ export default function ApplicationDetail() {
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
 
   return (
-    <div className="min-h-screen text-white">
+    <div className=" text-white">
       {/* Breadcrumb */}
       <nav className="mb-4">
         <div className="flex items-center text-[12px] sm:text-[16px] gap-3 font-regular leading-[20px] text-white/40 ">
-          <Link href="/dashboard/applications" className="hover:text-[#EFFC76]">
+          <Link href="/dashboard/application" className="hover:text-[#EFFC76]">
             My Applications
           </Link>
           <Image src="/images/greater.svg" alt="linked" width={16} height={16} />
@@ -89,10 +89,9 @@ export default function ApplicationDetail() {
       </p>
 
       {/* Main Content Area */}
-      <div className="flex flex-col sm:flex-row gap-3 items-start">
+      <div className="flex flex-col sm:flex-row gap-3 items-center">
         {/* Main Image Container - Height synced with thumbnails */}
         <div className=" w-full flex flex-col">
-          {/* Image with dynamic height matching thumbnails */}
           <div
             className={`
     relative w-full rounded-lg overflow-hidden bg-gray-900
@@ -126,7 +125,10 @@ export default function ApplicationDetail() {
         {/* Thumbnail Gallery - Reference for height measurement */}
         <div
           ref={thumbnailsContainerRef}
-          className=" w-full max-w-[300px] sm:w-[145px] max-h-full flex  sm:flex-col justify-center items-center gap-3"
+          className="  w-full max-w-[300px] 
+    sm:w-[145px] max-h-full 
+    flex flex-wrap justify-between gap-3 
+    sm:flex-col sm:justify-center sm:items-center"
         >
           {images.map((image, index) => (
 
@@ -185,7 +187,7 @@ export default function ApplicationDetail() {
       </div>
       {/* Description */}
       <div className="mt-[60px] max-w-[1134px]">
-        <p className="text-white/80 font-regular text-[16px] sm:text-[18px] tracking-[0%] leading-[22px] text-justify">
+        <p className="text-white/80 font-normal text-[16px] sm:text-[18px] tracking-[0%] leading-[22px] text-justify">
           {application.title} at 1234 Maplewood Avenue, Austin, Texas is a fully verified
           and certified property. Featuring 4 bedrooms, 3 bathrooms, and a modern kitchen,
           this home combines comfort with trust. With a landscaped garden, private patio,

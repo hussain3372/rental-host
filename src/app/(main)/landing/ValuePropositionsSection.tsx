@@ -7,7 +7,7 @@ import BlackButton from "../../shared/BlackButton";
 
 const ValuePropositionsSection = () => {
   return (
-    <div className="bg-[#121315] container-class text-white py-20 px-[10px] md:px-[23px] lg:px-[120px]">
+    <div className="bg-[#121315] container-class text-white py-15 sm:py-[20px] px-[10px] md:px-[23px] lg:px-[120px]">
       <div className=" text-center">
         {/* Top Badge */}
         <div className="flex items-center justify-center">
@@ -18,6 +18,7 @@ const ValuePropositionsSection = () => {
             iconHeight={32}
           />
         </div>
+        
 
         {/* Main Heading with Icons */}
         <div className=" py-[60px]">

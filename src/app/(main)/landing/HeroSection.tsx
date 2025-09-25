@@ -131,16 +131,19 @@ const HeroSection = () => {
 
         {/* Heading */}
         <div className="text-center mb-8 bg-gradient-to-r from-white/40 via-white to-white/40 bg-clip-text">
-          <h1 className="text-[32px] sm:text-[40px] md:text-[56px] text-transparent font-medium leading-tight mb-4 sm:mb-6 w-full max-w-[835px]">
+          <h1 className="text-[32px] sm:text-[40px] md:text-[56px] text-transparent font-medium leading-tight mb-4 sm:mb-6 w-full max-w-[835px] ">
             Build Trust. Get Certified. Grow Your Hosting Business.
           </h1>
-          <p className="text-white opacity-60 text-[16px] sm:text-[20px] md:text-[24px] leading-[26px] sm:leading-[30px] md:leading-[32px] mx-auto w-full max-w-[716px] font-normal">
+          <p className="text-white opacity-60 text-[16px] sm:text-[20px] md:text-[24px] leading-[26px] sm:leading-[30px] md:leading-[32px] mx-auto w-full max-w-[716px] font-normal px-3 sm:px-[0px]">
             Experience the perfect blend of credibility, trust, and recognition.
           </p>
         </div>
 
         {/* Search Bar */}
-        <div className="w-full sm:w-[600px] md:w-[700px] lg:w-[860px]  sm:h-[220px] md:h-[273px] lg:h-auto  bg-[#0A0C0B] rounded-[16px] sm:rounded-[24px] relative p-4">
+<div className="w-full max-w-[361px] md:max-w-[700px] lg:max-w-[860px] sm:h-[220px] md:h-[273px] lg:h-auto 
+  bg-[#0A0C0B] rounded-[16px] sm:rounded-[24px] relative 
+  p-4 sm:px-8"
+>
           {/* <input
             type="text"
             placeholder='"Search for certified and verified properties..."'

@@ -127,7 +127,7 @@ const NotificationPreferences: React.FC = () => {
   // };
 
   return (
-    <div className="container-class space-y-5 py-5">
+    <div className=" space-y-5 py-5">
       {/* Notification Preferences Card */}
       <div className="bg-[#121315] rounded-[12px] p-5">
         <h3 className="text-white text-[18px] leading-[22px] font-medium mb-5">
@@ -143,7 +143,7 @@ const NotificationPreferences: React.FC = () => {
             toggleState={emailNotifications}
             onToggleChange={() => setEmailNotifications(!emailNotifications)}
             trackWidth="w-[32px]"
-            trackHeight="h-[18px]"
+            trackHeight="h-[19px]"
             thumbSize="w-4 h-4"
             iconSize="w-3 h-3"
             thumbTranslate="translate-x-2.5"
@@ -156,9 +156,9 @@ const NotificationPreferences: React.FC = () => {
             toggleState={pushNotifications}
             onToggleChange={() => setPushNotifications(!pushNotifications)}
             trackWidth="w-[32px]"
-            trackHeight="h-[18px]"
+            trackHeight="h-[19px]"
             thumbSize="w-4 h-4"
-            iconSize="w-3 h-3"
+            iconSize="w-3 h-4"
             thumbTranslate="translate-x-2.5"
           />
         </div>
@@ -176,7 +176,7 @@ const NotificationPreferences: React.FC = () => {
             title="Change Password"
             description="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
             hasArrow
-            // onArrowClick={() => setIs2FAModalOpen(true)}
+            onArrowClick={() => setIsPasswordDrawerOpen(true)}
           />
 
           <PreferenceItem
@@ -185,16 +185,16 @@ const NotificationPreferences: React.FC = () => {
             hasToggle
             toggleState={twoFactorAuth}
             onToggleChange={() => {
-  if (!twoFactorAuth) {
-   
-    setIs2FAModalOpen(true);
-  } else {
-  
-    setTwoFactorAuth(false);
-  }
-}}
+              if (!twoFactorAuth) {
+
+                setIs2FAModalOpen(true);
+              } else {
+
+                setTwoFactorAuth(false);
+              }
+            }}
             trackWidth="w-[32px]"
-            trackHeight="h-[18px]"
+            trackHeight="h-[19px]"
             thumbSize="w-4 h-4"
             iconSize="w-3 h-3"
             thumbTranslate="translate-x-2.5"
@@ -202,17 +202,16 @@ const NotificationPreferences: React.FC = () => {
         </div>
       </div>
       <TwoFAModal
-  isOpen={is2FAModalOpen}
-  onClose={() => {
-    setIs2FAModalOpen(false);
-    // ❌ don’t auto-enable here, only close
-  }}
-  onConfirm={() => {
-    setIs2FAModalOpen(false);
-    setTwoFactorAuth(true); // ✅ enable only after confirm
-    setIsDrawerOpen(true);  // open next drawer if needed
-  }}
-/>
+        isOpen={is2FAModalOpen}
+        onClose={() => {
+          setIs2FAModalOpen(false);
+        }}
+        onConfirm={() => {
+          setIs2FAModalOpen(false);
+          setTwoFactorAuth(true);
+          setIsDrawerOpen(true);
+        }}
+      />
 
 
       {isDrawerOpen && (
@@ -223,7 +222,7 @@ const NotificationPreferences: React.FC = () => {
           {/* Drawer Panel */}
           <div
             className="w-full  lg:max-w-[608px] md:max-w-[500px]  max-w-[280px] p-5 sm:p-7 h-full bg-[#0A0C0B] overflow-auto border border-[#FFFFFF1F] rounded-l-[12px] shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
-            onClick={(e) => e.stopPropagation()} 
+            onClick={(e) => e.stopPropagation()}
           >
             <EmailVerifyDrawer
               initialEmail={email}
@@ -233,26 +232,24 @@ const NotificationPreferences: React.FC = () => {
           </div>
         </div>
       )}
-      {/* Step 3 - Authentication Enabled Modal */}
+      {/* step 3 */}
       <AuthenticationEnable
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onConfirm={() => {
           console.log("2FA setup completed");
-          setIsAuthModalOpen(false);
-          setIsPasswordDrawerOpen(true); // ✅ open password drawer
+          setIsAuthModalOpen(false); // ✅ only close modal now
         }}
       />
       {/* Step 4 - Change Password Drawer */}
       {isPasswordDrawerOpen && (
         <div
           className="fixed inset-0 bg-[#121315CC] z-[2022] flex justify-end transition-opacity duration-300"
-          onClick={() => setIsPasswordDrawerOpen(false)} // close on overlay click
+          onClick={() => setIsPasswordDrawerOpen(false)}
         >
-          {/* Drawer Panel */}
           <div
-            className="w-full  lg:max-w-[608px] md:max-w-[500px]  max-w-[280px] p-5 sm:p-7 h-full bg-[#0A0C0B] overflow-auto border border-[#FFFFFF1F] rounded-l-[12px] shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
-            onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
+            className="w-full lg:max-w-[608px] md:max-w-[500px] max-w-[280px] p-5 sm:p-7 h-full bg-[#0A0C0B] overflow-auto border border-[#FFFFFF1F] rounded-l-[12px] shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
+            onClick={(e) => e.stopPropagation()}
           >
             <ChangePasswordDrawer
               onSave={(current, newPass) => {
@@ -264,6 +261,7 @@ const NotificationPreferences: React.FC = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };

@@ -17,7 +17,7 @@ export default function Navbar() {
         <div className="bg-[#0A0C0B] rounded-lg relative w-full max-w-[1304px] mx-auto">
           <nav
             aria-label="Global"
-            className="mx-auto flex items-center justify-between py-[24px] px-10 sm:px-[20px]"
+            className="mx-auto flex items-center justify-between py-[24px] px-3 sm:px-[20px]"
           >
             {/* Mobile Menu Button */}
             <div className="flex items-center gap-3 ">
@@ -29,7 +29,7 @@ export default function Navbar() {
                 <Bars3Icon className="h-6 w-6" />
               </button>
               <Link href="/" className="-m-1.5 p-1.5 block sm:hidden">
-                <Image src="/images/logo.png" width={61} height={18} alt="logo" />
+                <Image src="/images/auth-logo.png" width={37} height={13} alt="logo" />
               </Link>
             </div>
 

@@ -50,7 +50,7 @@ export default function Plans() {
         </div>
       </div>
 
-      <div className="flex flex-col xl:flex-row items-center pt-[24px] justify-center gap-[24px] ">
+      <div className="flex flex-col xl:flex-row items-center pt-[38px] justify-center gap-[24px] ">
         <PricingCard
           key={`starter-${isOn}`}
           title="Starter"

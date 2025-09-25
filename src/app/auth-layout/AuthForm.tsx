@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Eye } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -40,7 +40,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
   const [showPassword, setShowPassword] = useState(true);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({
@@ -95,7 +95,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
   };
 
   const validateForm = (): boolean => {
-    const newErrors: {[key: string]: string} = {};
+    const newErrors: { [key: string]: string } = {};
 
     switch (mode) {
       case "login":
@@ -104,7 +104,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
           newErrors.email = "Please enter a valid email address";
         }
-        
+
         if (!formData.password.trim()) {
           newErrors.password = "Password is required";
         }
@@ -116,7 +116,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
           newErrors.email = "Please enter a valid email address";
         }
-        
+
         if (!formData.password.trim()) {
           newErrors.password = "Password is required";
         }
@@ -141,7 +141,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
         if (!formData.password.trim()) {
           newErrors.password = "Password is required";
         }
-        
+
         if (!formData.confirmPassword?.trim()) {
           newErrors.confirmPassword = "Please confirm your password";
         } else if (formData.password !== formData.confirmPassword) {
@@ -214,7 +214,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
     toast.success("Your OTP has been resent");
     setTimeLeft(120); // restart
     setShowResend(false);
-    
+
   };
 
   const renderFields = () => {
@@ -321,7 +321,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
                     <Eye size={20} />
                   )}
                 </button>
-               
+
               </div>
               {errors.password && (
                 <p className="text-red-500 text-sm mt-1">{errors.password}</p>
@@ -358,11 +358,17 @@ const AuthForm: React.FC<AuthFormProps> = ({
                   type="text"
                   maxLength={1}
                   placeholder="0"
-                  className={`w-[93px] mt-[60px] h-[64px] bg-gradient-to-b from-[#202020] to-[#101010] border ${errors.otp ? 'border-red-500' : 'border-[#404040]'} rounded-xl text-center text-white text-lg font-semibold  focus:outline-none transition-colors`}
+                  className={`w-[48px] h-[48px] sm:w-[72px] sm:h-[60px] md:w-[93px] md:h-[64px] 
+              mt-[30px] sm:mt-[40px] md:mt-[60px] 
+              bg-gradient-to-b from-[#202020] to-[#101010] border 
+              ${errors.otp ? 'border-red-500' : 'border-[#404040]'} 
+              rounded-xl text-center text-white text-lg font-semibold  
+              focus:outline-none transition-colors`}
                   value={digit}
                   onChange={(e) => handleOtpChange(index, e.target.value)}
                   onKeyDown={(e) => handleOtpKeyDown(index, e)}
                 />
+
               ))}
             </div>
             {errors.otp && (
@@ -372,11 +378,11 @@ const AuthForm: React.FC<AuthFormProps> = ({
               {formatTime(timeLeft)}
             </p>
 
-              <div
-                className="font-semibold max-w-[602px] text-[18px] leading-[22px] text-[#EFFC76] text-center pt-[40px] flex !justify-center"
-              >
-                <button onClick={handleResend} disabled={!showResend} className={`"text-center  underline ${showResend?"!cursor-pointer":"cursor-not-allowed opacity-50"}"`}> Resend Code </button>
-              </div>
+            <div
+              className="font-semibold max-w-[602px] text-[18px] leading-[22px] text-[#EFFC76] text-center pt-[40px] flex !justify-center"
+            >
+              <button onClick={handleResend} disabled={!showResend} className={`"text-center  underline ${showResend ? "!cursor-pointer" : "cursor-not-allowed opacity-50"}"`}> Resend Code </button>
+            </div>
           </div>
         );
 
@@ -400,12 +406,12 @@ const AuthForm: React.FC<AuthFormProps> = ({
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 cursor-pointer top-6 transform  text-gray-500 hover:text-white"
                 >
-                  {!showPassword ?  <Image
-                      src="/images/eye-off.png"
-                      alt="hide password"
-                      width={20}
-                      height={20}
-                    /> : <Eye size={20} />}
+                  {!showPassword ? <Image
+                    src="/images/eye-off.png"
+                    alt="hide password"
+                    width={20}
+                    height={20}
+                  /> : <Eye size={20} />}
                 </button>
               </div>
               {errors.password && (
@@ -453,72 +459,72 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
   return (
     <div className="min-h-screen  bg-[#121315] xl:gap-[80px] flex flex-col lg:flex-row">
-{/* Left Panel */}
-<div className="flex items-center pl-[20px] md:pl-[80px] py-8  lg:w-1/2">
-  <div className="w-full max-w-[640px] space-y-8">
-    {/* Logo */}
-    <div className="flex items-center space-x-2 ">
-      <Image
-        src="/images/auth-logo.png"
-        alt="logo"
-        width={100}
-        height={58}
-      />
-    </div>
-
-    {/* Header */}
-    <div className="space-y-2">
-      <h1 className="text-3xl text-white leading-[48px] font-bold text-[30px] sm:text-[40px]">
-        {currentConfig.title}
-      </h1>
-      <p className="text-white opacity-60 font-regular text-[20px] leading-[24px] pt-[12px]">
-        {currentConfig.subtitle}
-      </p>
-    </div>
-
-    {/* Error Message */}
-    {error && (
-      <div className="bg-red-900/20 border border-red-800 rounded-lg p-3">
-        <p className="text-red-400 text-sm">{error}</p>
-      </div>
-    )}
-
-    {/* Form */}
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {renderFields()}
-      
-      {/* Submit Button */}
-      {mode === "signup" && (onGoogleLogin || onAppleLogin) && (
-        <div className="space-y-4">
-          {/* Divider */}
-          <div className="flex items-center space-x-4">
-            <div className="flex-1 h-px bg-gradient-to-r from-[#121315] via-white to-[#121315]"></div>
-            <span className="text-white opacity-60 text-sm">or</span>
-            <div className="flex-1 h-px bg-gradient-to-r from-[#121315] via-white to-[#121315]"></div>
+      {/* Left Panel */}
+      <div className="flex items-center px-[20px] md:pl-[80px] py-8  lg:w-1/2">
+        <div className="w-full max-w-[640px] space-y-8">
+          {/* Logo */}
+          <div className="flex items-center space-x-2 ">
+            <Image
+              src="/images/auth-logo.png"
+              alt="logo"
+              width={100}
+              height={58}
+            />
           </div>
-  
-          {/* Social Buttons */}
-          <div className="flex gap-[18px]">
-            {onGoogleLogin && (
-              <button
-                type="button"
-                onClick={onGoogleLogin}
-                disabled={socialLoading}
-                className="w-full bg-[#252628] cursor-pointer border border-[#404040] rounded-xl px-4 py-3 text-white hover:border-[#505050] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3"
-              >
-                <Image
-                  src="/images/google.png"
-                  alt="Google"
-                  width={20}
-                  height={20}
-                />
-                <span className="font-medium  text-[16px]">
-                  {socialLoading ? "Please wait..." : "Google"}
-                </span>
-              </button>
-            )}
-  
-            {onAppleLogin && (
+
+          {/* Header */}
+          <div className="space-y-2">
+            <h1 className="text-3xl text-white leading-[48px] font-bold text-[30px] sm:text-[40px]">
+              {currentConfig.title}
+            </h1>
+            <p className="text-white opacity-60 font-regular text-[20px] leading-[24px] pt-[12px]">
+              {currentConfig.subtitle}
+            </p>
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-900/20 border border-red-800 rounded-lg p-3">
+              <p className="text-red-400 text-sm">{error}</p>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {renderFields()}
+
+            {/* Submit Button */}
+            {mode === "signup" && (onGoogleLogin || onAppleLogin) && (
+              <div className="space-y-4">
+                {/* Divider */}
+                <div className="flex items-center space-x-4">
+                  <div className="flex-1 h-px bg-gradient-to-r from-[#121315] via-white to-[#121315]"></div>
+                  <span className="text-white opacity-60 text-sm">or</span>
+                  <div className="flex-1 h-px bg-gradient-to-r from-[#121315] via-white to-[#121315]"></div>
+                </div>
+
+                {/* Social Buttons */}
+                <div className="flex gap-[18px]">
+                  {onGoogleLogin && (
+                    <button
+                      type="button"
+                      onClick={onGoogleLogin}
+                      disabled={socialLoading}
+                      className="w-full bg-[#252628] cursor-pointer  rounded-[8px] px-4 py-3 text-white hover:border-[#505050] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3"
+                    >
+                      <Image
+                        src="/images/google.png"
+                        alt="Google"
+                        width={20}
+                        height={20}
+                      />
+                      <span className="font-medium  text-[16px]">
+                        {socialLoading ? "Please wait..." : "Google"}
+                      </span>
+                    </button>
+                  )}
+
+                  {/* {onAppleLogin && (
               <button
                 type="button"
                 onClick={onAppleLogin}
@@ -535,31 +541,31 @@ const AuthForm: React.FC<AuthFormProps> = ({
                   {socialLoading ? "Please wait..." : "Apple"}
                 </span>
               </button>
+            )} */}
+                </div>
+              </div>
             )}
-          </div>
-        </div>
-      )}
-     <button
-  type="submit"
-  disabled={loading}
-  className={`bg-[#EFFC76] yellow-btn mt-[40px] cursor-pointer text-[#101010] py-4 px-[40px] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-inner font-semibold text-[18px] leading-[22px] 
+            <button
+              type="submit"
+              disabled={loading}
+              className={`bg-[#EFFC76] yellow-btn mt-[40px] cursor-pointer text-[#101010] py-4 px-[40px] rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-inner font-semibold text-[18px] leading-[22px] 
     ${mode === "login" ? "w-full" : "inline"}`}
->
-  {loading ? "Please wait..." : currentConfig.buttonText}
-</button>
+            >
+              {loading ? "Please wait..." : currentConfig.buttonText}
+            </button>
 
-      <div className={`py-[60px] ${mode==="signup"||mode==="login"||mode==="forgot"?"block":"hidden"}`}>
-       <p className="text-white/60 font-regular text-[16px] leading-[20px]">   {mode === "signup" ? "Already have an account?" : mode === "forgot" ? "Remember your password?" : "Don't have an account?"} <Link className="text-[#EFFC76] font-bold" href={mode==="signup"||mode==="forgot"?"/auth/login":"/auth/signup"}>{ mode==="signup"?"Login":mode==="forgot"?"Login":"Signup"}</Link> </p>
+            <div className={`py-[60px] ${mode === "signup" || mode === "login" || mode === "forgot" ? "block" : "hidden"}`}>
+              <p className="text-white/60 font-regular text-[16px] leading-[20px]">   {mode === "signup" ? "Already have an account?" : mode === "forgot" ? "Remember your password?" : "Don't have an account?"} <Link className="text-[#EFFC76] font-bold" href={mode === "signup" || mode === "forgot" ? "/auth/login" : "/auth/signup"}>{mode === "signup" ? "Login" : mode === "forgot" ? "Login" : "Signup"}</Link> </p>
+            </div>
+          </form>
+
+          {/* Social Login for Signup */}
+        </div>
       </div>
-    </form>
-
-    {/* Social Login for Signup */}
-  </div>
-</div>
 
 
       {/* Right Panel */}
-      <div className="rounded-2xl  flex relative z-[10] lg:w-1/2 items-end p-12 ">
+      <div className="hidden lg:flex  rounded-2xl  flex relative z-[10] lg:w-1/2 items-end p-12 ">
         {/* Video background */}
         <video
           src="/videos/auth.mp4"
@@ -636,8 +642,8 @@ const SignupPage = () => {
   };
 
   return (
-    <AuthForm 
-      mode="signup" 
+    <AuthForm
+      mode="signup"
       onSubmit={handleSignup}
       onGoogleLogin={handleGoogleSignup}
       onAppleLogin={handleAppleSignup}

@@ -6,7 +6,7 @@ import { Menu } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import SearchDrawer from "@/app/shared/SearchDrawer";
 import HelpSupportDrawer from "@/app/(user-dashboard)/dashboard/help-support/HelpSupportDrawer";
-import SearchDrawerShortcut from "@/app/shared/SearchDrawerShortcut"; 
+import SearchDrawerShortcut from "@/app/shared/SearchDrawerShortcut";
 import { allProperties } from "@/app/(main)/search-page/data/properties";
 interface SidebarProps {
   onCollapseChange: (isCollapsed: boolean) => void;
@@ -85,66 +85,66 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
           <div className="border-b border-b-[#3f4041] pb-[32px] mb-[32px] ml-[-14px]">
             {/* Search */}
             {/* Search */}
-           <div
-  className={`flex justify-between items-center cursor-pointer mb-[20px]`}
->
-  <button
-    onClick={() => setIsSearchOpen(true)}
-    className={`flex justify-between items-center w-full px-[12px] py-[8px] rounded-[6px] 
+            <div
+              className={`flex justify-between items-center cursor-pointer mb-[20px]`}
+            >
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className={`flex justify-between items-center w-full px-[12px] py-[8px] rounded-[6px] 
       transition-all duration-200 group 
       ${
-        // isActive('/search') ? 'bg-[#4a5439]' : 
-        // 'hover:bg-[#4a5439]'
-        ''
-      }`}
-  >
-    <div className="flex gap-[8px] items-center">
-      <div className="relative w-[20px] h-[20px]">
-        <Image
-          src="/images/search.png"
-          alt="Search"
-          width={isCollapsed ? 28 : 16}
-          height={isCollapsed ? 28 : 16}
-          className={`opacity-80 
+                  // isActive('/search') ? 'bg-[#4a5439]' : 
+                  // 'hover:bg-[#4a5439]'
+                  ''
+                  }`}
+              >
+                <div className="flex gap-[8px] items-center">
+                  <div className="relative w-[20px] h-[20px]">
+                    <Image
+                      src="/images/search.png"
+                      alt="Search"
+                      width={isCollapsed ? 28 : 16}
+                      height={isCollapsed ? 28 : 16}
+                      className={`opacity-80 
             ${
-              // 'group-hover:opacity-0'
-              // isActive('/search') ? 'opacity-0' : 
-              ''
-            } absolute transition-opacity`}
-        />
-        <Image
-          src="/images/search.png"
-          alt="Search"
-          width={isCollapsed ? 28 : 16}
-          height={isCollapsed ? 28 : 16}
-          className={`opacity-0 
+                        // 'group-hover:opacity-0'
+                        // isActive('/search') ? 'opacity-0' : 
+                        ''
+                        } absolute transition-opacity`}
+                    />
+                    <Image
+                      src="/images/search.png"
+                      alt="Search"
+                      width={isCollapsed ? 28 : 16}
+                      height={isCollapsed ? 28 : 16}
+                      className={`opacity-0 
             ${
-              // 'group-hover:opacity-100'
-              // isActive('/search') ? 'opacity-100' : 
-              ''
-            } absolute transition-opacity`}
-        />
-      </div>
-      <p
-        className={`font-normal text-[16px] leading-[20px] text-[#ffffff] transition-colors 
+                        // 'group-hover:opacity-100'
+                        // isActive('/search') ? 'opacity-100' : 
+                        ''
+                        } absolute transition-opacity`}
+                    />
+                  </div>
+                  <p
+                    className={`font-normal text-[16px] leading-[20px] text-[#ffffff] transition-colors 
           ${isCollapsed ? 'hidden' : 'block'} 
           ${
-            // 'group-hover:text-[#eefb75]'
-            // isActive('/search') ? 'text-[#eefb75]' : 
-            ''
-          }`}
-      >
-        Search
-      </p>
-    </div>
+                      // 'group-hover:text-[#eefb75]'
+                      // isActive('/search') ? 'text-[#eefb75]' : 
+                      ''
+                      }`}
+                  >
+                    Search
+                  </p>
+                </div>
 
-    <div className={`flex gap-[4px] ${isCollapsed ? 'hidden' : 'block'}`}>
-      <div className="w-[20px] h-[20px] bg-[#3f4041] rounded-[3px] border-b border-b-white flex items-center justify-center">
-        <span className="text-[#ffffff] text-[10px] font-normal">K</span>
-      </div>
-    </div>
-  </button>
-</div>
+                <div className={`flex gap-[4px] ${isCollapsed ? 'hidden' : 'block'}`}>
+                  <div className="w-[20px] h-[20px] bg-[#3f4041] rounded-[3px] border-b border-b-white flex items-center justify-center">
+                    <span className="text-[#ffffff] text-[10px] font-normal">K</span>
+                  </div>
+                </div>
+              </button>
+            </div>
 
 
 
@@ -233,8 +233,8 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
             <Link onClick={() => { setIsMobileOpen(false) }}
               href="/dashboard/application"
               className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard/application') || isActive('/dashboard/application/detail/[id]')
-                  ? 'bg-[#4a5439] text-[#EFFC76]'
-                  : 'hover:bg-[#4a5439]'
+                ? 'bg-[#4a5439] text-[#EFFC76]'
+                : 'hover:bg-[#4a5439]'
                 }`}
             >
               <div className="relative w-[20px] h-[20px]">
@@ -269,8 +269,8 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
             <Link onClick={() => { setIsMobileOpen(false) }}
               href="/dashboard/certificates"
               className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard/certificates')
-                  ? 'bg-[#4a5439]'
-                  : 'hover:bg-[#4a5439]'
+                ? 'bg-[#4a5439]'
+                : 'hover:bg-[#4a5439]'
                 }`}
             >
               <div className="relative w-[20px] h-[20px]">
@@ -305,18 +305,21 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
           {/* Bottom Section */}
           <div className="pb-[24px] ml-[-14px]">
             {/* Settings */}
-            <Link onClick={() => { setIsMobileOpen(false) }}
+            <Link
+              onClick={() => {
+                setIsMobileOpen(false);
+              }}
               href="/dashboard/subscription-plan"
-              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/dashboard/settings')
-                ? 'bg-[#4a5439]'
-                : 'hover:bg-[#4a5439]'
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive("/dashboard/subscription-plan")
+                ? "bg-[#4a5439]"
+                : "hover:bg-[#4a5439]"
                 }`}
             >
               <Image
                 src={
-                  isActive('/dashboard/settings')
-                    ? '/images/settings-yellow.svg'
-                    : '/images/settings.png'
+                  isActive("/dashboard/subscription-plan")
+                    ? "/images/settings-yellow.svg"
+                    : "/images/settings.png"
                 }
                 alt="Settings"
                 width={20}
@@ -331,20 +334,19 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                 className="opacity-100 hidden group-hover:block"
               />
               <p
-                className={`font-normal text-[16px] leading-[20px] ${isActive('/dashboard/settings')
-                  ? 'text-[#eefb75]'
-                  : 'text-[#ffffff] group-hover:text-[#eefb75]'
-                  } ${isCollapsed ? 'hidden' : 'block'}`}
+                className={`font-normal text-[16px] leading-[20px] ${isActive("/dashboard/subscription-plan")
+                  ? "text-[#eefb75]"
+                  : "text-[#ffffff] group-hover:text-[#eefb75]"
+                  } ${isCollapsed ? "hidden" : "block"}`}
               >
                 Setting
               </p>
             </Link>
 
             {/* Help */}
-
             <div
               onClick={() => setIsDrawerOpen(true)}
-              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 ${isActive("/dashboard/help")
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 ${pathname.startsWith("/dashboard/help")
                 ? "bg-[#4a5439]"
                 : "hover:bg-[#4a5439]"
                 }`}
@@ -355,7 +357,7 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                   alt="Help"
                   width={isCollapsed ? 28 : 20}
                   height={isCollapsed ? 28 : 20}
-                  className={`opacity-100 group-hover:opacity-0 absolute transition-opacity ${isActive("/dashboard/help") ? "opacity-0" : ""
+                  className={`opacity-100 group-hover:opacity-0 absolute transition-opacity ${pathname.startsWith("/dashboard/help") ? "opacity-0" : ""
                     }`}
                 />
                 <Image
@@ -363,12 +365,12 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                   alt="Help"
                   width={isCollapsed ? 28 : 20}
                   height={isCollapsed ? 28 : 20}
-                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${isActive("/dashboard/help") ? "opacity-100" : ""
+                  className={`opacity-0 group-hover:opacity-100 absolute transition-opacity ${pathname.startsWith("/dashboard/help") ? "opacity-100" : ""
                     }`}
                 />
               </div>
               <p
-                className={`font-normal text-[16px] leading-[20px] ${isActive("/dashboard/help")
+                className={`font-normal text-[16px] leading-[20px] ${pathname.startsWith("/dashboard/help")
                   ? "text-[#eefb75]"
                   : "text-[#ffffff] group-hover:text-[#eefb75]"
                   } ${isCollapsed ? "hidden" : "block"}`}
@@ -376,6 +378,7 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                 Help & support
               </p>
             </div>
+
           </div>
         </div>
 
@@ -397,7 +400,7 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
             } transition-all duration-300 ease-in-out hidden lg:block`}
         ></div>
       </div>
-            <SearchDrawerShortcut setIsSearchOpen={setIsSearchOpen} />
+      <SearchDrawerShortcut setIsSearchOpen={setIsSearchOpen} />
 
       <SearchDrawer
         isOpen={isSearchOpen}
@@ -406,12 +409,12 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
       />
       {/* Drawer */}
       <div
-        className={`fixed inset-0 z-[2000] bg-[#121315CC] flex justify-end transition-opacity duration-500 ${isDrawerOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        className={`fixed inset-0 bg-[#121315CC] z-[2022] flex justify-end transition-opacity duration-300 ${isDrawerOpen ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
         onClick={() => setIsDrawerOpen(false)}
       >
         <div
-          className={`w-full lg:max-w-[608px] md:max-w-[500px]  max-w-[280px] p-5 sm:p-7 bg-[#0A0C0B]  h-full overflow-y-auto rounded-[12px] border border-[#FFFFFF1F] transform transition-transform duration-300 ease-in-out ${isDrawerOpen ? "translate-x-0" : "translate-x-full"
+          className={`w-full lg:max-w-[608px] md:max-w-[500px]  max-w-[280px] p-5 sm:p-7 bg-[#0A0C0B]  h-full overflow-auto rounded-[12px] border border-[#FFFFFF1F] transform transition-transform duration-300 ease-in-out ${isDrawerOpen ? "translate-x-0" : "translate-x-full"
             }`}
           onClick={(e) => e.stopPropagation()}
         >

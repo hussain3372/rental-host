@@ -40,7 +40,7 @@ export default function ProfilePage() {
     };
 
     return (
-        <div className="container-class text-white pb-[180px] ">
+        <div className=" text-white pb-[180px] ">
              <div className="flex items-center justify-between mb-6">
                 <h1 className="text-[20px] leading-[24px] font-semibold">Your Profile</h1>
 

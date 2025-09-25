@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 type HelpSupportDrawerProps = {
-  onClose: () => void;
+    onClose: () => void;
 };
 export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
 
@@ -18,7 +18,7 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
     };
 
     return (
-<div className="h-full flex flex-col text-white  ">
+    <div className="h-full flex flex-col justify-between text-white">
             <div className="space-y-5">
                 <h2 className="text-[20px] leading-6 font-medium mb-3">Help & Support</h2>
                 <p className="text-[16px] leading-5 font-normal mb-10 text-[#FFFFFF99]">

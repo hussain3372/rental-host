@@ -1,5 +1,4 @@
 import React, { useState, useRef, ChangeEvent, DragEvent } from "react";
-// import { Upload } from "lucide-react";
 import Image from "next/image";
 
 type DocumentKey =
@@ -21,7 +20,15 @@ interface DocumentInfo {
   description?: string;
 }
 
-export default function Step3() {
+interface Step3Props {
+  formData: {
+    photos: File[];
+  };
+  errors: { [key: string]: string };
+  onFieldChange: (field: string, value: File[]) => void;
+}
+
+export default function Step3({  errors, onFieldChange }: Step3Props) {
   const [files, setFiles] = useState<Record<DocumentKey, FileData | null>>({
     governmentId: null,
     propertyOwnership: null,
@@ -36,31 +43,23 @@ export default function Step3() {
     insuranceCertificate: null,
   });
 
-  const [, setDragStates] = useState<Record<DocumentKey, boolean>>({
-    governmentId: false,
-    propertyOwnership: false,
-    safetyPermits: false,
-    insuranceCertificate: false,
-  });
-
-  const fileInputRefs: Record<DocumentKey, React.RefObject<HTMLInputElement | null>> = {
-  governmentId: useRef<HTMLInputElement | null>(null),
-  propertyOwnership: useRef<HTMLInputElement | null>(null),
-  safetyPermits: useRef<HTMLInputElement | null>(null),
-  insuranceCertificate: useRef<HTMLInputElement | null>(null),
+ const fileInputRefs: Record<DocumentKey, React.RefObject<HTMLInputElement | null>> = {
+  governmentId: useRef<HTMLInputElement>(null),
+  propertyOwnership: useRef<HTMLInputElement>(null),
+  safetyPermits: useRef<HTMLInputElement>(null),
+  insuranceCertificate: useRef<HTMLInputElement>(null),
 };
 
   const documentTypes: DocumentInfo[] = [
     {
       key: "governmentId",
       title: "Government-issued ID",
-      description:"Upload a valid ID (passport, national ID card, or driver’s license) of the property owner."
+      description: "Upload a valid ID (passport, national ID card, or driver's license) of the property owner.",
     },
     {
       key: "propertyOwnership",
       title: "Property Ownership Proof",
-      description:
-        "Submit legal proof of ownership (title deed, property tax receipt, or utility bill under your name)",
+      description: "Submit legal proof of ownership (title deed, property tax receipt, or utility bill under your name)",
     },
     {
       key: "safetyPermits",
@@ -74,45 +73,50 @@ export default function Step3() {
     },
   ];
 
-  const handleFileSelect = (docType: DocumentKey, file: File | undefined) => {
-    if (!file) return;
+  const handleFileSelect = (docType: DocumentKey, selectedFile: File | undefined) => {
+    if (!selectedFile) return;
 
-    setFiles((prev) => ({
+    const fileData: FileData = {
+      name: selectedFile.name,
+      size: selectedFile.size,
+      file: selectedFile,
+    };
+
+    setFiles(prev => ({
       ...prev,
-      [docType]: { name: file.name, size: file.size, file },
+      [docType]: fileData,
     }));
 
-    if (file.type.startsWith("image/")) {
-      const url = URL.createObjectURL(file);
-      setPreviewUrls((prev) => ({
+    if (selectedFile.type.startsWith("image/")) {
+      const url = URL.createObjectURL(selectedFile);
+      setPreviewUrls(prev => ({
         ...prev,
         [docType]: url,
       }));
     } else {
-      setPreviewUrls((prev) => ({
+      setPreviewUrls(prev => ({
         ...prev,
         [docType]: null,
       }));
     }
+
+    // Update parent form data with all current files
+    const updatedFiles = { ...files, [docType]: fileData };
+    const allFiles = Object.values(updatedFiles).filter(Boolean).map(f => f!.file);
+    onFieldChange("photos", allFiles);
   };
 
+  
   const handleDrop = (e: DragEvent<HTMLDivElement>, docType: DocumentKey) => {
     e.preventDefault();
-    setDragStates((prev) => ({ ...prev, [docType]: false }));
     const droppedFile = e.dataTransfer.files[0];
     if (droppedFile) {
       handleFileSelect(docType, droppedFile);
     }
   };
 
-  const handleDragOver = (e: DragEvent<HTMLDivElement>, docType: DocumentKey) => {
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    setDragStates((prev) => ({ ...prev, [docType]: true }));
-  };
-
-  const handleDragLeave = (e: DragEvent<HTMLDivElement>, docType: DocumentKey) => {
-    e.preventDefault();
-    setDragStates((prev) => ({ ...prev, [docType]: false }));
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -125,42 +129,19 @@ export default function Step3() {
 
   const renderUploadCard = (doc: DocumentInfo) => {
     const file = files[doc.key];
-    // const isDragging = dragStates[doc.key];
     const previewUrl = previewUrls[doc.key];
+    const hasError = errors.photos && !file;
 
-    if (file) {
-      return (
-        <div className="border-2  border-dashed border-[#effc76]  h-[200px] rounded-lg p-8 bg-gradient-to-b from-[#202020] to-[#101010]">
-          <div className="text-center mb-4">
-            {previewUrl ? (
-              <div className="w-20 h-16 mx-auto mb-2 rounded overflow-hidden">
-                <Image
-                  src={previewUrl}
-                  width={80}
-                  height={52}
-                  alt="Document preview"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ) : (
-              <div className="w-12 h-8 bg-red-100 rounded mx-auto mb-2 flex items-center justify-center">
-                <div className="w-8 h-6 bg-red-500 rounded-sm flex items-center justify-center text-white text-xs">
-                  PDF
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="text-center">
-            <h4 className="text-white/80 font-regular text-[12px] mb-5">
-              {doc.title} ({formatFileSize(file.size)})
-            </h4>
-            <button
-              onClick={() => fileInputRefs[doc.key].current?.click()}
-              className="text-[#EFFC76CC] underline cursor-pointer text-sm font-medium  transition-colors"
-            >
-              Replace File
-            </button>
-          </div>
+    return (
+      <div>
+        <div
+          className={`border-2 border-dashed rounded-lg p-8 bg-gradient-to-b from-[#202020] to-[#101010] h-[200px] cursor-pointer transition-colors ${
+            hasError ? "border-red-500" : file ? "border-[#effc76]" : "border-[#effc76]"
+          }`}
+          onDrop={(e) => handleDrop(e, doc.key)}
+          onDragOver={handleDragOver}
+          onClick={() => fileInputRefs[doc.key].current?.click()}
+        >
           <input
             ref={fileInputRefs[doc.key]}
             type="file"
@@ -170,36 +151,63 @@ export default function Step3() {
               handleFileSelect(doc.key, e.target.files?.[0])
             }
           />
-        </div>
-      );
-    }
 
-    return (
-      <div
-        className={`border-2 border-dashed rounded-lg p-8 bg-gradient-to-b from-[#202020] to-[#101010] border-[#effc76] h-[200px] cursor-pointer transition-colors `}
-        onDrop={(e) => handleDrop(e, doc.key)}
-        onDragOver={(e) => handleDragOver(e, doc.key)}
-        onDragLeave={(e) => handleDragLeave(e, doc.key)}
-        onClick={() => fileInputRefs[doc.key].current?.click()}
-      >
-        <input
-          ref={fileInputRefs[doc.key]}
-          type="file"
-          className="hidden"
-          accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            handleFileSelect(doc.key, e.target.files?.[0])
-          }
-        />
-        <div className="text-center">
-          <div className="w-12 h-12  mx-auto mb-4 flex items-center justify-center">
-            <Image src="/images/upload2.svg" alt="Upload docs" width={40} height={40} />
-          </div>
-          <h4 className="text-white font-regular leading-[20px] text-[16px] mb-2">{doc.title}</h4>
-          {doc.description && (
-            <p className="text-white/60 text-xs font-regular leading-[16px] ">{doc.description}</p>
+          {file ? (
+            <div className="text-center h-full flex flex-col justify-center">
+              {previewUrl ? (
+                <div className="w-20 h-16 mx-auto mb-2 rounded overflow-hidden">
+                  <Image
+                    src={previewUrl}
+                    width={80}
+                    height={64}
+                    alt="Document preview"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-12 h-12 mx-auto mb-2 flex items-center justify-center bg-gray-600 rounded">
+                  <span className="text-white text-xs font-bold">PDF</span>
+                </div>
+              )}
+              <h4 className="text-white/80 font-regular text-[12px] mb-2 truncate">
+                {file.name} ({formatFileSize(file.size)})
+              </h4>
+              
+              <div className="flex justify-center gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    fileInputRefs[doc.key].current?.click();
+                  }}
+                  className="text-[#EFFC76] pt-5 text-[14px] font-medium underline"
+                >
+                  Replace File
+                </button>
+                
+              </div>
+            </div>
+          ) : (
+            <div className="text-center h-full flex flex-col justify-center">
+              <div className="w-12 h-12 mx-auto mb-4 flex items-center justify-center">
+                <Image src="/images/upload2.svg" alt="Upload docs" width={40} height={40} />
+              </div>
+              <h4 className="text-white font-regular leading-[20px] text-[16px] mb-2">
+                {doc.title}
+              </h4>
+              {doc.description && (
+                <p className="text-white/60 text-xs font-regular leading-[16px]">
+                  {doc.description}
+                </p>
+              )}
+            </div>
           )}
         </div>
+        
+        {hasError && (
+          <p className="text-red-500 text-xs mt-2">
+            {doc.title} is required
+          </p>
+        )}
       </div>
     );
   };
@@ -211,13 +219,18 @@ export default function Step3() {
       </h3>
       <p className="font-regular text-[12px] sm:text-[16px] sm:leading-[20px] max-w-[573px] text-white/60">
         Provide the necessary documents for verification. All files must be clear and
-        legible.
+        legible. 
       </p>
+      
+      
+
       <div className="pt-10"></div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {documentTypes.map((doc) => (
-          <div key={doc.key}>{renderUploadCard(doc)}</div>
+          <div key={doc.key}>
+            {renderUploadCard(doc)}
+          </div>
         ))}
       </div>
     </div>

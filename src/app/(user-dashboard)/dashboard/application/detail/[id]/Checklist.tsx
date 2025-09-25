@@ -35,15 +35,15 @@ export default function Checklist() {
   };
 
   return (
-    <div className='pb-5'>
+    <div className=' pb-5'>
       <h3 className='font-semibold text-[16px] leading-[20px] tracking-normal'>Compliance Checklist</h3>
       <div className='pt-3 flex flex-col md:flex-row gap-3'>
-        <p className='font-regular text-[14px] leading-[18px] tracking-normal py-[15px] pl-[12px]  sm:w-[391px] text-white bg-gradient-to-b from-[#202020] to-[#101010] border border-[#323232] rounded-lg'>Fire safety measures in place</p>
-        <p className='font-regular text-[14px] leading-[18px] tracking-normal py-[15px] pl-[12px]  sm:w-[391px] text-white bg-gradient-to-b from-[#202020] to-[#101010] border border-[#323232] rounded-lg'>Fire safety measures in place</p>
-        <p className='font-regular text-[14px] leading-[18px] tracking-normal py-[15px] pl-[12px]  sm:w-[391px] text-white bg-gradient-to-b from-[#202020] to-[#101010] border border-[#323232] rounded-lg'>Fire safety measures in place</p>
+        <p className='font-regular text-[14px] leading-[18px] tracking-normal py-[15px] pl-[12px] max-w-full  sm:w-[391px] lg:w-[391px] xl:w-[500px] text-white bg-gradient-to-b from-[#202020] to-[#101010] border border-[#323232] rounded-lg'>Fire safety measures in place</p>
+        <p className='font-regular text-[14px] leading-[18px] tracking-normal py-[15px] pl-[12px] max-w-full  sm:w-[391px] lg:w-[391px] xl:w-[500px] text-white bg-gradient-to-b from-[#202020] to-[#101010] border border-[#323232] rounded-lg'>Fire safety measures in place</p>
+        <p className='font-regular text-[14px] leading-[18px] tracking-normal py-[15px] pl-[12px] max-w-full sm:w-[391px] lg:w-[391px] xl:w-[500px] text-white bg-gradient-to-b from-[#202020] to-[#101010] border border-[#323232] rounded-lg'>Fire safety measures in place</p>
       </div>
       <div className="flex flex-col md:flex-row pt-[60px] gap-5">
-        <div className='flex flex-col gap-[16px] md:w-1/2 p-5 bg-black'>
+        <div className="flex flex-col gap-[16px] flex-1 p-5 bg-black">
           {verification.map((item, index) => (
             <div key={item.id}>
               <h2 className='font-semibold text-[18px] leading-[22px]  text-white'>
@@ -105,7 +105,7 @@ export default function Checklist() {
             </button>
           </div>
 
-         
+
           <div className='bg-[#121315] p-3 rounded-lg flex items-center justify-between'>
             <div className='flex items-center gap-5'>
               <Image src="/images/id.png" alt='ID' width={100} height={60} />
@@ -149,7 +149,7 @@ export default function Checklist() {
               />
             </button>
           </div>
-          
+
 
         </div>
       </div>

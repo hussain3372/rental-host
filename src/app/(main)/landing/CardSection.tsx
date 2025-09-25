@@ -26,7 +26,7 @@ const steps = [
 
 function CardSection() {
   return (
-    <div className="px-[120px] bg-[#121315] max-w-[1440px] mx-auto py-[80px] max-[1100px]:px-[80px] max-[1100px]:py-[60px] max-[430px]:px-[50px] max-[430px]:py-[0px]">
+    <div className="px-[120px] bg-[#121315] max-w-[1440px] mx-auto py-[80px] max-[1100px]:px-[80px] max-[1100px]:py-[60px] max-[430px]:px-[19px] max-[430px]:py-[0px]">
       {/* Top Section */}
       <div className="flex flex-col gap-[24px]">
 
@@ -47,7 +47,7 @@ function CardSection() {
       </div>
 
       {/* Cards Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-30 md:gap-y-[115px] md:gap-x-[17px] lg:gap-[24px] mt-[150px] sm:mt-[211px] ">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-45 md:gap-y-[115px] md:gap-x-[17px] lg:gap-[24px] mt-[170px] sm:mt-[211px] ">
         {steps.map((step) => (
           <div key={step.id} className="relative flex flex-col items-center text-left ">
             {/* Glow Background */}
@@ -78,7 +78,7 @@ function CardSection() {
             </div>
 
             {/* Body Text */}
-            <p className="mt-4 text-[#D5D5D5] text-[18px] leading-[22px] max-w-[320px] font-medium">
+            <p className="mt-4 text-[#D5D5D5] text-[16px] sm:text-[18px] sm:leading-[22px] leading-[18px] max-w-[320px] font-medium">
               {step.desc}
             </p>
           </div>

@@ -72,7 +72,7 @@ export default function Verification() {
                 </p>
                 {/* Divider - responsive width */}
                 {index !== verification.length - 1 && (
-                  <div className='w-full sm:w-[350px] lg:w-[422px] h-[1px] bg-gradient-to-r from-[#121315] via-white to-[#121315] mt-[26px]'></div>
+                  <div className='w-full sm:max-w-[350px] lg:max-w-[386px] h-[1px] bg-gradient-to-r from-[#121315] via-white to-[#121315] mt-[26px]'></div>
                 )}
               </div>
             ))}

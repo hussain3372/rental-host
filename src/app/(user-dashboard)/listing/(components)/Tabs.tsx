@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import Image from "next/image";
 import Step1a from "./Step1a";
@@ -11,9 +10,115 @@ import Step4b from "./Step4b";
 import Step5 from "./Step5";
 import toast from "react-hot-toast";
 
+interface ChecklistItem {
+  id: number;
+  title: string;
+  checked: boolean;
+}
+
+interface FormData {
+  propertyName: string;
+  propertyAddress: string;
+  propertyType: string;
+  ownership: string;
+  description: string;
+  images: File[];
+  checklistItems: ChecklistItem[];
+  photos: File[];
+}
+
 export default function MultiStepForm() {
   const [step, setStep] = useState(1);
   const [subStep, setSubStep] = useState(1);
+  const [formData, setFormData] = useState<FormData>({
+    propertyName: "",
+    propertyAddress: "",
+    propertyType: "",
+    ownership: "",
+    description: "",
+    images: [],
+    photos: [],
+    checklistItems: [
+      { id: 1, title: "Fire safety measures in place", checked: false },
+      { id: 2, title: "Earthquake-resistant structure", checked: false },
+      { id: 3, title: "Emergency exits available", checked: false },
+      { id: 4, title: "CCTV surveillance active", checked: false },
+    ]
+  });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const handleFieldChange = (field: string, value: string | File | File[] | ChecklistItem[]) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ""
+      }));
+    }
+  };
+
+  const validateCurrentStep = (): boolean => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (step === 1 && subStep === 1) {
+      if (!formData.propertyName.trim()) {
+        newErrors.propertyName = "Property name is required";
+      }
+      if (!formData.propertyAddress.trim()) {
+        newErrors.propertyAddress = "Property address is required";
+      }
+      if (!formData.propertyType) {
+        newErrors.propertyType = "Property type is required";
+      }
+      if (!formData.ownership) {
+        newErrors.ownership = "Ownership is required";
+      }
+    }
+
+    if (step === 1 && subStep === 2) {
+      if (!formData.description.trim()) {
+        newErrors.description = "Description is required";
+      }
+      if (formData.images.length < 3) {
+        newErrors.images = "At least 3 images are required";
+      }
+    }
+
+    // Step 2 validation - keep original logic
+    if (step === 2) {
+      formData.checklistItems.forEach((item) => {
+        if (!item.checked) {
+          newErrors[`checklist_${item.id}`] = "This item must be checked";
+        }
+      });
+    }
+
+    // Step 3 validation - require all 4 documents
+    if (step === 3) {
+      if (formData.photos.length < 4) {
+        newErrors.photos = "All 4 documents are required";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNextClick = () => {
+    if (!validateCurrentStep()) {
+      return;
+    }
+
+    if (step === 5) {
+      toast.success("Form submitted successfully");
+    } else {
+      handleNext();
+    }
+  };
 
   const steps = [
     {
@@ -55,8 +160,17 @@ export default function MultiStepForm() {
 
   const renderStepContent = () => {
     if (step === 1) {
-      if (subStep === 1) return <Step1a />;
-      if (subStep === 2) return <Step1b />;
+      if (subStep === 1) return (
+        <Step1a 
+          formData={formData} 
+          errors={errors} 
+          onFieldChange={handleFieldChange} 
+        />
+      );
+      if (subStep === 2) return <Step1b
+          formData={formData} 
+          errors={errors} 
+          onFieldChange={handleFieldChange}  />;
     }
 
     if (step === 4) {
@@ -66,9 +180,19 @@ export default function MultiStepForm() {
 
     switch (step) {
       case 2:
-        return <Step2 />;
+        return <Step2
+          formData={formData} 
+          errors={errors} 
+          onFieldChange={handleFieldChange} 
+        />;
       case 3:
-        return <Step3 />;
+        return (
+          <Step3
+            formData={formData}
+            errors={errors}
+            onFieldChange={handleFieldChange}
+          />
+        );
       case 5:
         return <Step5 />;
       default:
@@ -102,9 +226,8 @@ export default function MultiStepForm() {
   };
 
   return (
-    <div className="min-h-screen  bg-black text-white flex flex-col pl-4 md:pl-10 py-10">
+    <div className="min-h-screen bg-black text-white flex flex-col pl-4 md:pl-10 py-10">
       <div className="w-full flex flex-col lg:flex-row rounded-xl overflow-hidden shadow-[0_0_40px_rgba(255,255,255,0.1)]">
-        {/* Sidebar */}
         <div className="relative w-full lg:w-1/3 bg-[#121315] max-h-[748px] p-6 md:p-10 lg:p-20">
           <Image
             src="/images/shape1.png"
@@ -113,7 +236,6 @@ export default function MultiStepForm() {
             className="absolute bottom-0 left-0 object-cover"
           />
 
-          {/* Horizontal for md/sm, Vertical for lg */}
           <div className="relative z-10 flex lg:flex-col flex-row items-start lg:items-stretch gap-8 lg:gap-12 overflow-x-auto lg:overflow-visible">
             {steps.map((s, idx) => {
               const isCompleted = step > s.id;
@@ -128,7 +250,6 @@ export default function MultiStepForm() {
                   key={s.id}
                   className="flex lg:flex-row flex-col items-center lg:items-start gap-4 relative flex-shrink-0"
                 >
-                  {/* Icon wrapper */}
                   <div className="flex flex-col lg:flex-col items-center">
                     <div
                       className={`h-[56px] w-[56px] flex justify-center items-center rounded-full ${
@@ -152,13 +273,11 @@ export default function MultiStepForm() {
                       </div>
                     </div>
 
-                    {/* Vertical dashed line (lg only) */}
                     {idx !== steps.length - 1 && (
                       <div className="hidden lg:block absolute top-full z-[-3] w-px h-16 border-l-2 border-dashed border-gray-600"></div>
                     )}
                   </div>
 
-                  {/* Text info */}
                   <div className="text-center lg:text-left min-w-[140px]">
                     <p
                       className={`font-regular text-[14px] leading-[18px] ${
@@ -175,7 +294,6 @@ export default function MultiStepForm() {
                     </p>
                   </div>
 
-                  {/* Horizontal dashed line (md/sm only) */}
                   {idx !== steps.length - 1 && (
                     <div className="lg:hidden absolute left-1/2 top-1/5 w-[120%] border-t-2 border-dashed border-gray-600"></div>
                   )}
@@ -185,8 +303,7 @@ export default function MultiStepForm() {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="w-full md:flex-1  p-4 md:pt-10 md:px-10 flex flex-col justify-end min-h-full">
+        <div className="w-full md:flex-1 p-4 md:pt-10 md:px-10 flex flex-col justify-end min-h-full">
           <div className="flex gap-2 items-center mb-5">
             <Image src="/images/step.svg" alt="steps" width={16} height={16} />
             <p className="text-[#EFFC76] font-semibold text-[14px]">
@@ -196,21 +313,17 @@ export default function MultiStepForm() {
 
           <div className="flex-1">{renderStepContent()}</div>
 
-          <div className=" flex flex-col pt-6 sm:flex-row gap-3">
+          <div className="flex flex-col pt-6 sm:flex-row gap-3">
             <button
               onClick={handlePrev}
-              className="w-full sm:w-auto px-8 py-3 text-[16px] bg-gradient-to-b yellow-btn text-black font-semibold rounded-md shadow-lg hover:opacity-90"
+              className={`w-full sm:w-auto px-8 py-3 text-[16px] bg-gradient-to-b yellow-btn text-black font-semibold rounded-md shadow-lg hover:opacity-90 ${
+                step === 1 && subStep === 1 ? "hidden" : "block"
+              }`}
             >
               Back
             </button>
             <button
-              onClick={() => {
-                if (step === 5) {
-                  toast.success("Form submitted successfully");
-                } else {
-                  handleNext();
-                }
-              }}
+              onClick={handleNextClick}
               className="w-full sm:w-auto px-8 py-3 text-[16px] bg-gradient-to-b yellow-btn text-black font-semibold rounded-md shadow-lg hover:opacity-90"
             >
               {step === 5 ? "Submit" : "Continue"}

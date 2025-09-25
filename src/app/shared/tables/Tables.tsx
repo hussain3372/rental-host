@@ -495,26 +495,28 @@ export function Table<T extends Record<string, unknown>>({
         bgColor = control.zebraColor || "#f9f9f9";
       }
 
-      css += `
-        #${tableId} tbody tr:nth-child(${idx + 1}) {
-          background-color: ${bgColor} !important;
-          color: ${control.rowTextColor || "#424242"} !important;
-          transition: all 0.3s ease !important;
-        }
-      `;
+     // Row base style (still per-row if you need zebra/striped)
+css += `
+  #${tableId} tbody tr:nth-child(${idx + 1}) {
+    background-color: ${bgColor} !important;
+    color: ${control.rowTextColor || "#424242"} !important;
+    transition: all 0.3s ease !important;
+  }
+`;
 
-      // Add hover effects
-      if (control.hover || control.highlightRowOnHover) {
-        css += `
-          #${tableId} tbody tr:nth-child(${idx + 1}):hover {
-            background-color: ${control.hoverBgColor || "#f0f0f0"} !important;
-            color: ${control.hoverTextColor || "#424242"} !important;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
-            z-index: 1 !important;
-            position: relative !important;
-          }
-        `;
-      }
+// ✅ Global hover rule (applies to all rows)
+if (control.hover || control.highlightRowOnHover) {
+  css += `
+    #${tableId} tbody tr:hover {
+      background-color: ${control.hoverBgColor || "#f0f0f0"} !important;
+      color: ${control.hoverTextColor || "#424242"} !important;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+      z-index: 1 !important;
+      position: relative !important;
+    }
+  `;
+}
+
     });
 
     return css;
@@ -565,7 +567,7 @@ export function Table<T extends Record<string, unknown>>({
     );
   }
 
-  const keys = Object.keys(displayData[0]);
+const keys = displayData.length > 0 ? Object.keys(displayData[0]) : [];
   const paddingSize = control.compact ? "8px 12px" : "12px 16px";
 
   const getBorderWidth = () => {

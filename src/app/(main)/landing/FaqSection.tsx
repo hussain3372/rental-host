@@ -164,8 +164,8 @@ useEffect(() => {
 
   return (
     <div className="container-class text-white">
-      <div className="px-3 md:px-[80px] lg:px-[120px] py-12">
-        <div className="pb-[64px]">
+      <div className="px-4 md:px-[80px] lg:px-[120px] py-12">
+        <div className="sm:pb-[64px] pb-[30px]">
           <div className="flex items-center mb-[40px]">
             <BlackButton
               text="FAQ"

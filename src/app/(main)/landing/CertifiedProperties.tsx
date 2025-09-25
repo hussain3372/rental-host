@@ -33,7 +33,7 @@ const properties = [
 
 const CertifiedProperties = () => {
     return (
-        <section className="bg-[#121315] max-w-[1440px] mx-auto text-white px-6 md:px-[90px] lg:px-[120px] py-20">
+        <section className="bg-[#121315] max-w-[1440px] mx-auto text-white px-4 md:px-[90px] lg:px-[120px] sm:py-20 py-10 ">
             {/* Header Section */}
             <div>
                 <div className="flex items-center gap-2 mb-4">
@@ -45,38 +45,26 @@ const CertifiedProperties = () => {
                         className="w-[259px]"
                     />
                 </div>
-                <div>
-                    <h2 className="text-[20px] md:text-[30px] lg:text-[48px] lg:leading-[56px] md:leading-[40px] leading-[36px] font-medium leading-snug w-full max-w-[810px]">
-                        Explore Our Collection of Officially Certified and Verified Properties
-                    </h2>
+               <div>
+  <h2 className="text-[20px] md:text-[30px] lg:text-[48px] lg:leading-[56px] md:leading-[40px] leading-[36px] font-medium leading-snug w-full max-w-[810px]">
+    Explore Our Collection of Officially Certified and Verified Properties
+  </h2>
 
-                    {/* <div className="flex justify-between items-center w-full ">
-                        <p className="text-[#FFFFFF99] font-medium text-[14px] leading-[22px] mt-6 w-full max-w-[688px] sm:text-[18px]">
-                            Browse through a trusted selection of properties that meet the
-                            highest standards of quality, authenticity, and reliability.
-                        </p>
-                        <Link
-                            href="/coming-soon"
-                            className="text-[#EFFC76] font-normal underline whitespace-nowrap text-[20px] leading-[24px]"
-                        >
-                            Explore More
-                        </Link>
-                    </div> */}
-                    <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-4 ">
-                        <p className="text-[#FFFFFF99] font-medium text-[14px] leading-[22px] sm:text-[18px] mt-6 flex-1 w-full max-w-[688px]">
-                            Browse through a trusted selection of properties that meet the
-                            highest standards of quality, authenticity, and reliability.
-                        </p>
+  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-4">
+    <p className="text-[#FFFFFF99] font-medium text-[14px] leading-[22px] sm:text-[18px] mt-6 flex-1 w-full max-w-[688px]">
+      Browse through a trusted selection of properties that meet the
+      highest standards of quality, authenticity, and reliability.
+    </p>
 
-                        <Link
-                            href="/coming-soon"
-                            className="text-[#EFFC76] font-normal underline whitespace-nowrap text-[20px] leading-[24px]"
-                        >
-                            Explore More
-                        </Link>
-                    </div>
+    <Link
+      href="/coming-soon"
+      className="text-[#EFFC76] font-normal underline whitespace-nowrap text-[20px] leading-[24px] self-end sm:self-auto"
+    >
+      Explore More
+    </Link>
+  </div>
+</div>
 
-                </div>
 
             </div>
 
