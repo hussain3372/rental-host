@@ -26,7 +26,7 @@ const steps = [
 
 function CardSection() {
   return (
-    <div className="px-[120px] bg-[#121315] max-w-[1440px] mx-auto py-[80px] max-[1100px]:px-[80px] max-[1100px]:py-[60px] max-[430px]:px-[19px] max-[430px]:py-[0px]">
+    <div className="px-[120px] bg-[#121315] max-w-[1440px] mx-auto py-[80px] max-[1100px]:px-[80px] max-[1100px]:py-[60px] max-[430px]:px-[19px] max-[430px]:py-8">
       {/* Top Section */}
       <div className="flex flex-col gap-[24px]">
 

@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 
 type AuthenticationEnableProps = {
@@ -9,13 +10,10 @@ type AuthenticationEnableProps = {
   onConfirm: () => void; // ✅ new
 };
 
-export const AuthenticationEnable: React.FC<AuthenticationEnableProps> = ({ isOpen, onClose, onConfirm }) => {
+export const AuthenticationEnable: React.FC<AuthenticationEnableProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  const handleConfirm = () => {
-    onConfirm();
-    onClose();
-  };
+ 
 
   return (
     <div
@@ -40,15 +38,19 @@ export const AuthenticationEnable: React.FC<AuthenticationEnableProps> = ({ isOp
           </h2>
           <div className="flex justify-center">
             <p className="text-[#FFFFFF99] text-[16px] mb-10 leading-5 font-normal max-w-[358px] w-full text-center">
-             From now on, we’ll send a login code to your email for extra security.
+              From now on, we’ll send a login code to your email for extra security.
             </p>
           </div>
           <button
-            onClick={handleConfirm} 
+            onClick={() => {
+              toast.success("2FA enabled successfully");
+              onClose(); // ✅ close the modal
+            }}
             className="w-full mt-8 py-4 rounded-lg bg-[#EFFC76] text-[#121315] text-[18px] leading-[22px] font-semibold cursor-pointer"
           >
             Got It
           </button>
+
         </div>
       </div>
     </div>

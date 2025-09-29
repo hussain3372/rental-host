@@ -1,0 +1,850 @@
+"use client";
+import React, { useMemo, useState } from "react";
+import Image from "next/image";
+import { Table } from "@/app/shared/tables/Tables";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Modal } from "@/app/shared/Modal";
+import TicketDetailDrawer from "./TicketDetailDrawer";
+import HelpSupportDrawer from "./HelpSupportDrawer";
+interface CustomDateInputProps {
+    value?: string;
+    onClick?: () => void;
+    onChange?: () => void;
+}
+
+interface CertificationData {
+    id: number;
+    "Ticket Id": string;
+    "Issue Type": string;
+    Subject: string;
+    "Created On": string;
+    Status: string;
+}
+
+export default function Applications() {
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 6;
+
+    // Modal and delete states
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
+    const [singleRowToDelete, setSingleRowToDelete] = useState<{ row: Omit<CertificationData, "id">; index: number } | null>(null);
+    const [modalType, setModalType] = useState<'single' | 'multiple'>('multiple');
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const handleDeleteSelected = () => {
+        console.log("Deleting selected rows:", Array.from(selectedRows));
+    };
+    // State
+    // New state for selected ticket
+    const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
+    const [selectedTicket, setSelectedTicket] = useState<CertificationData | null>(null);
+
+    const [certificationFilters, setCertificationFilters] = useState({
+        subject: "",
+        property: "",
+        status: "",
+        submittedDate: "",
+    });
+
+    // State for date picker
+    const [submittedDate, setSubmittedDate] = useState<Date | null>(null);
+
+    const [allCertificationData, setAllCertificationData] = useState<CertificationData[]>([
+        {
+            id: 1,
+            "Ticket Id": "TIK - 8765",
+            "Issue Type": "Support Tickets",
+            Subject: "View and man...",
+            "Created On": "Aug 20, 2025",
+            Status: "Resolved",
+        },
+        {
+            id: 2,
+            "Ticket Id": "TIK - 8765",
+            "Issue Type": "Support Queries",
+            Subject: "View and man...",
+            "Created On": "Aug 12, 2025",
+            Status: "Pending",
+        },
+        {
+            id: 3,
+            "Ticket Id": "TIK - 8765",
+            "Issue Type": "Assistance Center",
+            Subject: "View and man...",
+            "Created On": "Aug 12, 2025",
+            Status: "Approved",
+        },
+        {
+            id: 4,
+            "Ticket Id": "TIK - 8765",
+            "Issue Type": "Support Tickets",
+            Subject: "View and man...",
+            "Created On": "Aug 20, 2025",
+            Status: "Pending",
+        },
+        {
+            id: 5,
+            "Ticket Id": "TIK - 8765",
+            "Issue Type": "Support Queries",
+            Subject: "View and man...",
+            "Created On": "Aug 12, 2025",
+            Status: "Pending",
+        },
+        {
+            id: 6,
+            "Ticket Id": "TIK - 8765",
+            "Issue Type": "Assistance Center",
+            Subject: "View and man...",
+            "Created On": "Aug 12, 2025",
+            Status: "Approved",
+        },
+        {
+            id: 7,
+            "Ticket Id": "TIK - 8765",
+            "Issue Type": "Support Queries",
+            Subject: "View and man...",
+            "Created On": "Aug 12, 2025",
+            Status: "Pending",
+        },
+        {
+            id: 8,
+            "Ticket Id": "TIK - 8765",
+            "Issue Type": "Support Tickets",
+            Subject: "View and man...",
+            "Created On": "Aug 12, 2025",
+            Status: "Approved",
+        },
+        {
+            id: 9,
+            "Ticket Id": "TIK - 8765",
+            "Issue Type": "Support Queries",
+            Subject: "View and man...",
+            "Created On": "Aug 12, 2025",
+            Status: "Approved",
+        },
+        {
+            id: 10,
+               "Ticket Id": "TIK - 8765",
+            "Issue Type": "Support Queries",
+            Subject: "View and man...",
+            "Created On": "Aug 12, 2025",
+            Status: "Pending",
+        },
+        {
+            id: 11,
+            "Ticket Id": "TIK - 8765",
+            "Issue Type": "762 Evergreen Terrace",
+            Subject: "Agent",
+            "Created On": "Aug 12, 2025",
+            Status: "Rejected",
+        },
+        {
+            id: 12,
+            "Ticket Id": "TIK - 8765",
+            "Issue Type": "762 Evergreen Terrace",
+            Subject: "Agent",
+            "Created On": "Aug 12, 2025",
+            Status: "Approved",
+        },
+        {
+            id: 13,
+              "Ticket Id": "TIK - 8765",
+            "Issue Type": "Support Queries",
+            Subject: "View and man...",
+            "Created On": "Aug 12, 2025",
+            Status: "Approved",
+        },
+        {
+            id: 14,
+            "Ticket Id": "Skyline Residences",
+            "Issue Type": "456 Tower Street",
+            Subject: "Manager",
+            "Created On": "Oct 1, 2025",
+            Status: "Approved",
+        },
+        {
+            id: 15,
+            "Ticket Id": "TIK - 8765",
+            "Issue Type": "762 Evergreen Terrace",
+            Subject: "Owner",
+            "Created On": "Aug 12, 2025",
+            Status: "Approved",
+        },
+        {
+            id: 16,
+              "Ticket Id": "TIK - 8765",
+            "Issue Type": "Support Queries",
+            Subject: "View and man...",
+            "Created On": "Aug 12, 2025",
+            Status: "Pending",
+        },
+        {
+            id: 17,
+            "Ticket Id": "TIK - 8765",
+            "Issue Type": "762 Evergreen Terrace",
+            Subject: "Agent",
+            "Created On": "Aug 12, 2025",
+            Status: "Rejected",
+        },
+        {
+            id: 18,
+               "Ticket Id": "TIK - 8765",
+            "Issue Type": "Support Queries",
+            Subject: "View and man...",
+            "Created On": "Aug 12, 2025",
+            Status: "Approved",
+        },
+        {
+            id: 19,
+              "Ticket Id": "TIK - 8765",
+            "Issue Type": "Support Queries",
+            Subject: "View and man...",
+            "Created On": "Aug 12, 2025",
+            Status: "Pending",
+        },
+        {
+            id: 20,
+              "Ticket Id": "TIK - 8765",
+            "Issue Type": "Support Queries",
+            Subject: "View and man...",
+            "Created On": "Aug 12, 2025",
+            Status: "Approved",
+        },
+    
+    ]);
+
+    // Delete handlers for application data - matching Tracking component style
+    const handleDeleteApplications = (selectedRows: Set<number>) => {
+        // Find the actual data items by matching the display data to full data
+        const idsToDelete = Array.from(selectedRows);
+
+        // Remove the items from the main data
+        const updatedData = allCertificationData.filter(item => !idsToDelete.includes(item.id));
+        setAllCertificationData(updatedData);
+
+        // Close modal and reset selected rows
+        setIsModalOpen(false);
+        setSelectedRows(new Set());
+
+        // Optional: Show success message - removed alert to match Tracking component
+    };
+
+    const handleDeleteSingleApplication = (_row: Omit<CertificationData, "id">, index: number) => {
+        // Find the actual item using the global index
+        const globalIndex = startIndex + index;
+        const itemToDelete = filteredCertificationData[globalIndex];
+
+        if (itemToDelete) {
+            // Remove the item from the main data
+            const updatedData = allCertificationData.filter(item => item.id !== itemToDelete.id);
+            setAllCertificationData(updatedData);
+        }
+
+        // Close modal and reset
+        setIsModalOpen(false);
+        setSingleRowToDelete(null);
+
+        // Optional: Show success message - removed alert to match Tracking component
+    };
+
+    // Functions to open modal for deletions
+    // const openDeleteModal = (selectedRows: Set<number>) => {
+    //     setSelectedRows(selectedRows);
+    //     setModalType('multiple');
+    //     setIsModalOpen(true);
+    // };
+
+    const openDeleteSingleModal = (row: Omit<CertificationData, "id">, index: number) => {
+        setSingleRowToDelete({ row, index });
+        setModalType('single');
+        setIsModalOpen(true);
+    };
+
+    // Handle confirmation from modal
+    const handleModalConfirm = () => {
+        if (modalType === 'multiple' && selectedRows.size > 0) {
+            handleDeleteApplications(selectedRows);
+        } else if (modalType === 'single' && singleRowToDelete) {
+            handleDeleteSingleApplication(singleRowToDelete.row, singleRowToDelete.index);
+        }
+    };
+
+    // Table control
+    const tableControl = {
+        hover: true,
+        striped: false,
+        bordered: false,
+        shadow: false,
+        compact: false,
+        headerBgColor: "#252628",
+        headerTextColor: "white",
+        rowBgColor: "black",
+        rowTextColor: "#e5e7eb",
+        hoverBgColor: "black",
+        hoverTextColor: "#ffffff",
+        fontSize: 13,
+        textAlign: "left" as const,
+        rowBorder: false,
+        headerBorder: true,
+        borderColor: "#374151",
+        highlightRowOnHover: true,
+    };
+
+    // Unique dropdown values
+    const uniqueProperties = [
+        ...new Set(allCertificationData.map((item) => item["Ticket Id"])),
+    ];
+    const uniqueStatuses = [
+        ...new Set(allCertificationData.map((item) => item["Status"])),
+    ];
+    const uniqueSubjects = [
+        ...new Set(allCertificationData.map((item) => item["Subject"])),
+    ];
+
+    // Filter + search logic
+    const filteredCertificationData = useMemo(() => {
+        let filtered = allCertificationData;
+
+        if (searchTerm) {
+            filtered = filtered.filter(
+                (item) =>
+                    item["Ticket Id"]
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
+                    item["Issue Type"].toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    item["Subject"].toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+
+        if (certificationFilters.property) {
+            filtered = filtered.filter(
+                (item) => item["Ticket Id"] === certificationFilters.property
+            );
+        }
+
+        if (certificationFilters.status) {
+            filtered = filtered.filter(
+                (item) => item["Status"] === certificationFilters.status
+            );
+        }
+
+        if (certificationFilters.subject) {
+            filtered = filtered.filter(
+                (item) => item["Subject"] === certificationFilters.subject
+            );
+        }
+
+        if (certificationFilters.submittedDate) {
+            filtered = filtered.filter((item) =>
+                item["Created On"].includes(certificationFilters.submittedDate)
+            );
+        }
+
+        return filtered;
+    }, [searchTerm, certificationFilters, allCertificationData]);
+
+    // Transform data to exclude ID from display but keep it for navigation
+    const displayData = useMemo(() => {
+        return filteredCertificationData.map(({ id, ...rest }) => rest);
+    }, [filteredCertificationData]);
+
+    // Pagination logic
+    const totalPages = Math.ceil(displayData.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedData = displayData.slice(
+        startIndex,
+        startIndex + itemsPerPage
+    );
+
+    // Reset pagination when filters change
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, certificationFilters]);
+
+    const handleResetFilter = () => {
+        setCertificationFilters({
+            subject: "",
+            property: "",
+            status: "",
+            submittedDate: "",
+        });
+        setSearchTerm("");
+        setSubmittedDate(null);
+    };
+
+    const handleApplyFilter = () => {
+        // Convert selected date to string format for filtering
+        if (submittedDate) {
+            setCertificationFilters(prev => ({
+                ...prev,
+                submittedDate: submittedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            }));
+        }
+
+        setIsFilterOpen(false);
+    };
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    // Custom input component for date picker to match the design
+    const CustomDateInput = React.forwardRef<HTMLInputElement, CustomDateInputProps>(
+        ({ value, onClick }, ref) => (
+            <div className="relative">
+                <input
+                    type="text"
+                    value={value}
+                    onClick={onClick}
+                    ref={ref}
+                    readOnly
+                    className="w-full bg-gradient-to-b placeholder:text-white/40 from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none cursor-pointer"
+                    placeholder="Select date"
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                    <Image src="/images/calender.svg" alt="select date" width={20} height={20} />
+                </div>
+            </div>
+        )
+    );
+
+    CustomDateInput.displayName = 'CustomDateInput';
+
+    const renderPaginationButtons = () => {
+        const buttons = [];
+        const maxVisiblePages = 5;
+
+        // Previous button - always visible
+        buttons.push(
+            <button
+                key="prev"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="w-8 h-8 flex items-center p-[13px] justify-center text-gray-400 hover:text-white transition-colors border border-gray-600 rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            >
+                <Image src="/images/arrow-left.svg" height={14} width={14} alt="Back" className="" />
+            </button>
+        );
+
+        // Calculate which pages to show
+        let startPage, endPage;
+
+        if (currentPage <= maxVisiblePages) {
+            // Show pages 1 to maxVisiblePages when on early pages
+            startPage = 1;
+            endPage = Math.min(maxVisiblePages, totalPages);
+        } else {
+            // For later pages, show pages ending with current page
+            startPage = currentPage - maxVisiblePages + 1;
+            endPage = currentPage;
+        }
+
+        // Page number buttons
+        for (let i = startPage; i <= endPage; i++) {
+            buttons.push(
+                <button
+                    key={i}
+                    onClick={() => handlePageChange(i)}
+                    className={`w-8 h-8 flex items-center justify-center rounded text-sm leading-[18px] p-[13px] transition-colors border cursor-pointer ${currentPage === i
+                        ? "bg-[#EFFC76] text-black font-medium border-[#EFFC76]"
+                        : "text-white opacity-60 border-gray-600"
+                        }`}
+                >
+                    {i}
+                </button>
+            );
+        }
+
+        // Next button - always visible
+        buttons.push(
+            <button
+                key="next"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white transition-colors border border-gray-600 rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 p-[13px]"
+            >
+                <Image src="/images/arrow-right.svg" height={14} width={14} alt="Back" className="" />
+            </button>
+        );
+
+        return buttons;
+    };
+
+    return (
+        <>
+            {/* Modal with proper onConfirm handler - matching Tracking component */}
+            {isModalOpen &&
+
+                <Modal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onConfirm={handleModalConfirm}
+                    title="Confirm Ticket Deletion"
+                    description="Deleting this ticket means it will no longer appear in your requests."
+                    image="/images/delete-modal.png"
+                    confirmText="Delete"
+                //   cancelText="Cancel"
+                />
+
+            }
+            <div className="flex flex-col gap-3 sm:gap-0 sm:flex-row items-start justify-between mb-[22px]">
+                <div>
+                    <h1 className="text-[20px] leading-[24px] font-semibold text-white mb-2">
+                        Help & Support
+                    </h1>
+                    <p className="text-[16px] leading-[20px] text-[#FFFFFF99] font-regular max-w-[573px]">
+                        Manage your support tickets and stay informed with system announcements.
+                    </p>
+                </div>
+                <button
+                    onClick={() => setIsDrawerOpen(true)}
+                    className="yellow-btn cursor-pointer text-black px-[20px] py-[12px] rounded-[8px] font-semibold text-[16px] leading-[20px] hover:bg-[#E5F266] transition-colors duration-300"
+                >
+                    Create Ticket
+                </button>
+            </div>
+            <div className="flex flex-col justify-between h-[90vh]">
+
+                <div className="bg-[#121315] h-full rounded-lg relative z-[10] overflow-hidden">
+
+                    {/* Header */}
+                    <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-5">
+                        <div>
+                            <h2>
+                                Tickets
+                            </h2>
+                        </div>
+                        <div className="inline-flex flex-col-reverse sm:flex-row item-start sm:items-center pt-3 sm:pt-0 gap-3">
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    placeholder="Search"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="bg-white/12 border rounded-lg text-white/40 placeholder-white/60 w-[204px] px-3 py-2 text-sm pl-8 border-none outline-none"
+                                />
+                                <div className="absolute left-2.5 top-2.5 w-4 h-4 text-gray-500">
+                                    <Image
+                                        src="/images/search.png"
+                                        alt="search"
+                                        width={16}
+                                        height={16}
+                                    />
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setIsFilterOpen(true)}
+                                className="h-[34px] cursor-pointer w-[86px] rounded-md bg-[#2e2f31] py-2 px-3 flex items-center gap-1"
+                            >
+                                <span className="text-sm leading-[18px] font-medium text-white opacity-60">
+                                    Filter
+                                </span>
+                                <Image
+                                    src="/images/filter1.png"
+                                    alt="filter"
+                                    height={9}
+                                    width={13}
+                                />
+                            </button>
+                            <button
+                                onClick={handleDeleteSelected}
+                                disabled={selectedRows.size === 0}
+                                className="flex cursor-pointer items-center disabled:hidden gap-[6px] p-2 rounded-[8px] 
+                border border-[rgba(239,252,118,0.32)] text-[#EFFC76] text-[12px] font-normal leading-[16px]
+                 disabled:bg-[transparent] disabled:cursor-not-allowed disabled:border-gray-600 disabled:text-gray-600"
+                            >
+                                <Image src="/images/delete-row.svg" alt='Delete selected' width={12} height={12} />
+                                Delete All
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Table with delete functionality */}
+                    <div className="p-0 cursor-pointer">
+                        <Table
+                            data={paginatedData}
+                            control={tableControl}
+                            showDeleteButton={true}
+                            showModal={true}
+                            clickable={true}
+                            modalTitle="Ticket Details"
+                            selectedRows={selectedRows}
+                            setSelectedRows={setSelectedRows}
+                            dropdownItems={[
+                                {
+                                    label: "View Details",
+                                    onClick: (row, index) => {
+                                        const originalRow = filteredCertificationData[startIndex + index];
+                                        setSelectedTicket(originalRow);        // ✅ store selected row
+                                        setIsDetailDrawerOpen(true);           // ✅ open drawer
+                                    },
+                                },
+                                {
+                                    label: "Delete Ticket",
+                                    onClick: (row, index) => openDeleteSingleModal(row, index),
+                                },
+                            ]}
+
+                        />
+
+
+                    </div>
+
+                    {/* Pagination - Always visible */}
+                </div>
+                <div className="flex justify-center my-[20px]">
+                    <div className="flex items-center gap-2">
+                        {renderPaginationButtons()}
+                    </div>
+                </div>
+            </div>
+
+            {/* Full Page Overlay */}
+            {isFilterOpen && (
+                <div
+                    className="fixed inset-0 bg-black/70 z-[100000]"
+                    onClick={() => setIsFilterOpen(false)}
+                />
+            )}
+
+
+
+            {/* Right Slide Panel Filter */}
+            <div
+                className={`fixed top-0 right-0 h-full bg-[#0A0C0B] z-[2000000000] transform transition-transform duration-300 ease-in-out ${isFilterOpen ? "translate-x-0" : "translate-x-full"
+                    } w-[250px] sm:w-1/2 lg:w-2/5 xl:w-1/3`}
+            >
+                <div
+                    className="h-full justify-between flex flex-col bg-[#0A0C0B] overflow-y-auto"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {/* Header */}
+                    <div>
+                        <div className="flex justify-between items-center px-6 pt-6 pb-3">
+                            <h3 className="text-white text-[20px] font-medium">
+                                Apply Filter
+                            </h3>
+                            <button
+                                onClick={handleResetFilter}
+                                className="text-[#EFFC76] cursor-pointer text-[18px] font-medium underline"
+                            >
+                                Reset
+                            </button>
+                        </div>
+
+                        <div className="px-6">
+                            <p className="text-white text-[16px] opacity-60 mb-10">
+                                Refine listings to find the right property faster.
+                            </p>
+
+                            <div className="space-y-[20px]">
+                                {/* subject */}
+                                <div>
+                                    <label className="text-white text-sm font-medium mb-3 block">
+                                        Subject
+                                    </label>
+                                    <div className="relative">
+                                        <select
+                                            value={certificationFilters.subject}
+                                            onChange={(e) =>
+                                                setCertificationFilters((prev) => ({
+                                                    ...prev,
+                                                    subject: e.target.value,
+                                                }))
+                                            }
+                                            className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                                        >
+                                            <option className="text-black" value="">
+                                                Select subject
+                                            </option>
+                                            {uniqueSubjects.map((subject) => (
+                                                <option
+                                                    className="text-black"
+                                                    key={subject}
+                                                    value={subject}
+                                                >
+                                                    {subject}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                            <svg
+                                                className="w-4 h-4 text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M19 9l-7 7-7-7"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                {/* Property */}
+                                <div>
+                                    <label className="text-white text-sm font-medium mb-3 block">
+                                        Property
+                                    </label>
+                                    <div className="relative">
+                                        <select
+                                            value={certificationFilters.property}
+                                            onChange={(e) =>
+                                                setCertificationFilters((prev) => ({
+                                                    ...prev,
+                                                    property: e.target.value,
+                                                }))
+                                            }
+                                            className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                                        >
+                                            <option className="text-black" value="">
+                                                Select property
+                                            </option>
+                                            {uniqueProperties.map((property) => (
+                                                <option
+                                                    className="text-black"
+                                                    key={property}
+                                                    value={property}
+                                                >
+                                                    {property}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Status */}
+                                <div>
+                                    <label className="text-white text-sm font-medium mb-3 block">
+                                        Status
+                                    </label>
+                                    <div className="relative">
+                                        <select
+                                            value={certificationFilters.status}
+                                            onChange={(e) =>
+                                                setCertificationFilters((prev) => ({
+                                                    ...prev,
+                                                    status: e.target.value,
+                                                }))
+                                            }
+                                            className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                                        >
+                                            <option className="text-black" value="">
+                                                Select status
+                                            </option>
+                                            {uniqueStatuses.map((status) => (
+                                                <option
+                                                    className="text-black"
+                                                    key={status}
+                                                    value={status}
+                                                >
+                                                    {status}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Submitted Date */}
+                                <div>
+                                    <label className="text-white text-sm font-medium mb-3 block">
+                                        Submitted date
+                                    </label>
+                                    <DatePicker
+                                        selected={submittedDate}
+                                        onChange={(date: Date | null) => setSubmittedDate(date)}
+                                        customInput={<CustomDateInput />}
+                                        dateFormat="MMM d, yyyy"
+                                        placeholderText="Select date"
+                                        showMonthDropdown
+                                        showYearDropdown
+                                        dropdownMode="select"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Apply Button */}
+                    <div className="p-6">
+                        <button
+                            onClick={handleApplyFilter}
+                            className="w-full bg-[#EFFC76] cursor-pointer text-black font-semibold py-4 rounded-xl hover:bg-[#e8f566] transition-colors text-sm"
+                        >
+                            Apply Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Help Support Drawer - Moved outside filter panel */}
+            <div
+                className={`fixed inset-0 bg-[#121315CC] z-[3000000000] flex justify-end transition-opacity duration-300 ${isDrawerOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+                    }`}
+                onClick={() => setIsDrawerOpen(false)}
+            >
+                <div
+                    className={`w-full lg:max-w-[608px] md:max-w-[500px] max-w-[280px] p-5 sm:p-7 bg-[#0A0C0B] h-full overflow-auto rounded-[12px] border border-[#FFFFFF1F] transform transition-transform duration-300 ease-in-out ${isDrawerOpen ? "translate-x-0" : "translate-x-full"
+                        }`}
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <HelpSupportDrawer
+                        isOpen={isDrawerOpen}
+                        onClose={() => setIsDrawerOpen(false)}
+                    />
+                </div>
+            </div>
+
+            <div
+                className={`fixed inset-0 bg-[#121315CC] z-[3000000001] flex justify-end transition-opacity duration-300 ${isDetailDrawerOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+                    }`}
+                onClick={() => setIsDetailDrawerOpen(false)}
+            >
+                <div
+                    className={`w-full lg:max-w-[608px] md:max-w-[500px] max-w-[280px] bg-[#0A0C0B] h-full flex flex-col rounded-[12px] border border-[#FFFFFF1F] transform transition-transform duration-300 ease-in-out ${isDetailDrawerOpen ? "translate-x-0" : "translate-x-full"
+                        }`}
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {/* Content area scrollable, footer fixed */}
+                    <div className="flex-1 overflow-y-auto">
+                        <TicketDetailDrawer
+                            isOpen={isDetailDrawerOpen}
+                            onClose={() => setIsDetailDrawerOpen(false)}
+                            ticket={
+                                selectedTicket
+                                    ? {
+                                        id: String(selectedTicket.id),
+                                        ticketId: selectedTicket["Ticket Id"],
+                                        issueType: selectedTicket["Issue Type"],
+                                        subject: selectedTicket["Subject"],
+                                        createdOn: selectedTicket["Created On"],
+                                        status: selectedTicket["Status"],
+                                    }
+                                    : null
+                            }
+                        />
+                    </div>
+                </div>
+            </div>
+
+        </>
+    );
+}

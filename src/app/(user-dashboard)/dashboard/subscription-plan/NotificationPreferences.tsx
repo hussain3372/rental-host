@@ -6,6 +6,7 @@ import EmailVerifyDrawer from "./VerifyEmailDrawer";
 import { AuthenticationEnable } from "./AuthenticationEnable";
 import ChangePasswordDrawer from "./ChangePasswordDrawer";
 import ToggleSwitch from "@/app/shared/Toggles";
+import toast from "react-hot-toast";
 
 interface PreferenceItemProps {
   title: string;
@@ -179,26 +180,28 @@ const NotificationPreferences: React.FC = () => {
             onArrowClick={() => setIsPasswordDrawerOpen(true)}
           />
 
-          <PreferenceItem
-            title="2 - Factor Authentication"
-            description="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
-            hasToggle
-            toggleState={twoFactorAuth}
-            onToggleChange={() => {
-              if (!twoFactorAuth) {
+         <PreferenceItem
+  title="2 - Factor Authentication"
+  description="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
+  hasToggle
+  toggleState={twoFactorAuth}
+  onToggleChange={() => {
+    if (!twoFactorAuth) {
+      // ✅ Turning ON
+      setIs2FAModalOpen(true);
+    } else {
+      // ✅ Turning OFF
+      setTwoFactorAuth(false);
+      toast.success("Two-factor authentication is disabled");
+    }
+  }}
+  trackWidth="w-[32px]"
+  trackHeight="h-[19px]"
+  thumbSize="w-4 h-4"
+  iconSize="w-3 h-3"
+  thumbTranslate="translate-x-2.5"
+/>
 
-                setIs2FAModalOpen(true);
-              } else {
-
-                setTwoFactorAuth(false);
-              }
-            }}
-            trackWidth="w-[32px]"
-            trackHeight="h-[19px]"
-            thumbSize="w-4 h-4"
-            iconSize="w-3 h-3"
-            thumbTranslate="translate-x-2.5"
-          />
         </div>
       </div>
       <TwoFAModal

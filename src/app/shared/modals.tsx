@@ -53,7 +53,7 @@ export function Modal({
 }: ModalProps) {
 
   // Backdrop adapts to theme: lighter blur in light mode, darker in dark mode
-  
+
 
   return (
     <AnimatePresence>

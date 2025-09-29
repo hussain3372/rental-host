@@ -43,20 +43,23 @@ export default function MultiStepForm() {
       { id: 2, title: "Earthquake-resistant structure", checked: false },
       { id: 3, title: "Emergency exits available", checked: false },
       { id: 4, title: "CCTV surveillance active", checked: false },
-    ]
+    ],
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const handleFieldChange = (field: string, value: string | File | File[] | ChecklistItem[]) => {
-    setFormData(prev => ({
+  const handleFieldChange = (
+    field: string,
+    value: string | File | File[] | ChecklistItem[]
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
-    
+
     if (errors[field]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [field]: ""
+        [field]: "",
       }));
     }
   };
@@ -88,7 +91,6 @@ export default function MultiStepForm() {
       }
     }
 
-    // Step 2 validation - keep original logic
     if (step === 2) {
       formData.checklistItems.forEach((item) => {
         if (!item.checked) {
@@ -97,7 +99,6 @@ export default function MultiStepForm() {
       });
     }
 
-    // Step 3 validation - require all 4 documents
     if (step === 3) {
       if (formData.photos.length < 4) {
         newErrors.photos = "All 4 documents are required";
@@ -115,6 +116,7 @@ export default function MultiStepForm() {
 
     if (step === 5) {
       toast.success("Form submitted successfully");
+      window.location.href="/dashboard/application"
     } else {
       handleNext();
     }
@@ -160,17 +162,22 @@ export default function MultiStepForm() {
 
   const renderStepContent = () => {
     if (step === 1) {
-      if (subStep === 1) return (
-        <Step1a 
-          formData={formData} 
-          errors={errors} 
-          onFieldChange={handleFieldChange} 
-        />
-      );
-      if (subStep === 2) return <Step1b
-          formData={formData} 
-          errors={errors} 
-          onFieldChange={handleFieldChange}  />;
+      if (subStep === 1)
+        return (
+          <Step1a
+            formData={formData}
+            errors={errors}
+            onFieldChange={handleFieldChange}
+          />
+        );
+      if (subStep === 2)
+        return (
+          <Step1b
+            formData={formData}
+            errors={errors}
+            onFieldChange={handleFieldChange}
+          />
+        );
     }
 
     if (step === 4) {
@@ -180,11 +187,13 @@ export default function MultiStepForm() {
 
     switch (step) {
       case 2:
-        return <Step2
-          formData={formData} 
-          errors={errors} 
-          onFieldChange={handleFieldChange} 
-        />;
+        return (
+          <Step2
+            formData={formData}
+            errors={errors}
+            onFieldChange={handleFieldChange}
+          />
+        );
       case 3:
         return (
           <Step3
@@ -226,109 +235,117 @@ export default function MultiStepForm() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col pl-4 md:pl-10 py-10">
-      <div className="w-full flex flex-col lg:flex-row rounded-xl overflow-hidden shadow-[0_0_40px_rgba(255,255,255,0.1)]">
-        <div className="relative w-full lg:w-1/3 bg-[#121315] max-h-[748px] p-6 md:p-10 lg:p-20">
-          <Image
-            src="/images/shape1.png"
-            alt="gradient"
-            fill
-            className="absolute bottom-0 left-0 object-cover"
-          />
+    <div className="min-h-screen bg-black text-white flex flex-col lg:flex-row pl-4 md:pl-10 py-10">
+      {/* Sidebar */}
+<div className="w-full lg:w-1/3 bg-[#121315] p-6 md:p-10 lg:p-20 relative 
+                lg:sticky lg:top-0 lg:h-screen lg:max-h-[748px] self-start">
+  <Image
+    src="/images/shape1.png"
+    alt="gradient"
+    fill
+    className="absolute bottom-0 left-0 object-cover"
+  />
 
-          <div className="relative z-10 flex lg:flex-col flex-row items-start lg:items-stretch gap-8 lg:gap-12 overflow-x-auto lg:overflow-visible">
-            {steps.map((s, idx) => {
-              const isCompleted = step > s.id;
-              const isActive = step === s.id;
+  <div className="relative flex lg:flex-col flex-row items-start lg:items-stretch gap-8 lg:gap-12 overflow-x-auto prevent-scroller lg:overflow-visible">
+              {steps.map((s, idx) => {
+            const isCompleted = step > s.id;
+            const isActive = step === s.id;
 
-              let iconSrc = s.icon;
-              if (isCompleted) iconSrc = "/images/completed.svg";
-              else if (isActive) iconSrc = s.activeIcon;
+            let iconSrc = s.icon;
+            if (isCompleted) iconSrc = "/images/completed.svg";
+            else if (isActive) iconSrc = s.activeIcon;
 
-              return (
-                <div
-                  key={s.id}
-                  className="flex lg:flex-row flex-col items-center lg:items-start gap-4 relative flex-shrink-0"
-                >
-                  <div className="flex flex-col lg:flex-col items-center">
+            return (
+              <div
+                key={s.id}
+                className="flex lg:flex-row z-10 flex-col items-center lg:items-start gap-4 relative flex-shrink-0"
+              >
+                <div className="flex flex-col lg:flex-col items-center">
+                  <div
+                    className={` flex justify-center items-center rounded-full  ${
+                      isCompleted || isActive ? "bg-[#353825] h-[56px] w-[56px]" : " h-[56px] lg:h-[30px] w-[56px]"
+                    }`}
+                  >
                     <div
-                      className={`h-[56px] w-[56px] flex justify-center items-center rounded-full ${
-                        isCompleted || isActive ? "bg-[#353825]" : ""
+                      className={`w-[44px] h-[44px] flex items-center justify-center rounded-full  ${
+                        isCompleted || isActive
+                          ? "bg-[#EFFC76]"
+                          : "bg-white/12"
                       }`}
                     >
-                      <div
-                        className={`w-[44px] h-[44px] flex items-center justify-center rounded-full z-10 ${
-                          isCompleted || isActive
-                            ? "bg-[#EFFC76]"
-                            : "bg-white/12"
-                        }`}
-                      >
-                        <Image
-                          src={iconSrc}
-                          alt={s.title}
-                          width={20}
-                          height={20}
-                          className="transition-all duration-300"
-                        />
-                      </div>
+                      <Image
+                        src={iconSrc}
+                        alt={s.title}
+                        width={20}
+                        height={20}
+                        className="transition-all duration-300"
+                      />
                     </div>
-
-                    {idx !== steps.length - 1 && (
-                      <div className="hidden lg:block absolute top-full z-[-3] w-px h-16 border-l-2 border-dashed border-gray-600"></div>
-                    )}
-                  </div>
-
-                  <div className="text-center lg:text-left min-w-[140px]">
-                    <p
-                      className={`font-regular text-[14px] leading-[18px] ${
-                        isActive ? "text-[#EFFC76]" : "text-white"
-                      }`}
-                    >
-                      STEP {s.id}
-                    </p>
-                    <p className="text-[16px] font-semibold leading-[20px] pt-[6px] text-white">
-                      {s.title}
-                    </p>
-                    <p className="pt-[6px] text-[12px] text-white/80 font-regular leading-[16px]">
-                      {s.desc}
-                    </p>
                   </div>
 
                   {idx !== steps.length - 1 && (
-                    <div className="lg:hidden absolute left-1/2 top-1/5 w-[120%] border-t-2 border-dashed border-gray-600"></div>
+                    <div className="hidden lg:block absolute top-[62%] w-px h-16 border-l-2 z-[-60] border-dashed border-gray-600"></div>
                   )}
                 </div>
-              );
-            })}
-          </div>
+
+                <div className="text-center lg:text-left min-w-[140px]">
+                  <p
+                    className={`font-regular text-[14px] leading-[18px] ${
+                      isActive ? "text-[#EFFC76]" : "text-white"
+                    }`}
+                  >
+                    STEP {s.id}
+                  </p>
+                  <p className="text-[16px] font-semibold leading-[20px] pt-[6px] text-white">
+                    {s.title}
+                  </p>
+                  <p className="pt-[6px] text-[12px] text-white/80 font-regular leading-[16px]">
+                    {s.desc}
+                  </p>
+                </div>
+
+                {idx !== steps.length - 1 && (
+                  <div className="lg:hidden absolute left-1/2 top-1/5 w-[120%] border-t-2 z-[-60] border-dashed border-gray-600"></div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Main Content */}
+<div className={`w-full lg:flex-1 ${step===5?"":"max-h-[748px] justify-between"} md:pt-10 md:px-10 flex flex-col lg:ml-1/3`}>      <div>
+        <div className="flex gap-2 items-center mb-5">
+          <Image src="/images/step.svg" alt="steps" width={16} height={16} />
+          <p className="text-[#EFFC76] font-semibold text-[14px]">
+            STEP {step} OF 5
+          </p>
         </div>
 
-        <div className="w-full md:flex-1 p-4 md:pt-10 md:px-10 flex flex-col justify-end min-h-full">
-          <div className="flex gap-2 items-center mb-5">
-            <Image src="/images/step.svg" alt="steps" width={16} height={16} />
-            <p className="text-[#EFFC76] font-semibold text-[14px]">
-              STEP {step} OF 5
-            </p>
-          </div>
+        <div className="">{renderStepContent()}</div>
+        </div>
 
-          <div className="flex-1">{renderStepContent()}</div>
-
+        <div className="flex flex-col sm:flex-row justify-between sm:items-end">
           <div className="flex flex-col pt-6 sm:flex-row gap-3">
-            <button
-              onClick={handlePrev}
-              className={`w-full sm:w-auto px-8 py-3 text-[16px] bg-gradient-to-b yellow-btn text-black font-semibold rounded-md shadow-lg hover:opacity-90 ${
-                step === 1 && subStep === 1 ? "hidden" : "block"
-              }`}
-            >
-              Back
-            </button>
-            <button
-              onClick={handleNextClick}
-              className="w-full sm:w-auto px-8 py-3 text-[16px] bg-gradient-to-b yellow-btn text-black font-semibold rounded-md shadow-lg hover:opacity-90"
-            >
-              {step === 5 ? "Submit" : "Continue"}
-            </button>
-          </div>
+
+          <button
+            onClick={handlePrev}
+            className={`w-full sm:w-auto px-8 py-3 black-btn text-[16px] bg-gradient-to-b  text-#101010 font-semibold rounded-md shadow-lg  ${
+              step === 1 && subStep === 1 ? "hidden" : "block"
+            }`}
+          >
+            Back
+          </button>
+          <button
+            onClick={handleNextClick}
+            className="w-full sm:w-auto px-8 py-3 text-[16px] bg-gradient-to-b yellow-btn text-black font-semibold rounded-md shadow-lg hover:opacity-90"
+          >
+            {step === 5 ? "Submit" : "Continue"}
+          </button>
+            </div>
+
+            <button onClick={()=>{toast.success("Your data drafted successfully")}} className="font-medium text-[16px] pt-3 sm:pt-0 leading-5 text-[#EFFC76] cursor-pointer">Save as Draft</button>
+          
         </div>
       </div>
     </div>

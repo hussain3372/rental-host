@@ -10,7 +10,7 @@ export default function Plans() {
   };
 
   return (
-    <div className="container-class pb-[20px] sm:pb-[96px]  px-3 md:px-[80px] lg:px-[120px] pt-[10px] md:">
+    <div className="container-class pb-[20px] sm:pb-[96px]  px-3 md:px-[80px] lg:px-[120px] py-8 md:">
       <div className="">
         <BlackButton
           text="Our Plans"

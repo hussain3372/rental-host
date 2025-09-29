@@ -14,6 +14,7 @@ interface FormData {
 
 interface AuthFormProps {
   mode: "login" | "signup" | "forgot" | "otp" | "reset-password";
+  showAlter:boolean
   onSubmit: (data: FormData) => void;
   loading?: boolean;
   error?: string;
@@ -24,6 +25,7 @@ interface AuthFormProps {
 
 const AuthForm: React.FC<AuthFormProps> = ({
   mode,
+  showAlter,
   onSubmit,
   loading = false,
   error,
@@ -190,6 +192,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
   };
 
   const currentConfig = config[mode];
+  // const [isShowAlter , setIsShowAlter] = useState(false);
   const [timeLeft, setTimeLeft] = useState(120);
   const [showResend, setShowResend] = useState(false);
 
@@ -553,10 +556,11 @@ const AuthForm: React.FC<AuthFormProps> = ({
             >
               {loading ? "Please wait..." : currentConfig.buttonText}
             </button>
-
-            <div className={`py-[60px] ${mode === "signup" || mode === "login" || mode === "forgot" ? "block" : "hidden"}`}>
+              { showAlter && 
+            <div className={`py-[60px]  ${mode === "signup" || mode === "login" || mode === "forgot" ? "block" : "hidden"}`}>
               <p className="text-white/60 font-regular text-[16px] leading-[20px]">   {mode === "signup" ? "Already have an account?" : mode === "forgot" ? "Remember your password?" : "Don't have an account?"} <Link className="text-[#EFFC76] font-bold" href={mode === "signup" || mode === "forgot" ? "/auth/login" : "/auth/signup"}>{mode === "signup" ? "Login" : mode === "forgot" ? "Login" : "Signup"}</Link> </p>
             </div>
+            }
           </form>
 
           {/* Social Login for Signup */}
@@ -565,7 +569,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
 
       {/* Right Panel */}
-      <div className="hidden lg:flex  rounded-2xl  flex relative z-[10] lg:w-1/2 items-end p-12 ">
+      <div className="hidden lg:flex  rounded-2xl  relative z-[10] lg:w-1/2 items-end p-12 ">
         {/* Video background */}
         <video
           src="/videos/auth.mp4"
@@ -622,7 +626,7 @@ const LoginPage = () => {
     // Make API call
   };
 
-  return <AuthForm mode="login" onSubmit={handleLogin} />;
+  return <AuthForm showAlter mode="login" onSubmit={handleLogin} />;
 };
 
 const SignupPage = () => {
@@ -643,6 +647,7 @@ const SignupPage = () => {
 
   return (
     <AuthForm
+      showAlter
       mode="signup"
       onSubmit={handleSignup}
       onGoogleLogin={handleGoogleSignup}
@@ -658,7 +663,7 @@ const OTPPage = () => {
     // Verify OTP
   };
 
-  return <AuthForm mode="otp" onSubmit={handleOTP} />;
+  return <AuthForm showAlter mode="otp" onSubmit={handleOTP} />;
 };
 
 export default AuthForm;

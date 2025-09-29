@@ -2,8 +2,10 @@
 import React, { useState } from "react";
 import Image from "next/image";
 type HelpSupportDrawerProps = {
-    onClose: () => void;
+  isOpen: boolean;
+  onClose: () => void;
 };
+
 export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
 
     const [issueType, setIssueType] = useState("");
@@ -18,26 +20,58 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
     };
 
     return (
-    <div className="h-full flex flex-col justify-between text-white">
+        <div className="h-full flex flex-col text-white">
+            {/* Top content */}
             <div className="space-y-5">
-                <h2 className="text-[20px] leading-6 font-medium mb-3">Help & Support</h2>
+                <h2 className="text-[20px] leading-6 font-medium mb-3">
+                    Help & Support
+                </h2>
                 <p className="text-[16px] leading-5 font-normal mb-10 text-[#FFFFFF99]">
                     View and update your personal details to keep your account information accurate.
                 </p>
-                {/* Issue Type */}
+
                 <div>
-                    <label className="block text-[14px] leading-[18px] font-medium mb-[10px]">Issue Type</label>
-                    <select
-                        value={issueType}
-                        onChange={(e) => setIssueType(e.target.value)}
-                        className="w-full p-3 rounded-[10px] bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]"
-                    >
-                        <option className="bg-[#202020]" value="">Select type</option>
-                        <option className="bg-[#202020]" value="account">Account Issue</option>
-                        <option className="bg-[#202020]" value="payment">Payment Problem</option>
-                        <option className="bg-[#202020]" value="bug">Report a Bug</option>
-                        <option className="bg-[#202020]" value="other">Other</option>
-                    </select>
+                    <label className="text-white text-sm font-medium mb-3 block">
+                        Issue Type
+                    </label>
+                    <div className="relative">
+                        <select
+                            value={issueType}
+                            onChange={(e) => setIssueType(e.target.value)}
+                            className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                        >
+                            <option className="text-black bg-[#121315] text-white" value="">
+                                Select type
+                            </option>
+                            <option className="text-black bg-[#121315] text-white" value="account">
+                                Account Issue
+                            </option>
+                            <option className="text-black bg-[#121315] text-white" value="payment">
+                                Payment Problem
+                            </option>
+                            <option className="text-black bg-[#121315] text-white" value="bug">
+                                Report a Bug
+                            </option>
+                            <option className="text-black bg-[#121315] text-white" value="other">
+                                Other
+                            </option>
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                            <svg
+                                className="w-4 h-4 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M19 9l-7 7-7-7"
+                                />
+                            </svg>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Subject */}
@@ -48,7 +82,7 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
                         type="text"
                         value={subject}
                         onChange={(e) => setSubject(e.target.value)}
-                        className="w-full p-3 rounded-[10px] bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]"
+                        className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
                     />
                 </div>
 
@@ -59,12 +93,10 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
                         placeholder="Describe your problem..."
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="w-full p-3 rounded-[10px] bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]"
+                        className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
                         rows={4}
                     />
                 </div>
-
-                {/* Image Upload */}
                 <div>
                     <label
                         className="flex flex-col justify-center items-center text-center  rounded-[10px] border border-dashed border-[#EFFC76] bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]"
@@ -81,7 +113,7 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
                                 <Image
                                     src={URL.createObjectURL(image)}
                                     alt="Preview"
-                                    width={100}
+                                    width={200}
                                     height={100}
                                     className="rounded-lg object-cover"
                                 />
@@ -94,7 +126,7 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
                                     alt="Upload"
                                     width={40}
                                     height={40}
-                                    className="mb-5"
+                                    className="mb-5 object-cover"
                                 />
                                 <h3 className="text-[#FFFFFF] text-[16px] leading-5 font-normal mb-2">
                                     Upload File
@@ -108,18 +140,16 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
 
                     </label>
                 </div>
-
             </div>
-
-            {/* Submit button */}
-            <div className="mt-6">
+            <div className="mt-5 pb-5">
                 <button
                     onClick={onClose}
-                    className="w-full py-3 bg-[#EFFC76] text-[#121315] rounded-lg font-semibold cursor-pointer"
+                    className="w-full py-4 bg-[#EFFC76] text-[#121315] rounded-[8px] text-[18px] leading-[22px] font-semibold cursor-pointer"
                 >
                     Report Issue
                 </button>
             </div>
         </div>
+
     );
 }

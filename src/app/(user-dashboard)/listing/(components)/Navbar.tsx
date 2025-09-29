@@ -22,7 +22,7 @@ const closeDrawer = () => {
 
   return (
     <>
-      <nav className='text-white border-b border-b-white/20'>
+      <nav className='text-white fixed z-50 w-full bg-[#0A0C0B] border-b border-b-white/20'>
         <div className='px-4 sm:px-10 py-[18px] flex justify-between items-center'>
           <Link href="/dashboard">
             <Image src="/images/pricing-logo.png" alt='Logo' width={181} height={35} />
@@ -51,7 +51,7 @@ const closeDrawer = () => {
     
     {/* Drawer with slide */}
     <div 
-      className={`relative z-10 max-w-[280px] sm:max-w-[608px] p-[28px] ml-auto h-full overflow-y-scroll bg-[#121315] transition-transform duration-300 ${
+      className={`relative z-10 prevent-scroller max-w-[280px] sm:max-w-[608px] p-[28px] ml-auto h-full overflow-y-scroll bg-[#121315] transition-transform duration-300 ${
         isOpen ? 'translate-x-0' : 'translate-x-full'
       }`}
     >

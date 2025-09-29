@@ -33,7 +33,7 @@ const properties = [
 
 const CertifiedProperties = () => {
     return (
-        <section className="bg-[#121315] max-w-[1440px] mx-auto text-white px-4 md:px-[90px] lg:px-[120px] sm:py-20 py-10 ">
+        <section className="bg-[#121315] max-w-[1440px] mx-auto text-white px-4 md:px-[90px] lg:px-[120px] sm:py-20 py-8 ">
             {/* Header Section */}
             <div>
                 <div className="flex items-center gap-2 mb-4">

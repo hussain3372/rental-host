@@ -77,3 +77,36 @@ body {
 html {
   scroll-behavior: smooth;
 }
+.prevent-scroller{
+  scrollbar-width: 0px;
+}
+.prevent-scroller {
+  overflow: auto;           
+  scrollbar-width: none;    /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.prevent-scroller::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+.black-btn{
+  border: 1px solid #FFFFFF66;
+  cursor: pointer;
+}
+.black-btn:hover{
+  border:1px solid #EFFC76 ;
+ background-color: #EFFC76;
+  color:  #101010;
+}
+
+.table-container{
+  
+    height: 100%;
+    max-height: 800px!important  ;
+ 
+}
+.hollow-btn{
+  border: 1px solid #EFFC76  ;
+  color: #EFFC76;
+  cursor: pointer;
+}

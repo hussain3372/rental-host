@@ -3,7 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 export default function Unlock() {
   return (
-    <div className='max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-[120px] pb-[20px] sm:pb-[80px] pt-[78px]'>
+    <div className='max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-[120px]  sm:pb-[80px] py-8'>
       <div className='bg-[#EFFC76] pr-3 rounded-3xl  mx-auto text-black flex flex-col xl:flex-row  justify-between !items-center md:items-start overflow-hidden '>
         
         {/* Content Section */}

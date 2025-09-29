@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Table } from "@/app/shared/tables/Tables";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Modal } from "@/app/shared/modals";
+import { Modal } from "@/app/shared/Modal";
 
 interface CustomDateInputProps {
   value?: string;
@@ -18,19 +18,17 @@ interface CertificationData {
   "Purchase Date": string;
   "End Date": string;
   Status: string;
+  [key: string]: unknown;
 }
-
-// Define proper types for table rows and delete operations
-// type TableRowData = CertificationData;
 
 export default function Applications() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-//   const [ setSelectedRows] = useState<TableRowData[]>([]);
-
-//   const [modalType, setModalType] = useState<"single" | "multiple">("multiple");
+  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
+  const [selectedRowsModal, setSelectedRowsModal] = useState<CertificationData[]>([]);
+  const [singleRowToDelete, setSingleRowToDelete] = useState<{ row: CertificationData, index: number } | null>(null);
+  const [modalType, setModalType] = useState<'single' | 'multiple'>('multiple');
 
   const [certificationFilters, setCertificationFilters] = useState({
     planName: "",
@@ -43,48 +41,94 @@ export default function Applications() {
   const [purchaseDate, setPurchaseDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
- const [allCertificationData] = useState<CertificationData[]>([
-      {
-        
-        "Plan Name": "Starter",
-        Amount: "$12",
-        "Purchase Date": "Aug 12, 2025",
-        "End Date": "Aug 12, 2025",
-        Status: "Active",
-      },
-      {
-       
-        "Plan Name": "Professional",
-        Amount: "$24",
-        "Purchase Date": "Aug 12, 2025",
-        "End Date": "Aug 12, 2025",
-        Status: "Inactive",
-      },
-      {
-       
-        "Plan Name": "Enterprise",
-        Amount: "$200",
-       "Purchase Date": "Aug 12, 2025",
-        "End Date": "Aug 12, 2025",
-        Status: "Active",
-      },
-       {
-      
-        "Plan Name": "Starter",
-        Amount: "$12",
-        "Purchase Date": "Aug 12, 2025",
-        "End Date": "Aug 12, 2025",
-        Status: "Inactive",
-      },
-       {
-      
-        "Plan Name": "Enterprise",
-        Amount: "$200",
-        "Purchase Date": "Aug 12, 2025",
-        "End Date": "Aug 12, 2025",
-        Status: "Active",
-      },
-    ]);
+  const [certificationData, setCertificationData] = useState<CertificationData[]>([
+    {
+      "Plan Name": "Starter",
+      Amount: "$12",
+      "Purchase Date": "Aug 12, 2025",
+      "End Date": "Aug 12, 2025",
+      Status: "Active",
+    },
+    {
+      "Plan Name": "Professional",
+      Amount: "$24",
+      "Purchase Date": "Aug 12, 2025",
+      "End Date": "Aug 12, 2025",
+      Status: "Inactive",
+    },
+    {
+      "Plan Name": "Enterprise",
+      Amount: "$200",
+      "Purchase Date": "Aug 12, 2025",
+      "End Date": "Aug 12, 2025",
+      Status: "Active",
+    },
+    {
+      "Plan Name": "Starter",
+      Amount: "$12",
+      "Purchase Date": "Aug 12, 2025",
+      "End Date": "Aug 12, 2025",
+      Status: "Inactive",
+    },
+    {
+      "Plan Name": "Enterprise",
+      Amount: "$200",
+      "Purchase Date": "Aug 12, 2025",
+      "End Date": "Aug 12, 2025",
+      Status: "Active",
+    },
+  ]);
+
+  // Delete handlers
+  const handleDeleteCertifications = (selectedRows: CertificationData[]) => {
+    const updatedData = certificationData.filter(item => !selectedRows.includes(item));
+    setCertificationData(updatedData);
+    setIsModalOpen(false);
+    setSelectedRowsModal([]);
+    setSelectedRows(new Set());
+  };
+
+  const handleDeleteSingleCertification = (row: CertificationData, index: number) => {
+    const updatedData = certificationData.filter((_, idx) => idx !== index);
+    setCertificationData(updatedData);
+    setIsModalOpen(false);
+    setSingleRowToDelete(null);
+
+    const newSelected = new Set(selectedRows);
+    newSelected.delete(index);
+    setSelectedRows(newSelected);
+  };
+
+  // Function to open modal for multiple deletions
+  const openDeleteModal = (selectedRowsData: CertificationData[]) => {
+    setSelectedRowsModal(selectedRowsData);
+    setModalType('multiple');
+    setIsModalOpen(true);
+  };
+
+  // Function to open modal for single deletion
+  const openDeleteSingleModal = (row: CertificationData, index: number) => {
+    setSingleRowToDelete({ row, index });
+    setModalType('single');
+    setIsModalOpen(true);
+  };
+
+  // Handle confirmation from modal
+  const handleModalConfirm = () => {
+    if (modalType === 'multiple' && selectedRowsModal.length > 0) {
+      handleDeleteCertifications(selectedRowsModal);
+    } else if (modalType === 'single' && singleRowToDelete) {
+      handleDeleteSingleCertification(singleRowToDelete.row, singleRowToDelete.index);
+    }
+  };
+
+  // Handle delete selected button click
+  const handleDeleteSelected = () => {
+    if (selectedRows.size > 0) {
+      const selectedData = Array.from(selectedRows).map(index => certificationData[index]);
+      openDeleteModal(selectedData);
+    }
+  };
 
   // Table control
   const tableControl = {
@@ -116,15 +160,15 @@ export default function Applications() {
 
   // ✅ Unique dropdown values
   const uniquePlanNames = [
-    ...new Set(allCertificationData.map((item) => item["Plan Name"])),
+    ...new Set(certificationData.map((item) => item["Plan Name"])),
   ];
   const uniqueStatuses = [
-    ...new Set(allCertificationData.map((item) => item["Status"])),
+    ...new Set(certificationData.map((item) => item["Status"])),
   ];
 
   // ✅ Filter + search logic
   const filteredCertificationData = useMemo(() => {
-    let filtered = allCertificationData;
+    let filtered = certificationData;
 
     if (searchTerm) {
       filtered = filtered.filter(
@@ -156,10 +200,16 @@ export default function Applications() {
       );
     }
     return filtered;
-  }, [searchTerm, certificationFilters, allCertificationData]);
-  // Pagination
-  const paginatedData = filteredCertificationData
-   .map(({  ...rest }) => rest); 
+  }, [searchTerm, certificationFilters, certificationData]);
+
+  // Get modal title based on deletion type
+  // const getModalTitle = () => {
+  //   if (modalType === 'multiple') {
+  //     return `Delete ${selectedRowsModal.length} selected billing item${selectedRowsModal.length > 1 ? 's' : ''}?`;
+  //   } else {
+  //     return 'Delete this billing record?';
+  //   }
+  // };
 
   // Reset filters
   const handleResetFilter = () => {
@@ -225,72 +275,108 @@ export default function Applications() {
 
   return (
     <>
+      {/* Delete Confirmation Modal */}
       {isModalOpen && (
+        // <Modal
+        //   type="confirm"
+        //   title={getModalTitle()}
+        //   onClose={() => {
+        //     setIsModalOpen(false);
+        //     setSelectedRows(new Set());
+        //     setSingleRowToDelete(null);
+        //   }}
+        //   isOpen={isModalOpen}
+        //   onConfirm={handleModalConfirm}
+        // />
         <Modal
-          type="confirm"
-          title="Do you want to delete this application"
+          isOpen={isModalOpen}
           onClose={() => {
             setIsModalOpen(false);
-           
+            setSelectedRows(new Set()); // ✅ Fixed: Use new Set() instead of []
+            setSingleRowToDelete(null);
           }}
-          isOpen={isModalOpen}
-          onConfirm={() => {}}
+          onConfirm={handleModalConfirm}
+          title="Confirm  Deletion"
+          description="Deleting this history means it will no longer appear in your requests."
+          image="/images/delete-modal.png"
+          confirmText="Delete"
+        //   cancelText="Cancel"
         />
       )}
-
-      <div className=" bg-[#121315] rounded-lg relative z-[10] overflow-hidden ">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-7 ">
-          <h2 className="text-white text-[16px] font-semibold leading-[20px]">
-            Billing History
-          </h2>
-          <div className="inline-flex flex-col-reverse sm:flex-row item-start sm:items-center pt-3 sm:pt-0 gap-3">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-white/12 border rounded-lg text-white/40 placeholder-white/60 w-[204px] px-3 py-2 text-sm pl-8 border-none outline-none"
-              />
-              <div className="absolute left-2.5 top-2.5 w-4 h-4 text-gray-500">
-                <Image
-                  src="/images/search.png"
-                  alt="search"
-                  width={16}
-                  height={16}
+        <div className=" bg-[#121315] rounded-lg relative z-[10] overflow-hidden  ">
+          {/* Header */}
+          <div className="flex flex-col h-full sm:flex-row justify-between lg:items-center pt-5 px-5 ">
+            <h2 className="text-white text-[16px] font-semibold leading-[20px]">
+              Billing History
+            </h2>
+            <div className="flex flex-wrap sm:flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
+              <div className="relative w-full sm:w-[204px]">
+                <input
+                  type="text"
+                  placeholder="Search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="bg-white/12 border rounded-lg text-white/40 placeholder-white/60 w-full px-3 py-2 text-sm pl-8 border-none outline-none"
                 />
+                <div className="absolute left-2.5 top-2.5 w-4 h-4 text-gray-500">
+                  <Image
+                    src="/images/search.png"
+                    alt="search"
+                    width={16}
+                    height={16}
+                  />
+                </div>
               </div>
+
+              <button
+                onClick={() => setIsFilterOpen(true)}
+                className="h-[34px] cursor-pointer w-[86px] rounded-md bg-[#2e2f31] py-2 px-3 flex items-center gap-1"
+              >
+                <span className="text-sm leading-[18px] font-medium text-white opacity-60">
+                  Filter
+                </span>
+                <Image
+                  src="/images/filter1.png"
+                  alt="filter"
+                  height={9}
+                  width={13}
+                />
+              </button>
+              <button
+                onClick={handleDeleteSelected}
+                disabled={selectedRows.size === 0}
+                className="flex cursor-pointer items-center disabled:hidden gap-[6px] p-2 rounded-[8px] 
+                border border-[rgba(239,252,118,0.32)] text-[#EFFC76] text-[12px] font-normal leading-[16px]
+                 disabled:bg-[transparent] disabled:cursor-not-allowed disabled:border-gray-600 disabled:text-gray-600"
+              >
+                <Image src="/images/delete-row.svg" alt='Delete selected' width={12} height={12} />
+                Delete All
+              </button>
             </div>
-            <button
-              onClick={() => setIsFilterOpen(true)}
-              className="h-[34px] cursor-pointer w-[86px] rounded-md bg-[#2e2f31] py-2 px-3 flex items-center gap-1"
-            >
-              <span className="text-sm leading-[18px] font-medium text-white opacity-60">
-                Filter
-              </span>
-              <Image
-                src="/images/filter1.png"
-                alt="filter"
-                height={9}
-                width={13}
-              />
-            </button>
+          </div>
+
+          {/* Table */}
+          <div className="p-0 max-w-none ">
+            <Table
+              data={filteredCertificationData}
+              control={tableControl}
+              showDeleteButton={true}
+              onDelete={openDeleteModal}
+              onDeleteSingle={openDeleteSingleModal}
+              showModal={false}
+              modalTitle="Billing Details"
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+               dropdownItems={[
+                                
+                                {
+                                    label: "Delete History",
+                                    onClick: (row, index) => openDeleteSingleModal(row, index),
+                                },
+                            ]}
+            />
           </div>
         </div>
-
-        {/* Table */}
-        <div className="p-0 cursor-pointer">
-          <Table
-            data={paginatedData}
-            control={tableControl}
-            showModal={false}
-            // clickable={true}
-            modalTitle="Plan Details"
-          />
-        </div>
-      </div>
-
       {/* Overlay */}
       {isFilterOpen && (
         <div
@@ -301,9 +387,8 @@ export default function Applications() {
 
       {/* Right Slide Panel Filter */}
       <div
-        className={`fixed top-0 right-0 h-full bg-[#0A0C0B] z-[2000000000] transform transition-transform duration-300 ease-in-out ${
-          isFilterOpen ? "translate-x-0" : "translate-x-full"
-        } w-[250px] sm:w-1/2 lg:w-2/5 xl:w-1/3`}
+        className={`fixed top-0 right-0 h-full bg-[#0A0C0B] z-[2000000000] transform transition-transform duration-300 ease-in-out ${isFilterOpen ? "translate-x-0" : "translate-x-full"
+          } w-[250px] sm:w-1/2 lg:w-2/5 xl:w-1/3`}
       >
         <div
           className="h-full justify-between flex flex-col bg-[#0A0C0B] overflow-y-auto"

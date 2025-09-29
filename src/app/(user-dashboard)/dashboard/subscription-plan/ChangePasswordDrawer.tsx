@@ -1,21 +1,21 @@
 "use client";
 import React, { useState } from "react";
-import { Eye, EyeOff } from "lucide-react"; // ✅ for eye icons
+import { Eye, EyeOff } from "lucide-react"; 
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 type EditProfileDrawerProps = {
   onSave: (currentPassword: string, newPassword: string) => void;
   onClose: () => void;
 };
 
-export default function EditProfileDrawer({ onSave }: EditProfileDrawerProps) {
+export default function EditProfileDrawer({  onClose }: EditProfileDrawerProps) {
   const router = useRouter();
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Toggle visibility states
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -34,7 +34,7 @@ export default function EditProfileDrawer({ onSave }: EditProfileDrawerProps) {
 
         {/* Current Password */}
         <div className="relative">
-          <label className="block text-[14px] leading-[18px] font-medium mb-[10px]">
+          <label className="block text-[14px] font-medium mb-[10px]">
             Current password
           </label>
           <input
@@ -53,7 +53,7 @@ export default function EditProfileDrawer({ onSave }: EditProfileDrawerProps) {
           </button>
           <button
             onClick={() => router.push("/auth/forgot-password")}
-            className="absolute right-0 -bottom-6 text-sm text-[#fff]  underline-none cursor-pointer"
+            className="absolute right-0 -bottom-6 text-sm text-[#fff] cursor-pointer"
           >
             Forgot Password?
           </button>
@@ -61,7 +61,7 @@ export default function EditProfileDrawer({ onSave }: EditProfileDrawerProps) {
 
         {/* New Password */}
         <div className="relative">
-          <label className="block text-[14px] leading-[18px] font-medium mb-[10px]">
+          <label className="block text-[14px] font-medium mb-[10px]">
             New password
           </label>
           <input
@@ -82,7 +82,7 @@ export default function EditProfileDrawer({ onSave }: EditProfileDrawerProps) {
 
         {/* Confirm Password */}
         <div className="relative">
-          <label className="block text-[14px] leading-[18px] font-medium mb-[10px]">
+          <label className="block text-[14px] font-medium mb-[10px]">
             Confirm new password
           </label>
           <input
@@ -105,7 +105,12 @@ export default function EditProfileDrawer({ onSave }: EditProfileDrawerProps) {
       {/* Bottom button */}
       <div className="mt-6">
         <button
-          onClick={() => onSave(currentPassword, newPassword)}
+          onClick={() => {
+            toast.success("Your password changed successfully");
+            setTimeout(() => {
+              onClose(); // ✅ works now
+            }, 800);
+          }}
           className="w-full py-3 bg-[#EFFC76] text-[#121315] rounded-lg font-semibold cursor-pointer"
         >
           Update Password
