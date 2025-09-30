@@ -1,17 +1,17 @@
 'use client'
 import Image from 'next/image';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Table } from '@/app/shared/tables/Tables';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { Modal } from "@/app/shared/Modal";
+import Dropdown from "@/app/shared/InputDropDown";
 
 interface CustomDateInputProps {
   value?: string;
   onClick?: () => void;
 }
 
-// Define proper interfaces for data types
 interface CertificationDataItem {
   "Property Name": string;
   Address: string;
@@ -38,21 +38,29 @@ export default function Tracking() {
     expiryDate: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set()); // Fixed: Use Set<number>
-  const [selectedRowsModal, setSelectedRowsModal] = useState<CertificationDataItem[]>([]); // For modal data
+  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
+  const [selectedRowsModal, setSelectedRowsModal] = useState<CertificationDataItem[]>([]);
   const [singleRowToDelete, setSingleRowToDelete] = useState<{ row: CertificationDataItem, index: number } | null>(null);
   const [modalType, setModalType] = useState<'single' | 'multiple'>('multiple');
+
+  // Dropdown states
+  const [showPropertyDropdown, setShowPropertyDropdown] = useState(false);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [showApplicationDropdown, setShowApplicationDropdown] = useState(false);
+  
+  // Refs for dropdown containers
+  const propertyDropdownRef = useRef<HTMLDivElement>(null);
+  const statusDropdownRef = useRef<HTMLDivElement>(null);
+  const applicationDropdownRef = useRef<HTMLDivElement>(null);
 
   const [applicationFilters, setApplicationFilters] = useState({
     application: "",
     submissionDate: "",
   });
 
-  // State for date pickers
   const [expiryDate, setExpiryDate] = useState<Date | null>(null);
   const [submissionDate, setSubmissionDate] = useState<Date | null>(null);
 
-  // State for managing data deletion
   const [certificationData, setCertificationData] = useState<CertificationDataItem[]>([
     {
       "Property Name": "Coastal Hillside Estate",
@@ -150,48 +158,64 @@ export default function Tracking() {
     },
   ];
 
-  // Delete handlers for certification data
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        propertyDropdownRef.current &&
+        !propertyDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowPropertyDropdown(false);
+      }
+      if (
+        statusDropdownRef.current &&
+        !statusDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowStatusDropdown(false);
+      }
+      if (
+        applicationDropdownRef.current &&
+        !applicationDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowApplicationDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleDeleteCertifications = (selectedRows: CertificationDataItem[]) => {
-    // Remove selected rows from certification data
     const updatedData = certificationData.filter(item => !selectedRows.includes(item));
     setCertificationData(updatedData);
-
-    // Close modal and reset selected rows
     setIsModalOpen(false);
     setSelectedRowsModal([]);
-    setSelectedRows(new Set()); // Clear the selection
+    setSelectedRows(new Set());
   };
 
   const handleDeleteSingleCertification = (row: CertificationDataItem, index: number) => {
-    // Remove single row from certification data
     const updatedData = certificationData.filter((_, idx) => idx !== index);
     setCertificationData(updatedData);
-
-    // Close modal and reset
     setIsModalOpen(false);
     setSingleRowToDelete(null);
-
-    // Also remove from selected rows if it was selected
     const newSelected = new Set(selectedRows);
     newSelected.delete(index);
     setSelectedRows(newSelected);
   };
 
-  // Function to open modal for multiple deletions
   const openDeleteModal = (selectedRowsData: CertificationDataItem[]) => {
     setSelectedRowsModal(selectedRowsData);
     setModalType('multiple');
     setIsModalOpen(true);
   };
 
-  // Function to open modal for single deletion
   const openDeleteSingleModal = (row: CertificationDataItem, index: number) => {
     setSingleRowToDelete({ row, index });
     setModalType('single');
     setIsModalOpen(true);
   };
 
-  // Handle confirmation from modal
   const handleModalConfirm = () => {
     if (modalType === 'multiple' && selectedRowsModal.length > 0) {
       handleDeleteCertifications(selectedRowsModal);
@@ -200,7 +224,6 @@ export default function Tracking() {
     }
   };
 
-  // Handle delete selected button click
   const handleDeleteSelected = () => {
     if (selectedRows.size > 0) {
       const selectedData = Array.from(selectedRows).map(index => certificationData[index]);
@@ -208,11 +231,9 @@ export default function Tracking() {
     }
   };
 
-  // Filter and search logic for certifications
   const filteredCertificationData = useMemo(() => {
     let filtered = certificationData;
 
-    // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(
         (item) =>
@@ -221,7 +242,6 @@ export default function Tracking() {
       );
     }
 
-    // Apply certification filters
     if (certificationFilters.listedProperty) {
       filtered = filtered.filter(
         (item) => item["Property Name"] === certificationFilters.listedProperty
@@ -263,15 +283,9 @@ export default function Tracking() {
     highlightRowOnHover: true,
   };
 
-  // Get unique values for dropdowns
   const uniqueProperties = [...new Set(certificationData.map((item) => item["Property Name"]))];
   const uniqueStatuses = [...new Set(certificationData.map((item) => item["Status"]))];
   const uniqueApplications = [...new Set(applicationData.map((item) => item["Application ID"]))];
-
-  // const openCertificationFilter = () => {
-  //   setFilterType("certification");
-  //   setIsFilterOpen(true);
-  // };
 
   const openApplicationFilter = () => {
     setFilterType("application");
@@ -279,7 +293,6 @@ export default function Tracking() {
   };
 
   const handleApplyFilter = () => {
-    // Convert selected dates to string format for filtering
     if (filterType === "certification" && expiryDate) {
       setCertificationFilters(prev => ({
         ...prev,
@@ -312,7 +325,6 @@ export default function Tracking() {
     setSubmissionDate(null);
   };
 
-  // Custom input component for date picker to match the design
   const CustomDateInput = React.forwardRef(({ value, onClick }: CustomDateInputProps, ref: React.Ref<HTMLInputElement>) => (
     <div className="relative">
       <input
@@ -321,7 +333,7 @@ export default function Tracking() {
         onClick={onClick}
         ref={ref}
         readOnly
-        className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none cursor-pointer text-white/40 placeholder-white/40"
+        className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none cursor-pointer text-white placeholder-white/40"
         placeholder="Select date"
       />
       <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
@@ -331,26 +343,15 @@ export default function Tracking() {
   ));
   CustomDateInput.displayName = 'CustomDateInput';
 
-  // Get modal title based on deletion type
-  // const getModalTitle = () => {
-  //   if (modalType === 'multiple') {
-  //     return `Delete ${selectedRowsModal.length} selected item${selectedRowsModal.length > 1 ? 's' : ''}?`;
-  //   } else {
-  //     return 'Delete this certification?';
-  //   }
-  // };
-
   return (
     <>
       {/* Confirmation Modal */}
       {isModalOpen &&
-
-
         <Modal
           isOpen={isModalOpen}
           onClose={() => {
             setIsModalOpen(false);
-            setSelectedRows(new Set()); // ✅ Fixed: Use new Set() instead of []
+            setSelectedRows(new Set());
             setSingleRowToDelete(null);
           }}
           onConfirm={handleModalConfirm}
@@ -358,13 +359,12 @@ export default function Tracking() {
           description="Deleting this ticket means it will no longer appear in your requests."
           image="/images/delete-modal.png"
           confirmText="Delete"
-        //   cancelText="Cancel"
         />
       }
 
-      <div className='py-[20px] flex flex-col gap-3 xl:flex-row items-center '>
+      <div className='py-[20px] flex flex-col w-full gap-3 xl:flex-row items-center '>
         {/* Left Panel - Application Tracker */}
-        <div className="rounded-md w-full bg-[#121315] xl:w-[354px] p-5 ">
+        <div className="rounded-md w-full bg-[#121315] p-5 ">
           <div className='flex justify-between items-center'>
             <p className='font-semibold text-[16px] leading-[20px] text-white'>Application Tracker</p>
             <Image
@@ -400,56 +400,55 @@ export default function Tracking() {
         </div>
 
         {/* Right Panel - Certification Table */}
-        
-        <div className="flex-1 w-full max-w-none ">
+        <div className="flex-1 w-full xl:w-[70%] max-w-none ">
           <div className="bg-[#121315] h-full z-[10000000] rounded-lg overflow-hidden">
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between sm:items-center pt-5 px-5">
               <h2 className="text-white text-[16px] font-semibold leading-[20px]">Certification</h2>
-               <div className="flex flex-wrap sm:flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
-            <div className="relative w-full sm:w-[204px]">
-              <input
-                type="text"
-                placeholder="Search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-white/12 border rounded-lg text-white/40 placeholder-white/60 w-full px-3 py-2 text-sm pl-8 border-none outline-none"
-              />
-              <div className="absolute left-2.5 top-2.5 w-4 h-4 text-gray-500">
-                <Image
-                  src="/images/search.png"
-                  alt="search"
-                  width={16}
-                  height={16}
-                />
-              </div>
-            </div>
+              <div className="flex flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
+                <div className="relative w-full sm:w-[204px]">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="bg-white/12 border rounded-lg text-white/40 placeholder-white/60 w-full px-3 py-2 text-sm pl-8 border-none outline-none"
+                  />
+                  <div className="absolute left-2.5 top-2.5 w-4 h-4 text-gray-500">
+                    <Image
+                      src="/images/search.png"
+                      alt="search"
+                      width={16}
+                      height={16}
+                    />
+                  </div>
+                </div>
 
-            <button
-              onClick={() => setIsFilterOpen(true)}
-              className="h-[34px] cursor-pointer w-[86px] rounded-md bg-[#2e2f31] py-2 px-3 flex items-center gap-1"
-            >
-              <span className="text-sm leading-[18px] font-medium text-white opacity-60">
-                Filter
-              </span>
-              <Image
-                src="/images/filter1.png"
-                alt="filter"
-                height={9}
-                width={13}
-              />
-            </button>
-            <button
-              onClick={handleDeleteSelected}
-              disabled={selectedRows.size === 0}
-              className="flex cursor-pointer items-center disabled:hidden gap-[6px] p-2 rounded-[8px] 
-                border border-[rgba(239,252,118,0.32)] text-[#EFFC76] text-[12px] font-normal leading-[16px]
-                 disabled:bg-[transparent] disabled:cursor-not-allowed disabled:border-gray-600 disabled:text-gray-600"
-            >
-              <Image src="/images/delete-row.svg" alt='Delete selected' width={12} height={12} />
-              Delete All
-            </button>
-          </div>
+                <button
+                  onClick={() => setIsFilterOpen(true)}
+                  className="h-[34px] cursor-pointer w-[86px] rounded-md bg-[#2e2f31] py-2 px-3 flex items-center gap-1"
+                >
+                  <span className="text-sm leading-[18px] font-medium text-white opacity-60">
+                    Filter
+                  </span>
+                  <Image
+                    src="/images/filter1.png"
+                    alt="filter"
+                    height={9}
+                    width={13}
+                  />
+                </button>
+                <button
+                  onClick={handleDeleteSelected}
+                  disabled={selectedRows.size === 0}
+                  className="flex cursor-pointer items-center disabled:hidden gap-[6px] p-2 rounded-[8px] 
+                    border border-[rgba(239,252,118,0.32)] text-[#EFFC76] text-[12px] font-normal leading-[16px]
+                     disabled:bg-[transparent] disabled:cursor-not-allowed disabled:border-gray-600 disabled:text-gray-600"
+                >
+                  <Image src="/images/delete-row.svg" alt='Delete selected' width={12} height={12} />
+                  Delete All
+                </button>
+              </div>
             </div>
 
             {/* Table */}
@@ -465,12 +464,11 @@ export default function Tracking() {
                 selectedRows={selectedRows}
                 setSelectedRows={setSelectedRows}
                 dropdownItems={[
-                                
-                                {
-                                    label: "Delete Certificate",
-                                    onClick: (row, index) => openDeleteSingleModal(row, index),
-                                },
-                            ]}
+                  {
+                    label: "Delete Certificate",
+                    onClick: (row, index) => openDeleteSingleModal(row, index),
+                  },
+                ]}
               />
             </div>
           </div>
@@ -511,54 +509,90 @@ export default function Tracking() {
               {filterType === 'certification' && (
                 <div className="space-y-5">
                   {/* Listed Property */}
-                  <div>
+                  <div ref={propertyDropdownRef}>
                     <label className="text-white leading-[18px] text-sm font-medium mb-3 block">
                       Listed property
                     </label>
                     <div className="relative">
-                      <select
-                        value={certificationFilters.listedProperty}
-                        onChange={(e) => setCertificationFilters(prev => ({ ...prev, listedProperty: e.target.value }))}
-                        className="w-full text-white/40 bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                      <button
+                        type="button"
+                        onClick={() => setShowPropertyDropdown(prev => !prev)}
+                        className={`
+                          w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
+                          bg-gradient-to-b from-[#202020] to-[#101010]
+                          text-[14px] font-medium text-left
+                          ${certificationFilters.listedProperty === "" ? "text-white/40" : "text-white"}
+                          cursor-pointer transition duration-200 ease-in-out
+                          hover:border-[#EFFC76]
+                        `}
                       >
-                        <option className='text-black' value="">Select property</option>
-                        {uniqueProperties.map((property) => (
-                          <option className='text-black' key={property} value={property}>
-                            {property}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
+                        {certificationFilters.listedProperty || "Select property"}
+                        <Image
+                          src="/images/dropdown.svg"
+                          alt="dropdown"
+                          width={15}
+                          height={8}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                        />
+                      </button>
+
+                      {showPropertyDropdown && (
+                        <div className="absolute z-10 mt-1 w-full">
+                          <Dropdown
+                            items={uniqueProperties.map(property => ({
+                              label: property,
+                              onClick: () => {
+                                setCertificationFilters(prev => ({ ...prev, listedProperty: property }));
+                                setShowPropertyDropdown(false);
+                              }
+                            }))}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   {/* Status */}
-                  <div>
+                  <div ref={statusDropdownRef}>
                     <label className="text-white leading-[18px] text-sm font-medium mb-3 block">
                       Status
                     </label>
                     <div className="relative">
-                      <select
-                        value={certificationFilters.status}
-                        onChange={(e) => setCertificationFilters(prev => ({ ...prev, status: e.target.value }))}
-                        className="w-full bg-gradient-to-b text-white/40 from-[#202020] to-[#101010] border rounded-xl px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                      <button
+                        type="button"
+                        onClick={() => setShowStatusDropdown(prev => !prev)}
+                        className={`
+                          w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
+                          bg-gradient-to-b from-[#202020] to-[#101010]
+                          text-[14px] font-medium text-left
+                          ${certificationFilters.status === "" ? "text-white/40" : "text-white"}
+                          cursor-pointer transition duration-200 ease-in-out
+                          hover:border-[#EFFC76]
+                        `}
                       >
-                        <option className='text-black' value="">Select status</option>
-                        {uniqueStatuses.map((status) => (
-                          <option className='text-black' key={status} value={status}>
-                            {status}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
+                        {certificationFilters.status || "Select status"}
+                        <Image
+                          src="/images/dropdown.svg"
+                          alt="dropdown"
+                          width={15}
+                          height={8}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                        />
+                      </button>
+
+                      {showStatusDropdown && (
+                        <div className="absolute z-10 mt-1 w-full">
+                          <Dropdown
+                            items={uniqueStatuses.map(status => ({
+                              label: status,
+                              onClick: () => {
+                                setCertificationFilters(prev => ({ ...prev, status: status }));
+                                setShowStatusDropdown(false);
+                              }
+                            }))}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -573,6 +607,7 @@ export default function Tracking() {
                       customInput={<CustomDateInput />}
                       dateFormat="MMM d, yyyy"
                       placeholderText="Select date"
+                      className='text-white'
                       showMonthDropdown
                       showYearDropdown
                       dropdownMode="select"
@@ -585,28 +620,46 @@ export default function Tracking() {
               {filterType === 'application' && (
                 <div className="space-y-6">
                   {/* Application */}
-                  <div>
+                  <div ref={applicationDropdownRef}>
                     <label className="text-white text-sm font-medium mb-3 block">
                       Application
                     </label>
                     <div className="relative">
-                      <select
-                        value={applicationFilters.application}
-                        onChange={(e) => setApplicationFilters(prev => ({ ...prev, application: e.target.value }))}
-                        className="w-full bg-gradient-to-b text-white/40 from-[#202020] to-[#101010] border rounded-xl px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                      <button
+                        type="button"
+                        onClick={() => setShowApplicationDropdown(prev => !prev)}
+                        className={`
+                          w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
+                          bg-gradient-to-b from-[#202020] to-[#101010]
+                          text-[14px] font-medium text-left
+                          ${applicationFilters.application === "" ? "text-white/40" : "text-white"}
+                          cursor-pointer transition duration-200 ease-in-out
+                          hover:border-[#EFFC76]
+                        `}
                       >
-                        <option className='text-black' value="">Select application</option>
-                        {uniqueApplications.map((application) => (
-                          <option className='text-black' key={application} value={application}>
-                            {application}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
+                        {applicationFilters.application || "Select application"}
+                        <Image
+                          src="/images/dropdown.svg"
+                          alt="dropdown"
+                          width={15}
+                          height={8}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                        />
+                      </button>
+
+                      {showApplicationDropdown && (
+                        <div className="absolute z-10 mt-1 w-full">
+                          <Dropdown
+                            items={uniqueApplications.map(app => ({
+                              label: app,
+                              onClick: () => {
+                                setApplicationFilters(prev => ({ ...prev, application: app }));
+                                setShowApplicationDropdown(false);
+                              }
+                            }))}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
 

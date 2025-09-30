@@ -6,7 +6,7 @@ import EmailVerifyDrawer from "./VerifyEmailDrawer";
 import { AuthenticationEnable } from "./AuthenticationEnable";
 import ChangePasswordDrawer from "./ChangePasswordDrawer";
 import ToggleSwitch from "@/app/shared/Toggles";
-import toast from "react-hot-toast";
+import { Modal } from "@/app/shared/Modal";
 
 interface PreferenceItemProps {
   title: string;
@@ -45,7 +45,7 @@ const PreferenceItem: React.FC<PreferenceItemProps> = ({
           {title}
         </h4>
 
-        <div className="sm:hidden">
+        <div className="sm:hidden flex items-center gap-2">
           {hasToggle && toggleState !== undefined && onToggleChange && (
             <ToggleSwitch
               isOn={toggleState}
@@ -64,6 +64,7 @@ const PreferenceItem: React.FC<PreferenceItemProps> = ({
               width={20}
               height={20}
               className="text-[#FFFFFF99]"
+              onClick={onArrowClick}
             />
           )}
         </div>
@@ -108,6 +109,8 @@ const NotificationPreferences: React.FC = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isPasswordDrawerOpen, setIsPasswordDrawerOpen] = useState(false);
+    const [isDisableAuthModalOpen, setIsDisableAuthModalOpen] = useState(false);
+
   // const [isOn, setIsOn] = useState(false);
 
   const [email] = useState("johndeo@gmail.com");
@@ -190,9 +193,8 @@ const NotificationPreferences: React.FC = () => {
       // ✅ Turning ON
       setIs2FAModalOpen(true);
     } else {
-      // ✅ Turning OFF
-      setTwoFactorAuth(false);
-      toast.success("Two-factor authentication is disabled");
+      // ✅ Turning OFF → open modal instead of toast
+      setIsDisableAuthModalOpen(true);
     }
   }}
   trackWidth="w-[32px]"
@@ -201,6 +203,7 @@ const NotificationPreferences: React.FC = () => {
   iconSize="w-3 h-3"
   thumbTranslate="translate-x-2.5"
 />
+
 
         </div>
       </div>
@@ -264,6 +267,20 @@ const NotificationPreferences: React.FC = () => {
           </div>
         </div>
       )}
+{isDisableAuthModalOpen && (
+  <Modal
+    isOpen={isDisableAuthModalOpen}
+    onClose={() => setIsDisableAuthModalOpen(false)}
+    onConfirm={() => {
+      setTwoFactorAuth(false); // disable 2FA
+      setIsDisableAuthModalOpen(false);
+    }}
+    title="Two-Factor Authentication Disabled"
+    description="Your two-factor authentication has been successfully disabled."
+          image="/images/2fa-image.png"
+    confirmText="Okay"
+  />
+)}
 
     </div>
   );

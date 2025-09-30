@@ -352,7 +352,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
       case "otp":
         return (
-          <div className="space-y-4">
+          <div className="space-y-4 ">
             <div className="flex gap-3">
               {formData.otp?.map((digit, index) => (
                 <input
@@ -361,7 +361,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
                   type="text"
                   maxLength={1}
                   placeholder="0"
-                  className={`w-[48px] h-[48px] sm:w-[72px] sm:h-[60px] md:w-[93px] md:h-[64px] 
+                  className={`w-[38px] h-[40px] sm:w-[72px] sm:h-[60px] md:w-[93px] md:h-[64px] 
               mt-[30px] sm:mt-[40px] md:mt-[60px] 
               bg-gradient-to-b from-[#202020] to-[#101010] border 
               ${errors.otp ? 'border-red-500' : 'border-[#404040]'} 
@@ -382,7 +382,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
             </p>
 
             <div
-              className="font-semibold max-w-[602px] text-[18px] leading-[22px] text-[#EFFC76] text-center pt-[40px] flex !justify-center"
+              className="font-semibold sm:max-w-[602px] text-[18px] leading-[22px] text-[#EFFC76] text-center pt-[40px] flex !justify-center"
             >
               <button onClick={handleResend} disabled={!showResend} className={`"text-center  underline ${showResend ? "!cursor-pointer" : "cursor-not-allowed opacity-50"}"`}> Resend Code </button>
             </div>
@@ -461,9 +461,9 @@ const AuthForm: React.FC<AuthFormProps> = ({
   const shapesCount = 9;
 
   return (
-    <div className="min-h-screen  bg-[#121315] xl:gap-[80px] flex flex-col lg:flex-row">
+    <div className="min-h-screen  bg-[#121315] xl:gap-[80px] flex flex-col xl:flex-row">
       {/* Left Panel */}
-      <div className="flex items-center px-[20px] md:pl-[80px] py-8  lg:w-1/2">
+      <div className="flex items-center px-[20px] md:pl-[80px] py-8 w-full xl:w-1/2">
         <div className="w-full max-w-[640px] space-y-8">
           {/* Logo */}
           <div className="flex items-center space-x-2 ">
@@ -493,7 +493,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4 flex xl:block flex-col items-center">
             {renderFields()}
 
             {/* Submit Button */}
@@ -548,6 +548,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
                 </div>
               </div>
             )}
+            <div className="flex justify-center sm:justify-start">
             <button
               type="submit"
               disabled={loading}
@@ -556,6 +557,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
             >
               {loading ? "Please wait..." : currentConfig.buttonText}
             </button>
+            </div>
               { showAlter && 
             <div className={`py-[60px]  ${mode === "signup" || mode === "login" || mode === "forgot" ? "block" : "hidden"}`}>
               <p className="text-white/60 font-regular text-[16px] leading-[20px]">   {mode === "signup" ? "Already have an account?" : mode === "forgot" ? "Remember your password?" : "Don't have an account?"} <Link className="text-[#EFFC76] font-bold" href={mode === "signup" || mode === "forgot" ? "/auth/login" : "/auth/signup"}>{mode === "signup" ? "Login" : mode === "forgot" ? "Login" : "Signup"}</Link> </p>
@@ -569,7 +571,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
 
 
       {/* Right Panel */}
-      <div className="hidden lg:flex  rounded-2xl  relative z-[10] lg:w-1/2 items-end p-12 ">
+      <div className="hidden xl:flex  rounded-2xl  relative z-[10] lg:w-1/2 items-end p-12 ">
         {/* Video background */}
         <video
           src="/videos/auth.mp4"

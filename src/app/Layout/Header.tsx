@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,18 +9,97 @@ import { usePathname } from "next/navigation";
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileMegaOpen, setMobileMegaOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+
+useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const sections = ["home", "plans", "how-it-works", "hosts"];
+
+  const handleIntersect: IntersectionObserverCallback = (entries) => {
+    let maxRatio = 0;
+    let maxEntry: IntersectionObserverEntry | null = null;
+
+    for (let i = 0; i < entries.length; i++) {
+      const entry = entries[i];
+      if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
+        maxRatio = entry.intersectionRatio;
+        maxEntry = entry;
+      }
+    }
+
+    if (maxEntry && maxEntry.target) {
+      const targetElement = maxEntry.target as HTMLElement;
+      const id = targetElement.id;
+      setActiveSection(id);
+    }
+  };
+
+  const observer = new IntersectionObserver(handleIntersect, { 
+    rootMargin: "-20% 0px -20% 0px",
+    threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+  });
+
+  sections.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+
+  return () => observer.disconnect();
+}, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (hash && ["plans", "how-it-works", "hosts"].includes(hash)) {
+        setActiveSection(hash);
+      } else if (pathname === "/" && !hash) {
+        setActiveSection("home");
+      }
+    };
+
+    handleHashChange();
+
+    window.addEventListener("hashchange", handleHashChange);
+    
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, [pathname]);
+
+  const linkClasses = (isActive: boolean) =>
+    `text-[20px] cursor-pointer pro-medium leading-5 relative group transition-colors duration-300
+     ${isActive ? "text-[#FFFFFF]" : "text-[#FFFFFF99]"} hover:text-[#FFFFFF]`;
+
+  const isSectionActive = (section: string) => {
+    return activeSection === section;
+  };
+
+  // Handle manual click on navigation links
+  const handleNavClick = (section: string) => {
+    setActiveSection(section);
+    
+    setTimeout(() => {
+      const element = document.getElementById(section);
+      if (element) {
+        const elementTop = element.getBoundingClientRect().top + window.pageYOffset - 100;
+        window.scrollTo({
+          top: elementTop,
+          behavior: 'smooth'
+        });
+      }
+    }, 10);
+  };
 
   return (
     <>
       <header className="fixed top-0 left-0 w-full z-50 bg-[#17181a] px-[0px] md:px-[89px] shadow-md">
         <div className="bg-[#0A0C0B] rounded-lg relative w-full max-w-[1304px] mx-auto">
-          <nav
-            aria-label="Global"
-            className="mx-auto flex items-center justify-between py-[24px] px-3 sm:px-[20px]"
-          >
+          <nav className="mx-auto flex items-center justify-between py-[24px] px-3 sm:px-[20px]">
             {/* Mobile Menu Button */}
-            <div className="flex items-center gap-3 ">
+            <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(true)}
@@ -48,49 +127,43 @@ export default function Navbar() {
 
             {/* Desktop Menu */}
             <div className="hidden lg:flex lg:gap-x-8 px-5 py-3 items-center relative">
-              <Link
-                href="/"
-                className={`text-[20px] cursor-pointer pro-medium leading-5 hover:text-[#FFFFFF] relative group transition-colors duration-300
-                ${pathname === "/" ? "text-[#FFFFFF]" : "text-[#FFFFFF99]"}
-                group-hover:text-[#FFFFFF]`}
+              <Link 
+                href="/" 
+                className={linkClasses(isSectionActive("home"))}
+                onClick={() => handleNavClick("home")}
               >
                 Home
               </Link>
-              <Link
-                href="/#plans"
-                
-                className={`text-[20px] cursor-pointer pro-medium leading-5 hover:text-[#FFFFFF] relative group transition-colors duration-300
-                ${pathname === "/industry" ? "text-[#FFFFFF]" : "text-[#FFFFFF99]"}
-                group-hover:text-[#FFFFFF]`}
+              <Link 
+                href="/#plans" 
+                className={linkClasses(isSectionActive("plans"))}
+                onClick={() => handleNavClick("plans")}
               >
                 Pricing
               </Link>
               <Link
                 href="/#how-it-works"
-                className={`text-[20px] cursor-pointer pro-medium leading-5 hover:text-[#FFFFFF] relative group transition-colors duration-300
-                ${pathname === "/about" ? "text-[#FFFFFF]" : "text-[#FFFFFF99]"}
-                group-hover:text-[#FFFFFF]`}
+                className={linkClasses(isSectionActive("how-it-works"))}
+                onClick={() => handleNavClick("how-it-works")}
               >
                 How It Works
               </Link>
-              <Link
-                href="/#hosts"
-                className={`text-[20px] cursor-pointer pro-medium leading-5 hover:text-[#FFFFFF] relative group transition-colors duration-300
-                ${pathname === "/coming-soon" ? "text-[#FFFFFF]" : "text-[#FFFFFF99]"}
-                group-hover:text-[#FFFFFF]`}
+              <Link 
+                href="/#hosts" 
+                className={linkClasses(isSectionActive("hosts"))}
+                onClick={() => handleNavClick("hosts")}
               >
                 Our Hosts
               </Link>
             </div>
 
-            {/* CTA Button */}
+            {/* CTA Buttons */}
             <div className="flex gap-3 lg:flex-1 lg:justify-end">
               <Link
                 href="/dashboard"
                 className="text-[16px] font-medium leading-5 flex items-center transition-all duration-300
                 bg-[#fff] rounded-[8px] h-[30px] pt-[6px] pb-[6px] pl-[12px] pr-[12px] gap-[4px]
-                lg:h-[36px] lg:pt-[8px] lg:pb-[8px] lg:pl-[24px] lg:pr-[24px] lg:gap-[8px]
-                text-black"
+                lg:h-[36px] lg:pt-[8px] lg:pb-[8px] lg:pl-[24px] lg:pr-[24px] lg:gap-[8px] text-black"
               >
                 Dashboard
               </Link>
@@ -98,8 +171,7 @@ export default function Navbar() {
                 href="/auth/signup"
                 className="text-[16px] font-medium leading-5 flex items-center transition-all duration-300
                 bg-[#fff] rounded-[8px] h-[30px] pt-[6px] pb-[6px] pl-[12px] pr-[12px] gap-[4px]
-                lg:h-[36px] lg:pt-[8px] lg:pb-[8px] lg:pl-[24px] lg:pr-[24px] lg:gap-[8px]
-                text-black"
+                lg:h-[36px] lg:pt-[8px] lg:pb-[8px] lg:pl-[24px] lg:pr-[24px] lg:gap-[8px] text-black"
               >
                 Sign Up
               </Link>
@@ -124,31 +196,59 @@ export default function Navbar() {
 
               <div className="mt-6">
                 <div className="space-y-4">
-                  <button
-                    className="w-full flex justify-between items-center text-[#FFFFFF99] text-base font-medium px-3 py-2"
-                    onClick={() => setMobileMegaOpen(!mobileMegaOpen)}
+                  <Link
+                    href="/"
+                    className={`block text-base px-3 py-2 transition-colors duration-300 ${
+                      isSectionActive("home") 
+                        ? "text-[#FFFFFF]" 
+                        : "text-[#FFFFFF99] hover:text-[#FFFFFF]"
+                    }`}
+                    onClick={() => {
+                      handleNavClick("home");
+                      setMobileMenuOpen(false);
+                    }}
                   >
                     Home
-                  </button>
-
+                  </Link>
                   <Link
-                    href="/coming-soon"
-                    className="block text-[#FFFFFF99] text-base px-3 py-2"
-                    onClick={() => setMobileMenuOpen(false)}
+                    href="/#plans"
+                    className={`block text-base px-3 py-2 transition-colors duration-300 ${
+                      isSectionActive("plans") 
+                        ? "text-[#FFFFFF]" 
+                        : "text-[#FFFFFF99] hover:text-[#FFFFFF]"
+                    }`}
+                    onClick={() => {
+                      handleNavClick("plans");
+                      setMobileMenuOpen(false);
+                    }}
                   >
                     Pricing
                   </Link>
                   <Link
-                    href="/coming-soon"
-                    className="block text-[#FFFFFF99] text-base px-3 py-2"
-                    onClick={() => setMobileMenuOpen(false)}
+                    href="/#how-it-works"
+                    className={`block text-base px-3 py-2 transition-colors duration-300 ${
+                      isSectionActive("how-it-works") 
+                        ? "text-[#FFFFFF]" 
+                        : "text-[#FFFFFF99] hover:text-[#FFFFFF]"
+                    }`}
+                    onClick={() => {
+                      handleNavClick("how-it-works");
+                      setMobileMenuOpen(false);
+                    }}
                   >
                     How It Works
                   </Link>
                   <Link
-                    href="/coming-soon"
-                    className="block text-[#FFFFFF99] text-base px-3 py-2"
-                    onClick={() => setMobileMenuOpen(false)}
+                    href="/#hosts"
+                    className={`block text-base px-3 py-2 transition-colors duration-300 ${
+                      isSectionActive("hosts") 
+                        ? "text-[#FFFFFF]" 
+                        : "text-[#FFFFFF99] hover:text-[#FFFFFF]"
+                    }`}
+                    onClick={() => {
+                      handleNavClick("hosts");
+                      setMobileMenuOpen(false);
+                    }}
                   >
                     Our Hosts
                   </Link>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   X,
   User,
@@ -79,7 +79,6 @@ interface TableProps<T> {
   setSelectedRows: React.Dispatch<React.SetStateAction<Set<number>>>;
 }
 
-
 // Modal Component
 interface ModalProps {
   isOpen: boolean;
@@ -96,45 +95,6 @@ interface SortDropdownProps {
   onSort: (direction: "asc" | "desc") => void;
   column: string;
 }
-
-// Actions dropdown component
-// interface ActionsDropdownProps {
-//   isOpen: boolean;
-//   onClose: () => void;
-//   onViewDetails: () => void;
-//   onDelete: () => void;
-// }
-
-// function ActionsDropdown({ isOpen, onClose, onViewDetails, onDelete }: ActionsDropdownProps) {
-//   if (!isOpen) return null;
-
-//   return (
-//     <div className="absolute top-full right-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg z-50 min-w-[140px]">
-//       <div className="py-1">
-//         <button
-//           onClick={() => {
-//             onViewDetails();
-//             onClose();
-//           }}
-//           className="w-full px-3 py-2 text-left text-white hover:bg-gray-700 flex items-center gap-2 text-sm"
-//         >
-//           <User size={14} />
-//           Go to Detail
-//         </button>
-//         <button
-//           onClick={() => {
-//             onDelete();
-//             onClose();
-//           }}
-//           className="w-full px-3 py-2 text-left text-white hover:bg-gray-700 flex items-center gap-2 text-sm"
-//         >
-//           <Trash2 size={14} />
-//           Delete
-//         </button>
-//       </div>
-//     </div>
-//   );
-// }
 
 function SortDropdown({ isOpen, onClose, onSort, column }: SortDropdownProps) {
   if (!isOpen) return null;
@@ -334,29 +294,27 @@ export function Table<T extends Record<string, unknown>>({
   data,
   control = {},
   onRowClick,
-  // showModal = true,
   modalTitle = "Row Details",
   clickable = true,
-  // onDelete,
-  // onDeleteSingle,
   showDeleteButton = false,
-  dropdownItems, // 🔹 Added dropdownItems prop
-  selectedRows = new Set(), // Provide a default empty Set
-  setSelectedRows = () => { }, // Provide default function
+  dropdownItems,
+  selectedRows = new Set(),
+  setSelectedRows = () => {},
 }: TableProps<T>) {
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     data: T | null;
     index: number;
   }>({ isOpen: false, data: null, index: -1 });
+  
   const [displayData, setDisplayData] = useState<T[]>(data);
   const [activeSortDropdown, setActiveSortDropdown] = useState<string | null>(
     null
   );
-  // const [activeActionsDropdown, setActiveActionsDropdown] = useState<number | null>(
-  //   null
-  // );
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+
+  // Ref for detecting outside clicks
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
 
   const handleDropdownToggle = (index: number, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -386,14 +344,12 @@ export function Table<T extends Record<string, unknown>>({
       statusLower === "approved" ||
       statusLower === "active"
     ) {
-      // ✅ Active added here
       badgeClasses += "bg-[#2d2d2d] text-[#EFFC76] py-2 px-3";
     } else if (
       statusLower === "near expiry" ||
       statusLower === "pending" ||
       statusLower === "inactive"
     ) {
-      // ✅ Inactive added here
       badgeClasses += "bg-[#2d2d2d] text-[#FFB52B] py-2 px-3";
     } else if (statusLower === "expired" || statusLower === "rejected") {
       badgeClasses += "bg-[#2d2d2d] text-[#FF5050] py-2 px-3";
@@ -543,43 +499,6 @@ export function Table<T extends Record<string, unknown>>({
     setSelectedRows(newSelected);
   };
 
-  // const handleDeleteSelected = () => {
-  //   if (onDelete && selectedRows.size > 0) {
-  //     const selectedData = Array.from(selectedRows).map(
-  //       (index) => displayData[index]
-  //     );
-  //     onDelete(selectedData);
-  //     setSelectedRows(new Set());
-  //   }
-  // };
-
-  // const handleDeleteSingle = (row: T, index: number, e: React.MouseEvent) => {
-  //   e.stopPropagation(); // Prevent row click
-  //   if (onDeleteSingle) {
-  //     onDeleteSingle(row, index);
-  //   }
-  // };
-
-  // Actions dropdown handlers
-  // const handleActionsClick = (index: number, e: React.MouseEvent) => {
-  //   e.stopPropagation();
-  //   setActiveActionsDropdown(activeActionsDropdown === index ? null : index);
-  // };
-
-  // const handleViewDetails = (row: T, index: number) => {
-  //   setModalState({
-  //     isOpen: true,
-  //     data: row,
-  //     index: index,
-  //   });
-  // };
-
-  // const handleDeleteFromActions = (row: T, index: number) => {
-  //   if (onDeleteSingle) {
-  //     onDeleteSingle(row, index);
-  //   }
-  // };
-
   // Generate dynamic CSS for row colors
   const generateRowCSS = useCallback(() => {
     let css = "";
@@ -654,15 +573,21 @@ export function Table<T extends Record<string, unknown>>({
   }, [generateRowCSS]);
 
   // Close dropdowns when clicking outside
-  // useEffect(() => {
-  //   const handleClickOutside = () => {
-  //     setActiveSortDropdown(null);
-  //     setActiveActionsDropdown(null);
-  //   };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Close sort dropdown if click is outside
+      if (
+        activeSortDropdown &&
+        sortDropdownRef.current &&
+        !sortDropdownRef.current.contains(event.target as Node)
+      ) {
+        setActiveSortDropdown(null);
+      }
+    };
 
-  //   document.addEventListener("click", handleClickOutside);
-  //   return () => document.removeEventListener("click", handleClickOutside);
-  // }, []);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [activeSortDropdown]);
 
   // Handle empty data
   if (!data || data.length === 0) {
@@ -697,7 +622,6 @@ export function Table<T extends Record<string, unknown>>({
   };
 
   const handleRowClick = (row: T, index: number, e?: React.MouseEvent) => {
-
     // Only trigger row click if clickable and onRowClick exists
     if (clickable && onRowClick && e) {
       const target = e.target as HTMLElement;
@@ -801,9 +725,6 @@ export function Table<T extends Record<string, unknown>>({
                    peer-checked:after:content-['✓'] peer-checked:after:text-black peer-checked:after:text-xs peer-checked:after:font-bold">
                       </span>
                     </label>
-
-
-
                   </th>
                 )}
 
@@ -831,6 +752,7 @@ export function Table<T extends Record<string, unknown>>({
                     }}
                   >
                     <div
+                      ref={index === 0 ? sortDropdownRef : null}
                       style={{
                         display: "flex",
                         alignItems: "center",
@@ -887,7 +809,7 @@ export function Table<T extends Record<string, unknown>>({
                   className="rounded-md !bg-transparent"
                   key={idx}
                   style={{
-                    cursor: "default", // Remove cursor pointer from rows
+                    cursor: "default",
                   }}
                   onClick={() => handleRowClick(row, idx)}
                 >
@@ -898,7 +820,7 @@ export function Table<T extends Record<string, unknown>>({
                         padding: paddingSize,
                         width: "40px",
                       }}
-                      onClick={(e) => e.stopPropagation()} // Prevent row click
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input
@@ -908,11 +830,11 @@ export function Table<T extends Record<string, unknown>>({
                           className="peer hidden"
                         />
 
-                        {/* Outer border - EXACTLY THE SAME */}
+                        {/* Outer border */}
                         <span className="absolute inset-0 rounded-md border-2 border-[#FFFFFFCC] translate-x-1 translate-y-1 
                    peer-checked:border-[#EFFC76]"></span>
 
-                        {/* Main box - EXACTLY THE SAME */}
+                        {/* Main box */}
                         <span className="relative w-5 h-5 rounded-md border-2 border-[#FFFFFFCC] bg-[#252628] 
                    flex items-center justify-center 
                    peer-checked:bg-[#EFFC76] peer-checked:border-[#EFFC76]
@@ -941,8 +863,18 @@ export function Table<T extends Record<string, unknown>>({
                   {(showDeleteButton || dropdownItems) && (
                     <td style={{ position: "relative" }}>
                       <button
-                        onClick={(e) => handleDropdownToggle(idx, e)}
-                        className="px-2 py-1 text-white rounded cursor-pointer"
+                        onClick={(e) => {
+                          // Only allow click if checkbox is checked (for individual delete)
+                          if (selectedRows.has(idx)) {
+                            handleDropdownToggle(idx, e);
+                          }
+                        }}
+                        className={`px-7 py-1 text-white rounded ${
+                          selectedRows.has(idx) 
+                            ? "cursor-pointer" 
+                            : "cursor-not-allowed opacity-50"
+                        }`}
+                        disabled={!selectedRows.has(idx)}
                       >
                         ⋮
                       </button>
@@ -954,8 +886,8 @@ export function Table<T extends Record<string, unknown>>({
                           items={dropdownItems.map((item) => ({
                             label: item.label,
                             onClick: () => {
-                              item.onClick(row, idx); // This should now trigger the modal functions
-                              setActiveDropdown(null); // Close dropdown after click
+                              item.onClick(row, idx);
+                              setActiveDropdown(null);
                             },
                           }))}
                         />

@@ -23,6 +23,18 @@ export default function Detail() {
     );
   }
 
+  const handleDownload = (filePath: string, fileName?: string) => {
+  // Create a temporary anchor element
+  const link = document.createElement('a');
+  link.href = filePath;
+  link.download = fileName || filePath.split('/').pop() || 'download';
+  
+  // Append to body, click, and remove
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 const images = property.images || [property.images]; // fallback if only one image
 const totalSteps = images.length;
 
@@ -92,7 +104,12 @@ const totalSteps = images.length;
         <h1 className=" text-[24px]  font-medium leading-[28px] text-white">
           {property.title}
         </h1>
-        <button className="yellow-btn text-black py-3 px-5 font-semibold text-[16px] leading-[20px]">Download Certificate</button>
+<button 
+  onClick={() => handleDownload('/docs/certificates.pdf')} 
+  className="yellow-btn text-black py-3 px-5 font-semibold text-[16px] leading-[20px]"
+>
+  Download Certificate
+</button>
       </div>
 
       <p className="text-white/60 text-[16px]  pt-[8px] leading-5 font-regular">

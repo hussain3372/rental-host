@@ -7,6 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Modal } from "@/app/shared/Modal";
 import TicketDetailDrawer from "./TicketDetailDrawer";
 import HelpSupportDrawer from "./HelpSupportDrawer";
+
 interface CustomDateInputProps {
     value?: string;
     onClick?: () => void;
@@ -22,7 +23,7 @@ interface CertificationData {
     Status: string;
 }
 
-export default function Applications() {
+export default function HelpSupport() {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -127,7 +128,7 @@ export default function Applications() {
         },
         {
             id: 10,
-               "Ticket Id": "TIK - 8765",
+            "Ticket Id": "TIK - 8765",
             "Issue Type": "Support Queries",
             Subject: "View and man...",
             "Created On": "Aug 12, 2025",
@@ -151,7 +152,7 @@ export default function Applications() {
         },
         {
             id: 13,
-              "Ticket Id": "TIK - 8765",
+            "Ticket Id": "TIK - 8765",
             "Issue Type": "Support Queries",
             Subject: "View and man...",
             "Created On": "Aug 12, 2025",
@@ -175,7 +176,7 @@ export default function Applications() {
         },
         {
             id: 16,
-              "Ticket Id": "TIK - 8765",
+            "Ticket Id": "TIK - 8765",
             "Issue Type": "Support Queries",
             Subject: "View and man...",
             "Created On": "Aug 12, 2025",
@@ -191,7 +192,7 @@ export default function Applications() {
         },
         {
             id: 18,
-               "Ticket Id": "TIK - 8765",
+            "Ticket Id": "TIK - 8765",
             "Issue Type": "Support Queries",
             Subject: "View and man...",
             "Created On": "Aug 12, 2025",
@@ -199,7 +200,7 @@ export default function Applications() {
         },
         {
             id: 19,
-              "Ticket Id": "TIK - 8765",
+            "Ticket Id": "TIK - 8765",
             "Issue Type": "Support Queries",
             Subject: "View and man...",
             "Created On": "Aug 12, 2025",
@@ -207,13 +208,13 @@ export default function Applications() {
         },
         {
             id: 20,
-              "Ticket Id": "TIK - 8765",
+            "Ticket Id": "TIK - 8765",
             "Issue Type": "Support Queries",
             Subject: "View and man...",
             "Created On": "Aug 12, 2025",
             Status: "Approved",
         },
-    
+
     ]);
 
     // Delete handlers for application data - matching Tracking component style
@@ -358,6 +359,10 @@ export default function Applications() {
         startIndex,
         startIndex + itemsPerPage
     );
+    const [subjectDropdownOpen, setSubjectDropdownOpen] = useState(false);
+    const [propertyDropdownOpen, setPropertyDropdownOpen] = useState(false);
+    const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+
 
     // Reset pagination when filters change
     React.useEffect(() => {
@@ -401,8 +406,16 @@ export default function Applications() {
                     onClick={onClick}
                     ref={ref}
                     readOnly
-                    className="w-full bg-gradient-to-b placeholder:text-white/40 from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none cursor-pointer"
-                    placeholder="Select date"
+                    className={`
+    w-full p-3 pr-10 rounded-[10px]
+    border border-[#404040]         
+    hover:border-[#EFFC76]          
+    focus:border-[#EFFC76]          
+    bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)]
+    text-white placeholder:text-white/40
+    focus:outline-none
+    transition duration-200 ease-in-out
+  `} placeholder="Select date"
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
                     <Image src="/images/calender.svg" alt="select date" width={20} height={20} />
@@ -506,16 +519,15 @@ export default function Applications() {
                     Create Ticket
                 </button>
             </div>
-            <div className="flex flex-col justify-between h-[90vh]">
+            <div className="flex flex-col justify-between custom-height">
 
-                <div className="bg-[#121315] h-full rounded-lg relative z-[10] overflow-hidden">
+                {/* Table Container */}
+                <div className="bg-[#121315] h-full rounded-lg relative z-[10] overflow-hidden flex flex-col">
 
                     {/* Header */}
-                    <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-5">
+                    <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-5 flex-shrink-0">
                         <div>
-                            <h2>
-                                Tickets
-                            </h2>
+                            <h2>Tickets</h2>
                         </div>
                         <div className="inline-flex flex-col-reverse sm:flex-row item-start sm:items-center pt-3 sm:pt-0 gap-3">
                             <div className="relative">
@@ -553,8 +565,8 @@ export default function Applications() {
                                 onClick={handleDeleteSelected}
                                 disabled={selectedRows.size === 0}
                                 className="flex cursor-pointer items-center disabled:hidden gap-[6px] p-2 rounded-[8px] 
-                border border-[rgba(239,252,118,0.32)] text-[#EFFC76] text-[12px] font-normal leading-[16px]
-                 disabled:bg-[transparent] disabled:cursor-not-allowed disabled:border-gray-600 disabled:text-gray-600"
+                    border border-[rgba(239,252,118,0.32)] text-[#EFFC76] text-[12px] font-normal leading-[16px]
+                    disabled:bg-[transparent] disabled:cursor-not-allowed disabled:border-gray-600 disabled:text-gray-600"
                             >
                                 <Image src="/images/delete-row.svg" alt='Delete selected' width={12} height={12} />
                                 Delete All
@@ -562,8 +574,7 @@ export default function Applications() {
                         </div>
                     </div>
 
-                    {/* Table with delete functionality */}
-                    <div className="p-0 cursor-pointer">
+                    <div className="flex-1 overflow-auto scrollbar-hide">
                         <Table
                             data={paginatedData}
                             control={tableControl}
@@ -578,8 +589,8 @@ export default function Applications() {
                                     label: "View Details",
                                     onClick: (row, index) => {
                                         const originalRow = filteredCertificationData[startIndex + index];
-                                        setSelectedTicket(originalRow);        // ✅ store selected row
-                                        setIsDetailDrawerOpen(true);           // ✅ open drawer
+                                        setSelectedTicket(originalRow);
+                                        setIsDetailDrawerOpen(true);
                                     },
                                 },
                                 {
@@ -587,21 +598,16 @@ export default function Applications() {
                                     onClick: (row, index) => openDeleteSingleModal(row, index),
                                 },
                             ]}
-
                         />
-
-
                     </div>
-
-                    {/* Pagination - Always visible */}
                 </div>
-                <div className="flex justify-center my-[20px]">
+
+                <div className="flex justify-center mt-4">
                     <div className="flex items-center gap-2">
                         {renderPaginationButtons()}
                     </div>
                 </div>
             </div>
-
             {/* Full Page Overlay */}
             {isFilterOpen && (
                 <div
@@ -641,53 +647,56 @@ export default function Applications() {
                             </p>
 
                             <div className="space-y-[20px]">
-                                {/* subject */}
                                 <div>
                                     <label className="text-white text-sm font-medium mb-3 block">
                                         Subject
                                     </label>
                                     <div className="relative">
-                                        <select
-                                            value={certificationFilters.subject}
-                                            onChange={(e) =>
-                                                setCertificationFilters((prev) => ({
-                                                    ...prev,
-                                                    subject: e.target.value,
-                                                }))
-                                            }
-                                            className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                                        <div
+                                            className={`
+    w-full p-3 pr-10 rounded-[10px]
+    border border-[#404040]         
+    hover:border-[#EFFC76]          
+    focus:border-[#EFFC76]          
+    bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)]
+    text-white placeholder:text-white/40
+    focus:outline-none
+    transition duration-200 ease-in-out
+  `}
+                                            onClick={() => setSubjectDropdownOpen(!subjectDropdownOpen)}
                                         >
-                                            <option className="text-black" value="">
-                                                Select subject
-                                            </option>
-                                            {uniqueSubjects.map((subject) => (
-                                                <option
-                                                    className="text-black"
-                                                    key={subject}
-                                                    value={subject}
-                                                >
-                                                    {subject}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                                            <svg
-                                                className="w-4 h-4 text-gray-400"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M19 9l-7 7-7-7"
-                                                />
-                                            </svg>
+                                            {certificationFilters.subject || "Select subject"}
+                                            <Image
+                                                src="/images/dropdown.svg"
+                                                alt="dropdown"
+                                                width={16}
+                                                height={16}
+                                                className="absolute right-3 top-1/2 transform -translate-y-1 cursor-pointer"
+
+                                            />
                                         </div>
+
+                                        {subjectDropdownOpen && (
+                                            <div className="absolute z-10 w-full mt-1 bg-[#1A1A1A] border border-[#404040] rounded-xl shadow-lg">
+                                                {uniqueSubjects.map((subject) => (
+                                                    <div
+                                                        key={subject}
+                                                        className="px-4 py-3 cursor-pointer hover:bg-[#2A2A2A] text-white"
+                                                        onClick={() => {
+                                                            setCertificationFilters((prev) => ({
+                                                                ...prev,
+                                                                subject: subject,
+                                                            }));
+                                                            setSubjectDropdownOpen(false);
+                                                        }}
+                                                    >
+                                                        {subject}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-
 
                                 {/* Property */}
                                 <div>
@@ -695,34 +704,49 @@ export default function Applications() {
                                         Property
                                     </label>
                                     <div className="relative">
-                                        <select
-                                            value={certificationFilters.property}
-                                            onChange={(e) =>
-                                                setCertificationFilters((prev) => ({
-                                                    ...prev,
-                                                    property: e.target.value,
-                                                }))
-                                            }
-                                            className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                                        <div
+                                            className={`
+    w-full p-3 pr-10 rounded-[10px]
+    border border-[#404040]         
+    hover:border-[#EFFC76]          
+    focus:border-[#EFFC76]          
+    bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)]
+    text-white placeholder:text-white/40
+    focus:outline-none
+    transition duration-200 ease-in-out
+  `}
+                                            onClick={() => setPropertyDropdownOpen(!propertyDropdownOpen)}
                                         >
-                                            <option className="text-black" value="">
-                                                Select property
-                                            </option>
-                                            {uniqueProperties.map((property) => (
-                                                <option
-                                                    className="text-black"
-                                                    key={property}
-                                                    value={property}
-                                                >
-                                                    {property}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                            </svg>
+                                            {certificationFilters.property || "Select property"}
+                                            <Image
+                                                src="/images/dropdown.svg"
+                                                alt="dropdown"
+                                                width={16}
+                                                height={16}
+                                                className="absolute right-3 top-1/2 transform -translate-y-1 cursor-pointer"
+
+                                            />
                                         </div>
+
+                                        {propertyDropdownOpen && (
+                                            <div className="absolute z-10 w-full mt-1 bg-[#1A1A1A] border border-[#404040] rounded-xl shadow-lg">
+                                                {uniqueProperties.map((property) => (
+                                                    <div
+                                                        key={property}
+                                                        className="px-4 py-3 cursor-pointer hover:bg-[#2A2A2A] text-white"
+                                                        onClick={() => {
+                                                            setCertificationFilters((prev) => ({
+                                                                ...prev,
+                                                                property: property,
+                                                            }));
+                                                            setPropertyDropdownOpen(false);
+                                                        }}
+                                                    >
+                                                        {property}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -732,36 +756,51 @@ export default function Applications() {
                                         Status
                                     </label>
                                     <div className="relative">
-                                        <select
-                                            value={certificationFilters.status}
-                                            onChange={(e) =>
-                                                setCertificationFilters((prev) => ({
-                                                    ...prev,
-                                                    status: e.target.value,
-                                                }))
-                                            }
-                                            className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                                        <div
+                                            className={`
+    w-full p-3 pr-10 rounded-[10px]
+    border border-[#404040]         
+    hover:border-[#EFFC76]          
+    focus:border-[#EFFC76]          
+    bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)]
+    text-white placeholder:text-white/40
+    focus:outline-none
+    transition duration-200 ease-in-out
+  `}
+                                            onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
                                         >
-                                            <option className="text-black" value="">
-                                                Select status
-                                            </option>
-                                            {uniqueStatuses.map((status) => (
-                                                <option
-                                                    className="text-black"
-                                                    key={status}
-                                                    value={status}
-                                                >
-                                                    {status}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                            </svg>
+                                            {certificationFilters.status || "Select status"}
+                                            <Image
+                                                src="/images/dropdown.svg"
+                                                alt="dropdown"
+                                                width={16}
+                                                height={16}
+                                                className="absolute right-3 top-1/2 transform -translate-y-1 cursor-pointer"
+                                            />
                                         </div>
+
+                                        {statusDropdownOpen && (
+                                            <div className="absolute z-10 w-full mt-1 bg-[#1A1A1A] border border-[#404040] rounded-xl shadow-lg">
+                                                {uniqueStatuses.map((status) => (
+                                                    <div
+                                                        key={status}
+                                                        className="px-4 py-3 cursor-pointer hover:bg-[#2A2A2A] text-white"
+                                                        onClick={() => {
+                                                            setCertificationFilters((prev) => ({
+                                                                ...prev,
+                                                                status: status,
+                                                            }));
+                                                            setStatusDropdownOpen(false);
+                                                        }}
+                                                    >
+                                                        {status}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
+
 
                                 {/* Submitted Date */}
                                 <div>
@@ -802,7 +841,7 @@ export default function Applications() {
                 onClick={() => setIsDrawerOpen(false)}
             >
                 <div
-                    className={`w-full lg:max-w-[608px] md:max-w-[500px] max-w-[280px] p-5 sm:p-7 bg-[#0A0C0B] h-full overflow-auto rounded-[12px] border border-[#FFFFFF1F] transform transition-transform duration-300 ease-in-out ${isDrawerOpen ? "translate-x-0" : "translate-x-full"
+                    className={`w-full lg:max-w-[608px] md:max-w-[500px] max-w-[280px] p-5 sm:p-7 bg-[#0A0C0B] h-full overflow-auto scrollbar-hide rounded-[12px] border border-[#FFFFFF1F] transform transition-transform duration-300 ease-in-out ${isDrawerOpen ? "translate-x-0" : "translate-x-full"
                         }`}
                     onClick={(e) => e.stopPropagation()}
                 >
@@ -824,7 +863,7 @@ export default function Applications() {
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* Content area scrollable, footer fixed */}
-                    <div className="flex-1 overflow-y-auto">
+                    <div className="flex-1 overflow-y-auto scrollbar-hide">
                         <TicketDetailDrawer
                             isOpen={isDetailDrawerOpen}
                             onClose={() => setIsDetailDrawerOpen(false)}

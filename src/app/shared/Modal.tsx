@@ -78,7 +78,7 @@ export const Modal: React.FC<ModalProps> = ({
             )} */}
             <button
               onClick={handleConfirm}
-              className="px-6 py-3 rounded-[8px] bg-[#EFFC76] text-[#121315] text-[16px] font-semibold w-full"
+              className="px-6 py-3 rounded-[8px] bg-[#EFFC76] text-[#121315] text-[16px] cursor-pointer font-semibold w-full"
             >
               {confirmText}
             </button>

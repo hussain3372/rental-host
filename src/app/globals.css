@@ -99,14 +99,44 @@ html {
   color:  #101010;
 }
 
-.table-container{
-  
-    height: 100%;
-    max-height: 800px!important  ;
- 
+.custom-height {
+  height: calc(100vh - 200px);
 }
+
 .hollow-btn{
   border: 1px solid #EFFC76  ;
   color: #EFFC76;
   cursor: pointer;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
+}
+
+.scrollbar-custom::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: #2e2f31;
+  border-radius: 2px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 2px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+.sticky-header {
+    position: sticky;
+    top: 0;
+    background: #121315;
+    z-index: 10;
 }

@@ -18,6 +18,7 @@ const HeroSection = () => {
   };
 
 
+
   // const handleSearchClick = () => {
   //   router.push("/search-page");
   // };
@@ -140,15 +141,11 @@ const HeroSection = () => {
         </div>
 
         {/* Search Bar */}
-<div className="w-full max-w-[361px] md:max-w-[700px] lg:max-w-[860px] sm:h-[220px] md:h-[273px] lg:h-auto 
+        <div className="w-full max-w-[336px] md:max-w-[700px] lg:max-w-[860px] sm:h-[220px] md:h-[273px] lg:h-auto 
   bg-[#0A0C0B] rounded-[16px] sm:rounded-[24px] relative 
   p-4 sm:px-8"
->
-          {/* <input
-            type="text"
-            placeholder='"Search for certified and verified properties..."'
-            className="w-full h-[140px] max-w-[828px] px-6 py-4 outline-none text-[18px] leading-[24px] font-medium text-white  pb-[100px] ps-[16px] !pt-[16px]"
-          /> */}
+        >
+
           <input
             type="text"
             placeholder='"Search for certified and verified properties..."'
@@ -157,14 +154,20 @@ const HeroSection = () => {
             className="w-full h-[140px] max-w-[828px] px-6 py-4 outline-none text-[18px] leading-[24px] font-medium text-white  pb-[100px] ps-[16px] !pt-[16px]"
           />
 
-          {/* Tabs */}
+
           <div className="mt-4 sm:mt-0 sm:absolute sm:bottom-4 sm:left-4 flex flex-wrap gap-2 sm:gap-3">
             {filters.map((f) => (
-              <FilterTab key={f.id} label={f.label} icon={f.icon} />
+              <div key={f.id} className="w-full sm:w-auto">
+
+                <FilterTab
+                  label={f.label}
+                  icon={f.icon}
+                  className="w-full"
+                />              </div>
             ))}
           </div>
 
-          {/* Button */}
+
           {/* Button */}
           <div
             className="
@@ -184,7 +187,7 @@ const HeroSection = () => {
         </div>
 
         {/* Carousel */}
-        <div className="w-full pt-12  md:pt-15 lg:pt-9 lg:px-[93px] md:px-[50px] px-[10px]  pb-[80px] md:pb-[127px]">
+        <div className="w-full pt-12  md:pt-15 lg:pt-9 lg:px-[93px] md:px-[50px] px-[10px]  pb-[27px] md:pb-[127px]">
           <StatsCarousel />
         </div>
       </div>

@@ -2,7 +2,6 @@
 
 import React from "react";
 import Image from "next/image";
-import { X } from "lucide-react";
 
 interface Attachment {
     name: string;
@@ -37,41 +36,33 @@ export default function TicketDetailDrawer({
     return (
         <div className="flex flex-col h-full">
             {/* Header */}
-            <div className="flex justify-between items-center px-4 py-3">
+            <div className="flex justify-between items-center px-4 py-3 flex-shrink-0">
                 <h2 className="text-lg font-semibold">
-                    TIK - {ticket.ticketId || ticket.id || "0001"}
+                    {ticket.ticketId || ticket.id || "0001"}
                 </h2>
-                <button
-                    onClick={onClose}
-                    className="p-1 text-gray-400 hover:text-yellow-300"
-                >
-                    <X size={20} />
-                </button>
             </div>
 
-            {/* Body */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-5">
-                <p className="text-sm text-gray-400">
+            {/* Body - Scrollable content (without the button) */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-10 scrollbar-hide">
+                <p className="text-[16px] leading-5 font-normal text-[#FFFFFF99]">
                     Submitted on {ticket.createdOn} • Status:{" "}
                     <span className="text-yellow-300 font-medium">{ticket.status}</span>
                 </p>
 
-                {/* Combined Card */}
                 <div className="bg-[#121315] p-4 rounded-lg space-y-4">
                     {/* Subject */}
                     <div className=" ">
-                        <h3 className="text-sm text-gray-300 font-semibold mb-1">Subject</h3>
-                        <p className="text-sm text-gray-200">
+                        <h3 className="text-[14] leading-[18px] text-gray-300 font-medium  mb-2">Subject</h3>
+                        <p className="text-[16px] leading-5 font-normal text-[#FFFFFF66]">
                             {ticket.subject || "View management request - Need assistance with ticket view."}
                         </p>
                     </div>
 
-                    {/* Description */}
                     <div>
-                        <h3 className="text-sm text-gray-300 font-semibold mb-1">
+                        <h3 className="text-[14] leading-[18px] text-gray-300 font-medium mb-5">
                             Description
                         </h3>
-                        <p className="text-sm text-gray-200">
+                        <p className="text-[16px] leading-5 font-normal text-[#FFFFFF66] mb-1">
                             {ticket.description ||
                                 "This is a sample description. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."}
                         </p>
@@ -98,11 +89,11 @@ export default function TicketDetailDrawer({
                 </div>
             </div>
 
-            {/* Footer */}
-            <div className="p-4">
+            {/* Footer with Go Back button - Always fixed at bottom */}
+            <div className="p-5 flex-shrink-0 ">
                 <button
                     onClick={onClose}
-                    className="w-full bg-[#EFFC76] text-black font-medium py-3 rounded-lg hover:bg-[#e8f566] transition"
+                    className="yellow-btn cursor-pointer w-full text-black px-[20px] py-[12px] rounded-[8px] font-semibold text-[16px] leading-[20px] hover:bg-[#E5F266] transition-colors duration-300"
                 >
                     Go Back
                 </button>

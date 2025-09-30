@@ -36,7 +36,7 @@ function CardSection() {
           iconSrc="/images/how-it-works.png"
           iconWidth={32}
           iconHeight={32}
-          className="max-w-[200px]"
+          className="max-w-[200px] mb-3 sm:mb-0"
         />
         <span className="text-[#fff] text-[48px] font-medium leading-[56px] max-[425px]:leading-[24px] max-[425px]:text-[24px]">
           How Our Hosting Platform Works.
@@ -47,7 +47,7 @@ function CardSection() {
       </div>
 
       {/* Cards Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-45 md:gap-y-[115px] md:gap-x-[17px] lg:gap-[24px] mt-[170px] sm:mt-[211px] ">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-45 md:gap-y-[115px] md:gap-x-[17px] lg:gap-[24px] mt-[148px] sm:mt-[211px] ">
         {steps.map((step) => (
           <div key={step.id} className="relative flex flex-col items-center text-left ">
             {/* Glow Background */}

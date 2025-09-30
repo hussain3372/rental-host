@@ -1,13 +1,14 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
+import Dropdown from "@/app/shared/InputDropDown";
 type HelpSupportDrawerProps = {
-  isOpen: boolean;
-  onClose: () => void;
+    isOpen: boolean;
+    onClose: () => void;
 };
 
 export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
-
+    const [issueDropdownOpen, setIssueDropdownOpen] = useState(false);
     const [issueType, setIssueType] = useState("");
     const [subject, setSubject] = useState("");
     const [description, setDescription] = useState("");
@@ -18,11 +19,17 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
             setImage(e.target.files[0]);
         }
     };
+    const uniqueIssueTypes = [
+        "Login Issue",
+        "Payment Issue",
+        "Bug Report",
+        "Feature Request",
+    ];
 
     return (
         <div className="h-full flex flex-col text-white">
             {/* Top content */}
-            <div className="space-y-5">
+            <div className="space-y-5 flex-1">
                 <h2 className="text-[20px] leading-6 font-medium mb-3">
                     Help & Support
                 </h2>
@@ -30,48 +37,46 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
                     View and update your personal details to keep your account information accurate.
                 </p>
 
-                <div>
+                <div className="relative">
                     <label className="text-white text-sm font-medium mb-3 block">
                         Issue Type
                     </label>
-                    <div className="relative">
-                        <select
-                            value={issueType}
-                            onChange={(e) => setIssueType(e.target.value)}
-                            className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
-                        >
-                            <option className="text-black bg-[#121315] text-white" value="">
-                                Select type
-                            </option>
-                            <option className="text-black bg-[#121315] text-white" value="account">
-                                Account Issue
-                            </option>
-                            <option className="text-black bg-[#121315] text-white" value="payment">
-                                Payment Problem
-                            </option>
-                            <option className="text-black bg-[#121315] text-white" value="bug">
-                                Report a Bug
-                            </option>
-                            <option className="text-black bg-[#121315] text-white" value="other">
-                                Other
-                            </option>
-                        </select>
-                        <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                            <svg
-                                className="w-4 h-4 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M19 9l-7 7-7-7"
-                                />
-                            </svg>
-                        </div>
+                    <div
+                        className={`
+                            w-full p-3 pr-10 rounded-[10px]
+                            border border-[#404040]         
+                            hover:border-[#EFFC76]          
+                            focus:border-[#EFFC76]          
+                            bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)]
+                            text-white placeholder:text-white/40
+                            focus:outline-none
+                            transition duration-200 ease-in-out
+                        `}
+                        onClick={() => setIssueDropdownOpen(!issueDropdownOpen)}
+                    >
+                        {issueType || "Select issue type"}
+                        <Image
+                            src="/images/dropdown.svg"
+                            alt="dropdown"
+                            width={16}
+                            height={16}
+                            className="absolute right-3 top-1/2 transform translate-y-3 cursor-pointer"
+                        />
                     </div>
+
+                    {issueDropdownOpen && (
+                        <div className="absolute z-50 w-full mt-1">
+                            <Dropdown
+                                items={uniqueIssueTypes.map((issue) => ({
+                                    label: issue,
+                                    onClick: () => {
+                                        setIssueType(issue);
+                                        setIssueDropdownOpen(false);
+                                    },
+                                }))}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {/* Subject */}
@@ -82,7 +87,16 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
                         type="text"
                         value={subject}
                         onChange={(e) => setSubject(e.target.value)}
-                        className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                        className={`
+                            w-full p-3 pr-10 rounded-[10px]
+                            border border-[#404040]         
+                            hover:border-[#EFFC76]          
+                            focus:border-[#EFFC76]          
+                            bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)]
+                            text-white placeholder:text-white/40
+                            focus:outline-none
+                            transition duration-200 ease-in-out
+                        `}
                     />
                 </div>
 
@@ -93,13 +107,13 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
                         placeholder="Describe your problem..."
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                        className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl  px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
                         rows={4}
                     />
                 </div>
                 <div>
                     <label
-                        className="flex flex-col justify-center items-center text-center  rounded-[10px] border border-dashed border-[#EFFC76] bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]"
+                        className="flex flex-col justify-center items-center text-center rounded-[10px] border border-dashed border-[#EFFC76] bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]"
                         style={{ height: "180px", padding: "12px", cursor: "pointer" }}
                     >
                         <input
@@ -113,20 +127,19 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
                                 <Image
                                     src={URL.createObjectURL(image)}
                                     alt="Preview"
-                                    width={200}
+                                    width={100}
                                     height={100}
-                                    className="rounded-lg object-cover"
+                                    className="rounded-lg object-contain w-[100px] h-[100px]"
                                 />
                             </div>
                         ) : (
                             <>
-                                {/* Upload Icon */}
                                 <Image
                                     src="/images/image-upload.png"
                                     alt="Upload"
                                     width={40}
                                     height={40}
-                                    className="mb-5 object-cover"
+                                    className="mb-5 object-contain"
                                 />
                                 <h3 className="text-[#FFFFFF] text-[16px] leading-5 font-normal mb-2">
                                     Upload File
@@ -137,11 +150,12 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
                                 </p>
                             </>
                         )}
-
                     </label>
                 </div>
             </div>
-            <div className="mt-5 pb-5">
+
+            {/* Report Issue Button with responsive margin */}
+            <div className="mt-5 lg:mt-auto py-5">
                 <button
                     onClick={onClose}
                     className="w-full py-4 bg-[#EFFC76] text-[#121315] rounded-[8px] text-[18px] leading-[22px] font-semibold cursor-pointer"
@@ -150,6 +164,5 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
                 </button>
             </div>
         </div>
-
     );
 }

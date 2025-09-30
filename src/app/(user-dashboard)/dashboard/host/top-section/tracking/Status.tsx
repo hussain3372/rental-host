@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 export default function Status() {
@@ -92,9 +93,9 @@ export default function Status() {
             Start your certification application today and keep your properties
             verified.
           </p>
-          <button className="mt-[84px] cursor-pointer w-[130px] text-center flex items-center font-semibold text-[16px] leading-[20px] bg-black text-[#c4c4c4] px-[20px] py-[11px] rounded-[8px] shadow-[0_4px_20px_rgba(0,0,0,0.6)] transition-all duration-200 hover:opacity-90">
+          <Link href="/listing" className="mt-[84px] cursor-pointer w-[130px] text-center flex items-center font-semibold text-[16px] leading-[20px] bg-black text-[#c4c4c4] px-[20px] py-[11px] rounded-[8px] shadow-[0_4px_20px_rgba(0,0,0,0.6)] transition-all duration-200 hover:opacity-90">
             Apply Now
-          </button>
+          </Link>
         </div>
 
         <Image

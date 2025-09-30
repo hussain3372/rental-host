@@ -52,7 +52,7 @@ export default function Verification() {
                 />
               </div>
 
-              <Link href="/dashboard/coming-soon">
+              <Link href="/docs/certificates.pdf" target='_blank'>
                 <p className='text-[#EFFC76] font-regular underline text-[20px] leading-[24px]'>View Certificate</p>
               </Link>
           </div>

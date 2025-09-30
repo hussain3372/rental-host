@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link"; 
+import Link from "next/link";
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
@@ -23,8 +23,8 @@ export default function PropertyDetailPage() {
     );
   }
 
-const images = property.images || [property.images]; // fallback if only one image
-const totalSteps = images.length;
+  const images = property.images || [property.images]; // fallback if only one image
+  const totalSteps = images.length;
 
 
   const nextStep = () =>
@@ -46,72 +46,65 @@ const totalSteps = images.length;
   };
   return (
     <div className="pt-[80px]  px-4 sm:px-6 lg:px-[120px]">
-      <nav
-        className="flex py-3 mb-5 text-gray-200 rounded-lg bg-transparent"
-        aria-label="Breadcrumb"
-      >
-        <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-          <li className="inline-flex items-center">
+
+      <nav className="py-3 mb-5 bg-transparent">
+        <ol className="flex flex-wrap items-center gap-1 sm:gap-2 text-sm md:text-base">
+          <li className="flex items-center">
             <Link
               href="/"
-              className=" text-[16px] leading-5 font-normal text-[#FFFFFF99] hover:text-[#EFFC76] md:ms-2"
+              className="text-[14px] sm:text-[16px] font-normal text-[#FFFFFF99] hover:text-[#EFFC76] transition-colors"
             >
               Home
             </Link>
           </li>
 
-          <li>
-            <div className="flex items-center">
-              {/* Arrow */}
-              <svg
-                className="rtl:rotate-180 block w-3 h-3 mx-1 text-gray-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m1 9 4-4-4-4"
-                />
-              </svg>
-              <Link
-                href="/search-page"
-                className="ms-1 text-[16px] leading-5 font-normal text-[#FFFFFF99] hover:text-[#EFFC76] md:ms-2"
-              >
-                Certified Properties
-              </Link>
-            </div>
+          <li className="flex items-center">
+            <svg
+              className="w-3 h-3 mx-1 text-gray-400 flex-shrink-0"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 6 10"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m1 9 4-4-4-4"
+              />
+            </svg>
+            <Link
+              href="/search-page"
+              className="text-[14px] sm:text-[16px] font-normal text-[#FFFFFF99] hover:text-[#EFFC76] transition-colors whitespace-nowrap"
+            >
+              Certified Properties
+            </Link>
           </li>
 
-          <li aria-current="page">
-            <div className="flex items-center">
-              {/* Arrow */}
-              <svg
-                className="rtl:rotate-180 w-3 h-3 mx-1 text-gray-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m1 9 4-4-4-4"
-                />
-              </svg>
-              <p className="text-[12px] sm:text-[16px] leading-5 font-normal text-white">
-                {property.title}
-              </p>
-            </div>
+          <li className="flex items-center min-w-0 max-w-[200px] sm:max-w-none">
+            <svg
+              className="w-3 h-3 mx-1 text-gray-400 flex-shrink-0"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 6 10"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m1 9 4-4-4-4"
+              />
+            </svg>
+            <p className="text-[12px] sm:text-[16px] font-normal text-white truncate">
+              {property.title}
+            </p>
           </li>
         </ol>
       </nav>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between gap-6 items-start sm:items-center">
         <h1 className="text-[35px] sm:text-[48px] font-medium text-white">
@@ -178,7 +171,7 @@ const totalSteps = images.length;
           <button
             onClick={nextStep}
             disabled={currentStep === totalSteps - 1}
-            className="w-10 h-10 rounded border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] cursor-pointer" 
+            className="w-10 h-10 rounded border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] cursor-pointer"
           >
             <Image src="/images/right.png" alt="Next" width={11} height={13} />
           </button>

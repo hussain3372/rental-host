@@ -17,7 +17,7 @@ export default function Plans() {
           iconSrc="/images/plan.png"
           iconWidth={32}
           iconHeight={32}
-          className="max-w-[164px] w-full"
+          className="max-w-[164px] w-full mb-5 sm:mb-10"
         />
         <h2 className="max-w-[695px] font-medium text-[30px] md:text-[48px] leading-[40px] md:leading-[56px] text-[#FFFFFF] py-[10px] md:py-[24px]">
           Flexible hosting plans that grow with your property needs

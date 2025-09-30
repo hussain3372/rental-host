@@ -12,8 +12,12 @@ import Unlock from "./Unlock";
 
 const LandingPage = () => {
   return (
+
     <div>
-      <HeroSection />
+      <section id="home">
+        <HeroSection />
+      </section>
+
       <div className="scroll-smooth">
         <section id="how-it-works" className="scroll-mt-[120px]">
           <CardSection />

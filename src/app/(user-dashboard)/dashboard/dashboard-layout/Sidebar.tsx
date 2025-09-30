@@ -402,7 +402,6 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                 : "hover:bg-[#4a5439]"
                 }`}
             >
-              {/* Default SVG */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width={isCollapsed ? 28 : 20}
@@ -419,7 +418,6 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                 />
               </svg>
 
-              {/* Hover/Active SVG */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width={isCollapsed ? 28 : 20}
@@ -448,7 +446,6 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
           </div>
         </div>
 
-        {/* Collapse button outside scroll area - Now visible on mobile when sidebar is open */}
         <Image
           onClick={toggleCollapse}
           src="/images/narrow.png"
@@ -457,8 +454,8 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
           height={32}
           className={`cursor-pointer hover:scale-110 h-auto w-auto transition-transform duration-500 top-[26px] fixed
           ${isCollapsed ? "left-[88px] rotate-180" : "left-[224px]"}
-          ${isMobileOpen ? "lg:block block" : "lg:block hidden"}
-          ${isSearchOpen ? "hidden" : "z-[10000]"}
+            ${isSearchOpen ? "lg:block hidden" : "lg:block block"}
+          z-[10000]
           `}
         />
         {/* Spacer */}

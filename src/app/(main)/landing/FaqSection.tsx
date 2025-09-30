@@ -172,7 +172,7 @@ useEffect(() => {
               iconSrc="/images/FAQ.png"
               iconWidth={32}
               iconHeight={32}
-              className="max-w-[113px] w-full"
+              className="max-w-[113px] w-full mb-0 sm:mb-10"
             />
           </div>
 
@@ -187,7 +187,7 @@ useEffect(() => {
         </div>
 
         {/* FAQ Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 sm:gap-16">
           <div className="space-y-0">
             {leftFAQs.map((faq, index) => (
               <FAQItem

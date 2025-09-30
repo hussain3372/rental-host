@@ -45,7 +45,7 @@ export default function Step2({ formData, errors, onFieldChange }: Step2Props) {
                   : "bg-gradient-to-b from-[#202020] to-[#101010]"
               }`}
             >
-              <p className={item.checked ? "" : ""}>
+              <p className={` text-[14px] ${item.checked ? "" : ""}`}>
                 {item.title}
               </p>
               <input

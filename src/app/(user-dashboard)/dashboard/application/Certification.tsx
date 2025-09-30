@@ -13,7 +13,7 @@ export default function Certification() {
           <p className='text-[12px] sm:text-[16px] font-medium leading-[20px]'>
             Start your certification application today and keep your properties verified.
           </p>
-          <Link href="/dashboard/coming-soon">
+          <Link href="/listing">
             <button className="mt-[48px] cursor-pointer shadow-2xl shadow-black font-semibold leading-[20px] text-[16px] sm:mt-8 lg:mt-10 bg-black text-[#c4c4c4] px-[20px] py-[11px] rounded-lg transition-colors duration-200">
               Apply Now
             </button>
@@ -27,7 +27,7 @@ export default function Certification() {
             alt='design' 
             width={154}
             height={154}
-            className='sm:mt-[-70px] hidden sm:block'
+            className='sm:mt-[-106px] hidden sm:block'
             
           />
           <Image 

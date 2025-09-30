@@ -2,14 +2,14 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react"; 
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { Modal } from "@/app/shared/Modal";
 
-type EditProfileDrawerProps = {
-  onSave: (currentPassword: string, newPassword: string) => void;
+type ChangePasswordDrawerProps = {
+  onSave?: (currentPassword: string, newPassword: string) => void;
   onClose: () => void;
 };
 
-export default function EditProfileDrawer({  onClose }: EditProfileDrawerProps) {
+export default function ChangePasswordDrawer({ onClose }: ChangePasswordDrawerProps) {
   const router = useRouter();
 
   const [currentPassword, setCurrentPassword] = useState("");
@@ -19,6 +19,14 @@ export default function EditProfileDrawer({  onClose }: EditProfileDrawerProps) 
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  // ✅ Success modal state
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
+  const handlePasswordUpdate = () => {
+    // here you can add validation / API call
+    setIsSuccessModalOpen(true); // show success modal
+  };
 
   return (
     <div className="h-full flex flex-col justify-between text-white">
@@ -42,7 +50,11 @@ export default function EditProfileDrawer({  onClose }: EditProfileDrawerProps) 
             type={showCurrent ? "text" : "password"}
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            className="w-full p-3 rounded-[10px] bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)] pr-10"
+            className="w-full p-3 pr-10 rounded-xl border border-[#404040]
+              bg-gradient-to-b from-[#202020] to-[#101010]
+              text-[14px] text-white placeholder:text-white/40
+              focus:outline-none focus:border-[#EFFC76]
+              transition duration-200 ease-in-out"
           />
           <button
             type="button"
@@ -69,7 +81,11 @@ export default function EditProfileDrawer({  onClose }: EditProfileDrawerProps) 
             type={showNew ? "text" : "password"}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full p-3 rounded-[10px] bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)] pr-10"
+            className="w-full p-3 pr-10 rounded-xl border border-[#404040]
+              bg-gradient-to-b from-[#202020] to-[#101010]
+              text-[14px] text-white placeholder:text-white/40
+              focus:outline-none focus:border-[#EFFC76]
+              transition duration-200 ease-in-out"
           />
           <button
             type="button"
@@ -90,7 +106,11 @@ export default function EditProfileDrawer({  onClose }: EditProfileDrawerProps) 
             type={showConfirm ? "text" : "password"}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full p-3 rounded-[10px] bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)] pr-10"
+            className="w-full p-3 pr-10 rounded-xl border border-[#404040]
+              bg-gradient-to-b from-[#202020] to-[#101010]
+              text-[14px] text-white placeholder:text-white/40
+              focus:outline-none focus:border-[#EFFC76]
+              transition duration-200 ease-in-out"
           />
           <button
             type="button"
@@ -103,19 +123,32 @@ export default function EditProfileDrawer({  onClose }: EditProfileDrawerProps) 
       </div>
 
       {/* Bottom button */}
-      <div className="mt-6">
+      <div className="mt-6 lg:mt-auto">
         <button
-          onClick={() => {
-            toast.success("Your password changed successfully");
-            setTimeout(() => {
-              onClose(); // ✅ works now
-            }, 800);
-          }}
+          onClick={handlePasswordUpdate}
           className="w-full py-3 bg-[#EFFC76] text-[#121315] rounded-lg font-semibold cursor-pointer"
         >
           Update Password
         </button>
       </div>
+
+      {isSuccessModalOpen && (
+        <Modal
+          isOpen={isSuccessModalOpen}
+          onClose={() => {
+            setIsSuccessModalOpen(false);
+            onClose(); 
+          }}
+          onConfirm={() => {
+            setIsSuccessModalOpen(false);
+            onClose();
+          }}
+          title="Password Changed"
+          description="Your password has been updated successfully."
+          image="/images/2fa-image.png"
+          confirmText="Okay"
+        />
+      )}
     </div>
   );
 }

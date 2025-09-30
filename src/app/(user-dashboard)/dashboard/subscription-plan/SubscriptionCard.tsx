@@ -141,15 +141,18 @@ export default function SubscriptionPlan() {
         onClick={() => setShowPayment(false)}
       >
         <div
-          className={`relative w-full sm:max-w-[608px]  max-w-[260px] max-h-screen bg-[#121315] shadow-lg overflow-y-auto z-[2010] transform transition-transform duration-300 ease-in-out ${showPayment ? "translate-x-0" : "translate-x-full"
+          className={`relative w-full sm:max-w-[608px] max-w-[260px] h-full  rounded-xl               border border-[#FFFFFF1F] 
+ bg-[#0A0C0B] shadow-lg overflow-y-auto scrollbar-hide z-[2010] transform transition-transform duration-300 ease-in-out ${showPayment ? "translate-x-0" : "translate-x-full"
             }`}
           onClick={(e) => e.stopPropagation()}
         >
-          <ApplyNowFilter
-            selectedPlan={selectedPlan ?? ""}
-            onClose={() => setShowPayment(false)}
-            onSubscribe={handleSubscribe}
-          />
+          <div className="h-full bg-[#0A0C0B] "> 
+            <ApplyNowFilter
+              selectedPlan={selectedPlan ?? ""}
+              onClose={() => setShowPayment(false)}
+              onSubscribe={handleSubscribe}
+            />
+          </div>
         </div>
       </div>
 

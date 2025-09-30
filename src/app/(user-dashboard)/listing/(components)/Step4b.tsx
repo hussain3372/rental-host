@@ -1,13 +1,17 @@
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Dropdown from "@/app/shared/InputDropDown";
 
 export default function Step4b() {
   const [selectedMethod, setSelectedMethod] = useState("card");
   const [expiryDate, setExpiryDate] = useState<Date | null>(null);
   const [selectedBank, setSelectedBank] = useState("");
+  const [showBankDropdown, setShowBankDropdown] = useState(false);
+
+  const bankDropdownRef = useRef<HTMLDivElement>(null);
 
   const banks = [
     "Bank of America",
@@ -18,6 +22,22 @@ export default function Step4b() {
     "Deutsche Bank",
     "Standard Chartered",
   ];
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        bankDropdownRef.current &&
+        !bankDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowBankDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div>
@@ -182,27 +202,46 @@ export default function Step4b() {
               />
             </div>
 
-            <div className="relative">
+            <div ref={bankDropdownRef}>
               <label className="block font-medium leading-[18px] text-white text-sm mb-[10px]">
                 Bank name
               </label>
-              <select
-                value={selectedBank}
-                onChange={(e) => setSelectedBank(e.target.value)}
-                className={`w-full appearance-none  h-12 text-[14px] font-regular bg-gradient-to-b from-[#202020] to-[#101010] border border-[#4a4a4a] rounded-lg px-4 focus:outline-none cursor-pointer ${
-                  selectedBank ? "text-white" : "text-white/40"
-                }`}
-              >
-                <option value="" disabled>
-                  Select bank
-                </option>
-                {banks.map((bank) => (
-                  <option key={bank} value={bank} className="text-black">
-                    {bank}
-                  </option>
-                ))}
-              </select>
-                <Image src="/images/dropdown.svg" alt="Selection" width={20} height={20} className="absolute bottom-4 right-5"/>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowBankDropdown((prev) => !prev)}
+                  className={`
+                    w-full h-12 px-4 pr-10 rounded-lg border border-[#464646]
+                    bg-gradient-to-b from-[#202020] to-[#101010]
+                    text-[14px] font-regular text-left
+                    ${selectedBank === "" ? "text-white/40" : "text-white"}
+                    cursor-pointer transition duration-200 ease-in-out
+                  `}
+                >
+                  {selectedBank || "Select bank"}
+                  <Image
+                    src="/images/dropdown.svg"
+                    alt="dropdown"
+                    width={15}
+                    height={8}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  />
+                </button>
+
+                {showBankDropdown && (
+                  <div className="absolute z-10 mt-1 w-full">
+                    <Dropdown
+                      items={banks.map((bank) => ({
+                        label: bank,
+                        onClick: () => {
+                          setSelectedBank(bank);
+                          setShowBankDropdown(false);
+                        },
+                      }))}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             <div>

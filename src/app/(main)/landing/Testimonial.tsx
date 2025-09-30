@@ -57,16 +57,16 @@ const Testimonial = () => {
 
 
   return (
-    <div className="bg-[#121315] text-white container-class px-4 md:px-[120px] py-8 md:py-[82px] flex items-center justify-center p-8">
+    <div className="bg-[#121315] text-white container-class px-4 md:px-[120px] py-9 md:py-[82px] flex items-center justify-center p-8">
       <div className="w-full">
         {/* Header */}
-        <div className="flex items-center gap-2 sm:mb-12 mb-4">
+        <div className="flex items-center gap-2 sm:mb-12 mb-0">
           <BlackButton
             text="Testimonials"
             iconSrc="/images/testimonial.png"
             iconWidth={32}
             iconHeight={32}
-            className="max-w-[193px] w-full"
+            className="max-w-[193px] w-full mb-0 sm:mt-10"
           />
         </div>
 

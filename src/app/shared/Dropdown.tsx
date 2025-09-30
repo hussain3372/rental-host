@@ -30,7 +30,7 @@ const Dropdown: React.FC<DropdownProps> = ({ items, isOpen = true, onClose }) =>
   return (
     <div
       ref={dropdownRef}
-      className="absolute top-full right-0 mt-1 z-50 flex flex-col items-start gap-3 py-3 px-3 w-[150px] rounded-[10px] 
+      className="absolute top-0 right-14 mt-1 z-50 flex flex-col items-start  w-[150px] rounded-[10px] 
                  bg-[radial-gradient(75%_81%_at_50%_18.4%,#202020_0%,#101010_100%)] 
                  shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)] p-2"
     >
@@ -41,7 +41,9 @@ const Dropdown: React.FC<DropdownProps> = ({ items, isOpen = true, onClose }) =>
             item.onClick();
             onClose?.(); // ✅ close after click
           }}
-          className="w-full text-left text-white text-sm hover:text-gray-300 transition"
+          className="w-full text-left px-3 py-2 rounded-md text-white/90 text-sm 
+                     hover:text-white hover:bg-white/10 cursor-pointer active:scale-[0.98] 
+                     transition-all duration-150 ease-out"
         >
           {item.label}
         </button>

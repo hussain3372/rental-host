@@ -1,10 +1,11 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Table } from "@/app/shared/tables/Tables";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Modal } from "@/app/shared/Modal";
+import Dropdown from "@/app/shared/InputDropDown";
 
 interface CustomDateInputProps {
   value?: string;
@@ -33,9 +34,20 @@ export default function Applications() {
   const [singleRowToDelete, setSingleRowToDelete] = useState<{ row: Record<string, string>, index: number } | null>(null);
   const [modalType, setModalType] = useState<'single' | 'multiple'>('multiple');
 
+  // Dropdown states
+  const [showOwnershipDropdown, setShowOwnershipDropdown] = useState(false);
+  const [showPropertyDropdown, setShowPropertyDropdown] = useState(false);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+
+  // Refs for dropdown containers
+  const ownershipDropdownRef = useRef<HTMLDivElement>(null);
+  const propertyDropdownRef = useRef<HTMLDivElement>(null);
+  const statusDropdownRef = useRef<HTMLDivElement>(null);
+
   const handleDeleteSelected = () => {
     console.log("Deleting selected rows:", Array.from(selectedRows));
   };
+
   const [certificationFilters, setCertificationFilters] = useState({
     ownership: "",
     property: "",
@@ -249,48 +261,62 @@ export default function Applications() {
     },
   ]);
 
-  // Delete handlers for application data - matching Tracking component style
-  const handleDeleteApplications = (selectedRows: Set<number>) => {
-    // Find the actual data items by matching the display data to full data
-    const idsToDelete = Array.from(selectedRows);
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        ownershipDropdownRef.current &&
+        !ownershipDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowOwnershipDropdown(false);
+      }
+      if (
+        propertyDropdownRef.current &&
+        !propertyDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowPropertyDropdown(false);
+      }
+      if (
+        statusDropdownRef.current &&
+        !statusDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowStatusDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
-    // Remove the items from the main data
+  // Delete handlers
+  const handleDeleteApplications = (selectedRows: Set<number>) => {
+    const idsToDelete = Array.from(selectedRows);
     const updatedData = allCertificationData.filter(item => !idsToDelete.includes(item.id));
     setAllCertificationData(updatedData);
-
-    // Close modal and reset selected rows
     setIsModalOpen(false);
     setSelectedRows(new Set());
-
-    // Optional: Show success message - removed alert to match Tracking component
   };
 
   const handleDeleteSingleApplication = (row: Record<string, string>, index: number) => {
-    // Find the actual item using the global index
     const globalIndex = startIndex + index;
     const itemToDelete = filteredCertificationData[globalIndex];
 
     if (itemToDelete) {
-      // Remove the item from the main data
       const updatedData = allCertificationData.filter(item => item.id !== itemToDelete.id);
       setAllCertificationData(updatedData);
     }
 
-    // Close modal and reset
     setIsModalOpen(false);
     setSingleRowToDelete(null);
-
-    // Optional: Show success message - removed alert to match Tracking component
   };
 
-  // Function to open modal for single deletion
   const openDeleteSingleModal = (row: Record<string, string>, index: number) => {
     setSingleRowToDelete({ row, index });
     setModalType('single');
     setIsModalOpen(true);
   };
 
-  // Handle confirmation from modal
   const handleModalConfirm = () => {
     if (modalType === 'multiple' && selectedRows.size > 0) {
       handleDeleteApplications(selectedRows);
@@ -403,7 +429,6 @@ export default function Applications() {
   };
 
   const handleApplyFilter = () => {
-    // Convert selected date to string format for filtering
     if (submittedDate) {
       setCertificationFilters(prev => ({
         ...prev,
@@ -418,7 +443,7 @@ export default function Applications() {
     setCurrentPage(page);
   };
 
-  // Custom input component for date picker to match the design
+  // Custom input component for date picker
   const CustomDateInput = React.forwardRef<HTMLInputElement, CustomDateInputProps>(
     ({ value, onClick }, ref) => (
       <div className="relative">
@@ -428,11 +453,11 @@ export default function Applications() {
           onClick={onClick}
           ref={ref}
           readOnly
-          className="w-full bg-gradient-to-b placeholder:text-white/40 from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none cursor-pointer"
+          className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none cursor-pointer text-white/40 placeholder-white/40"
           placeholder="Select date"
         />
         <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-          <Image src="/images/calender.svg" alt="select date" width={20} height={20} />
+          <Image src="/images/calender.svg" alt='Pick date' width={20} height={20} />
         </div>
       </div>
     )
@@ -444,7 +469,6 @@ export default function Applications() {
     const buttons = [];
     const maxVisiblePages = 5;
 
-    // Previous button - always visible
     buttons.push(
       <button
         key="prev"
@@ -456,20 +480,16 @@ export default function Applications() {
       </button>
     );
 
-    // Calculate which pages to show
     let startPage, endPage;
 
     if (currentPage <= maxVisiblePages) {
-      // Show pages 1 to maxVisiblePages when on early pages
       startPage = 1;
       endPage = Math.min(maxVisiblePages, totalPages);
     } else {
-      // For later pages, show pages ending with current page
       startPage = currentPage - maxVisiblePages + 1;
       endPage = currentPage;
     }
 
-    // Page number buttons
     for (let i = startPage; i <= endPage; i++) {
       buttons.push(
         <button
@@ -485,7 +505,6 @@ export default function Applications() {
       );
     }
 
-    // Next button - always visible
     buttons.push(
       <button
         key="next"
@@ -502,7 +521,6 @@ export default function Applications() {
 
   return (
     <>
-      {/* Modal with proper onConfirm handler - matching Tracking component */}
       {isModalOpen && (
         <Modal
           isOpen={isModalOpen}
@@ -519,7 +537,7 @@ export default function Applications() {
         />
       )}
 
-      <div className="flex flex-col justify-between h-[80vh]"> 
+      <div className="flex flex-col justify-between custom-height"> 
         <div className="bg-[#121315] h-full rounded-lg relative z-[10] overflow-hidden">
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-5">
@@ -572,38 +590,37 @@ export default function Applications() {
             </div>
           </div>
 
-          {/* Table with delete functionality */}
+          {/* Table */}
           <div className="p-0 cursor-pointer">
-           <Table
-  data={paginatedData}
-  control={tableControl}
-  showDeleteButton={true}
-  onDeleteSingle={openDeleteSingleModal}
-  showModal={true}
-  clickable={true}
-  
-  modalTitle="Property Details"
-  selectedRows={selectedRows}
-  setSelectedRows={setSelectedRows}
-  dropdownItems={[
-                                {
-                                    label: "View Details",
-                                    onClick:(row: Record<string, string>, index: number)=>{
-                                       console.log('Clicked row:', row);
-                                        const originalRow = filteredCertificationData[startIndex + index];
-                                        window.location.href = `/dashboard/application/detail/${originalRow.id}`;
-                                    }
-                                },
-                                {
-                                    label: "Delete Application",
-                                    onClick: (row, index) => openDeleteSingleModal(row, index),
-                                },
-                            ]}
-/>
+            <Table
+              data={paginatedData}
+              control={tableControl}
+              showDeleteButton={true}
+              onDeleteSingle={openDeleteSingleModal}
+              showModal={true}
+              clickable={true}
+              modalTitle="Property Details"
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+              dropdownItems={[
+                {
+                  label: "View Details",
+                  onClick:(row: Record<string, string>, index: number)=>{
+                    console.log('Clicked row:', row);
+                    const originalRow = filteredCertificationData[startIndex + index];
+                    window.location.href = `/dashboard/application/detail/${originalRow.id}`;
+                  }
+                },
+                {
+                  label: "Delete Application",
+                  onClick: (row, index) => openDeleteSingleModal(row, index),
+                },
+              ]}
+            />
           </div>
-
-          {/* Pagination - Always visible */}
         </div>
+
+        {/* Pagination */}
         <div className="flex justify-center mt-[20px]">
           <div className="flex items-center gap-2">
             {renderPaginationButtons()}
@@ -621,8 +638,9 @@ export default function Applications() {
 
       {/* Right Slide Panel Filter */}
       <div
-        className={`fixed top-0 right-0 h-full bg-[#0A0C0B] z-[2000000000] transform transition-transform duration-300 ease-in-out ${isFilterOpen ? "translate-x-0" : "translate-x-full"
-          } w-[250px] sm:w-1/2 lg:w-2/5 xl:w-1/3`}
+        className={`fixed top-0 right-0 h-full bg-[#0A0C0B] z-[2000000000] transform transition-transform duration-300 ease-in-out ${
+          isFilterOpen ? "translate-x-0" : "translate-x-full"
+        } w-[250px] sm:w-1/2 lg:w-2/5 xl:w-1/3`}
       >
         <div
           className="h-full justify-between flex flex-col bg-[#0A0C0B] overflow-y-auto"
@@ -631,12 +649,12 @@ export default function Applications() {
           {/* Header */}
           <div>
             <div className="flex justify-between items-center px-6 pt-6 pb-3">
-              <h3 className="text-white text-[20px] font-medium">
+              <h3 className="text-white text-[20px] leading-[24px] font-medium">
                 Apply Filter
               </h3>
               <button
                 onClick={handleResetFilter}
-                className="text-[#EFFC76] cursor-pointer text-[18px] font-medium underline"
+                className="text-[#EFFC76] cursor-pointer text-[18px] leading-[22px] font-medium underline"
               >
                 Reset
               </button>
@@ -647,115 +665,136 @@ export default function Applications() {
                 Refine listings to find the right property faster.
               </p>
 
-              <div className="space-y-[20px]">
-                {/* Ownership */}
-                <div>
-                  <label className="text-white text-sm font-medium mb-3 block">
+              <div className="space-y-5">
+                {/* Ownership Dropdown */}
+                <div ref={ownershipDropdownRef}>
+                  <label className="text-white leading-[18px] text-sm font-medium mb-3 block">
                     Ownership
                   </label>
                   <div className="relative">
-                    <select
-                      value={certificationFilters.ownership}
-                      onChange={(e) =>
-                        setCertificationFilters((prev) => ({
-                          ...prev,
-                          ownership: e.target.value,
-                        }))
-                      }
-                      className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                    <button
+                      type="button"
+                      onClick={() => setShowOwnershipDropdown(prev => !prev)}
+                      className={`
+                        w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
+                        bg-gradient-to-b from-[#202020] to-[#101010]
+                        text-[14px] font-medium text-left
+                        ${certificationFilters.ownership === "" ? "text-white/40" : "text-white"}
+                        cursor-pointer transition duration-200 ease-in-out
+                        hover:border-[#EFFC76]
+                      `}
                     >
-                      <option className="text-black" value="">
-                        Select ownership
-                      </option>
-                      {uniqueOwnerships.map((ownership) => (
-                        <option
-                          className="text-black"
-                          key={ownership}
-                          value={ownership}
-                        >
-                          {ownership}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
+                      {certificationFilters.ownership || "Select ownership"}
+                      <Image
+                        src="/images/dropdown.svg"
+                        alt="dropdown"
+                        width={15}
+                        height={8}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                      />
+                    </button>
+
+                    {showOwnershipDropdown && (
+                      <div className="absolute z-10 mt-1 w-full">
+                        <Dropdown
+                          items={uniqueOwnerships.map(ownership => ({
+                            label: ownership,
+                            onClick: () => {
+                              setCertificationFilters(prev => ({ ...prev, ownership: ownership }));
+                              setShowOwnershipDropdown(false);
+                            }
+                          }))}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Property */}
-                <div>
-                  <label className="text-white text-sm font-medium mb-3 block">
+                {/* Property Dropdown */}
+                <div ref={propertyDropdownRef}>
+                  <label className="text-white leading-[18px] text-sm font-medium mb-3 block">
                     Property
                   </label>
                   <div className="relative">
-                    <select
-                      value={certificationFilters.property}
-                      onChange={(e) =>
-                        setCertificationFilters((prev) => ({
-                          ...prev,
-                          property: e.target.value,
-                        }))
-                      }
-                      className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                    <button
+                      type="button"
+                      onClick={() => setShowPropertyDropdown(prev => !prev)}
+                      className={`
+                        w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
+                        bg-gradient-to-b from-[#202020] to-[#101010]
+                        text-[14px] font-medium text-left
+                        ${certificationFilters.property === "" ? "text-white/40" : "text-white"}
+                        cursor-pointer transition duration-200 ease-in-out
+                        hover:border-[#EFFC76]
+                      `}
                     >
-                      <option className="text-black" value="">
-                        Select property
-                      </option>
-                      {uniqueProperties.map((property) => (
-                        <option
-                          className="text-black"
-                          key={property}
-                          value={property}
-                        >
-                          {property}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
+                      {certificationFilters.property || "Select property"}
+                      <Image
+                        src="/images/dropdown.svg"
+                        alt="dropdown"
+                        width={15}
+                        height={8}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                      />
+                    </button>
+
+                    {showPropertyDropdown && (
+                      <div className="absolute z-10 mt-1 w-full">
+                        <Dropdown
+                          items={uniqueProperties.map(property => ({
+                            label: property,
+                            onClick: () => {
+                              setCertificationFilters(prev => ({ ...prev, property: property }));
+                              setShowPropertyDropdown(false);
+                            }
+                          }))}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Status */}
-                <div>
-                  <label className="text-white text-sm font-medium mb-3 block">
+                {/* Status Dropdown */}
+                <div ref={statusDropdownRef}>
+                  <label className="text-white leading-[18px] text-sm font-medium mb-3 block">
                     Status
                   </label>
                   <div className="relative">
-                    <select
-                      value={certificationFilters.status}
-                      onChange={(e) =>
-                        setCertificationFilters((prev) => ({
-                          ...prev,
-                          status: e.target.value,
-                        }))
-                      }
-                      className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl text-white/40 px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                    <button
+                      type="button"
+                      onClick={() => setShowStatusDropdown(prev => !prev)}
+                      className={`
+                        w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
+                        bg-gradient-to-b from-[#202020] to-[#101010]
+                        text-[14px] font-medium text-left
+                        ${certificationFilters.status === "" ? "text-white/40" : "text-white"}
+                        cursor-pointer transition duration-200 ease-in-out
+                        hover:border-[#EFFC76]
+                      `}
                     >
-                      <option className="text-black" value="">
-                        Select status
-                      </option>
-                      {uniqueStatuses.map((status) => (
-                        <option
-                          className="text-black"
-                          key={status}
-                          value={status}
-                        >
-                          {status}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
+                      {certificationFilters.status || "Select status"}
+                      <Image
+                        src="/images/dropdown.svg"
+                        alt="dropdown"
+                        width={15}
+                        height={8}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                      />
+                    </button>
+
+                    {showStatusDropdown && (
+                      <div className="absolute z-10 mt-1 w-full">
+                        <Dropdown
+                          items={uniqueStatuses.map(status => ({
+                            label: status,
+                            onClick: () => {
+                              setCertificationFilters(prev => ({ ...prev, status: status }));
+                              setShowStatusDropdown(false);
+                            }
+                          }))}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -783,7 +822,7 @@ export default function Applications() {
           <div className="p-6">
             <button
               onClick={handleApplyFilter}
-              className="w-full bg-[#EFFC76] cursor-pointer text-black font-semibold py-4 rounded-xl hover:bg-[#e8f566] transition-colors text-sm"
+              className="w-full yellow-btn cursor-pointer text-black font-semibold py-4 rounded-md transition-colors text-sm shadow-[inset_0_4px_6px_rgba(0,0,0,0.3)]"
             >
               Apply Filter
             </button>

@@ -33,7 +33,7 @@ const DropdownField: React.FC<DropdownFieldProps> = ({ icon, label, options, onS
   };
 
   return (
-    <div ref={ref} className="relative z-50">
+    <div ref={ref} className="relative">
       <div
         onClick={() => setOpen(!open)}
         className="flex items-center justify-between px-[14px] w-full sm:w-auto bg-[#18191B] text-white rounded-lg p-[14px] cursor-pointer border border-[#2A2B2E]"
@@ -54,7 +54,7 @@ const DropdownField: React.FC<DropdownFieldProps> = ({ icon, label, options, onS
       </div>
 
       {open && (
-        <div className="absolute left-0 mt-2 w-full sm:w-[220px] bg-[#18191B] border border-[#2A2B2E] rounded-lg shadow-lg">
+        <div className="absolute left-0 mt-2 w-full sm:w-[220px] bg-[#18191B] border border-[#2A2B2E] rounded-lg shadow-lg z-[1000]">
           {options.map((option, index) => (
             <div
               key={index}
