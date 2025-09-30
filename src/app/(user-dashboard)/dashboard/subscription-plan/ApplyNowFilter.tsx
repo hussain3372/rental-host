@@ -1,26 +1,47 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { forwardRef } from "react";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropdown from "@/app/shared/InputDropDown";
+
 type PaymentOptionsProps = {
     selectedPlan?: string;
     onClose?: () => void;
     onSubscribe: () => void;
 };
+
 export default function PaymentOptions({ onSubscribe }: PaymentOptionsProps) {
     const [selected, setSelected] = useState<"card" | "bank">("card");
     const [expiryDate, setExpiryDate] = useState<Date | null>(null);
     const [bankDropdownOpen, setBankDropdownOpen] = useState(false);
     const [selectedBank, setSelectedBank] = useState<string>("");
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
     const bankOptions = [
         "Standard Chartered",
         "Bank Alfalah",
         "Meezan Bank",
         "Faysal Bank",
     ];
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setBankDropdownOpen(false);
+            }
+        };
+
+        if (bankDropdownOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [bankDropdownOpen]);
 
     const options = [
         {
@@ -36,11 +57,13 @@ export default function PaymentOptions({ onSubscribe }: PaymentOptionsProps) {
             icon: "/images/atm-card.png",
         },
     ];
+
     type CustomDateInputProps = {
         value?: string;
         onClick?: () => void;
         placeholder?: string;
     };
+
     const CustomDateInput = forwardRef<HTMLInputElement, CustomDateInputProps>(
         ({ value, onClick, placeholder }, ref) => (
             <div className="relative w-full">
@@ -249,7 +272,7 @@ export default function PaymentOptions({ onSubscribe }: PaymentOptionsProps) {
                                     />
                                 </div>
 
-                                <div className="relative" id="bank-dropdown-wrapper">
+                                <div className="relative" ref={dropdownRef}>
                                     <label className="block text-[14px] leading-[18px] font-medium text-[#FFFFFF] mb-[10px]">
                                         Bank name
                                     </label>
@@ -264,6 +287,7 @@ export default function PaymentOptions({ onSubscribe }: PaymentOptionsProps) {
                                         text-white placeholder:text-white/40
                                         focus:outline-none
                                         transition duration-200 ease-in-out
+                                        cursor-pointer
                                         text-white `}
                                         onClick={() => setBankDropdownOpen(!bankDropdownOpen)}
                                     >
@@ -338,8 +362,7 @@ export default function PaymentOptions({ onSubscribe }: PaymentOptionsProps) {
                 <div className="py-7  lg:mt-auto lg:flex-shrink-0">
                     <button
                         onClick={onSubscribe}
-                        className="w-full py-[16px] px-10 rounded-[8px] bg-[#EFFC76] text-[#121315] 
-                        text-[18px] leading-[22px] font-semibold cursor-pointer"
+                        className="yellow-btn cursor-pointer w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
                     >
                         Subscribe
                     </button>

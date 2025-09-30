@@ -7,8 +7,8 @@ import {
   Briefcase,
   Calendar,
   Activity,
-  ChevronUp,
-  ChevronDown,
+  // ChevronUp,
+  // ChevronDown,
 } from "lucide-react";
 import Image from "next/image";
 import Dropdown from "@/app/shared/Dropdown";
@@ -57,24 +57,21 @@ export type TableControl = {
 
 interface TableProps<T> {
   title?: string;
+  onSelectAll: (checked: boolean) => void;
+  onSelectRow: (rowId: string, checked: boolean) => void; // or (index: number, checked: boolean) depending on your implementation
+  isAllSelected: boolean;
+  isSomeSelected: boolean;
+  rowIds: string[];
   data: T[];
   control?: TableControl;
   onRowClick?: (row: T, index: number) => void;
-
-  // 🔹 Dropdown items per row
   dropdownItems?: { label: string; onClick: (row: T, index: number) => void }[];
-
-  // 🔹 Modal options
   showModal?: boolean;
   modalTitle?: string;
   clickable?: boolean;
-
-  // 🔹 Delete options
   onDelete?: (rows: T[]) => void;
   onDeleteSingle?: (row: T, index: number) => void;
   showDeleteButton?: boolean;
-
-  // 🔹 Row selection
   selectedRows: Set<number>;
   setSelectedRows: React.Dispatch<React.SetStateAction<Set<number>>>;
 }
@@ -89,80 +86,80 @@ interface ModalProps {
 }
 
 // Sort dropdown component
-interface SortDropdownProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSort: (direction: "asc" | "desc") => void;
-  column: string;
-}
+// interface SortDropdownProps {
+//   isOpen: boolean;
+//   onClose: () => void;
+//   onSort: (direction: "asc" | "desc") => void;
+//   column: string;
+// }
 
-function SortDropdown({ isOpen, onClose, onSort, column }: SortDropdownProps) {
-  if (!isOpen) return null;
+// function SortDropdown({ isOpen, onClose, onSort, column }: SortDropdownProps) {
+//   if (!isOpen) return null;
 
-  // Determine sort options based on column type
-  const getSortOptions = () => {
-    const columnLower = column.toLowerCase();
+//   // Determine sort options based on column type
+//   const getSortOptions = () => {
+//     const columnLower = column.toLowerCase();
 
-    // Date columns
-    if (columnLower.includes("date") || columnLower.includes("expiry")) {
-      return {
-        asc: { label: "Oldest First", icon: <ChevronUp size={14} /> },
-        desc: { label: "Newest First", icon: <ChevronDown size={14} /> },
-      };
-    }
+//     // Date columns
+//     if (columnLower.includes("date") || columnLower.includes("expiry")) {
+//       return {
+//         asc: { label: "Oldest First", icon: <ChevronUp size={14} /> },
+//         desc: { label: "Newest First", icon: <ChevronDown size={14} /> },
+//       };
+//     }
 
-    // Status columns
-    if (columnLower.includes("status")) {
-      return {
-        asc: { label: "Approved First", icon: <ChevronUp size={14} /> },
-        desc: { label: "Pending First", icon: <ChevronDown size={14} /> },
-      };
-    }
+//     // Status columns
+//     if (columnLower.includes("status")) {
+//       return {
+//         asc: { label: "Approved First", icon: <ChevronUp size={14} /> },
+//         desc: { label: "Pending First", icon: <ChevronDown size={14} /> },
+//       };
+//     }
 
-    // Ownership columns
-    if (columnLower.includes("ownership")) {
-      return {
-        asc: { label: "Manager First", icon: <ChevronUp size={14} /> },
-        desc: { label: "Owner First", icon: <ChevronDown size={14} /> },
-      };
-    }
+//     // Ownership columns
+//     if (columnLower.includes("ownership")) {
+//       return {
+//         asc: { label: "Manager First", icon: <ChevronUp size={14} /> },
+//         desc: { label: "Owner First", icon: <ChevronDown size={14} /> },
+//       };
+//     }
 
-    // Default alphabetical for text columns
-    return {
-      asc: { label: "A to Z", icon: <ChevronUp size={14} /> },
-      desc: { label: "Z to A", icon: <ChevronDown size={14} /> },
-    };
-  };
+//     // Default alphabetical for text columns
+//     return {
+//       asc: { label: "A to Z", icon: <ChevronUp size={14} /> },
+//       desc: { label: "Z to A", icon: <ChevronDown size={14} /> },
+//     };
+//   };
 
-  const sortOptions = getSortOptions();
+//   const sortOptions = getSortOptions();
 
-  return (
-    <div className="absolute top-full left-0 mt-1 bg-[#2d2d2d] border border-gray-600 rounded-lg shadow-lg z-50 min-w-[140px]">
-      <div className="py-1">
-        <button
-          onClick={() => {
-            onSort("asc");
-            onClose();
-          }}
-          className="w-full px-3 py-2 text-left text-white hover:bg-gray-700 flex items-center gap-2 text-sm"
-        >
-          {sortOptions.asc.icon}
-          {sortOptions.asc.label}
-        </button>
-        <button
-          onClick={() => {
-            onSort("desc");
-            onClose();
-          }}
-          className="w-full px-3 py-2 text-left text-white hover:bg-gray-700 flex items-center gap-2 text-sm"
-        >
-          {sortOptions.desc.icon}
-          {sortOptions.desc.label}
-        </button>
-      </div>
-    </div>
-  );
-}
+//   return (
+//     <div className="absolute top-full left-0 mt-1 bg-[#2d2d2d] border border-gray-600 rounded-lg shadow-lg z-50 min-w-[140px]">
+//       <div className="py-1">
+//         <button
+//           onClick={() => {
+//             onSort("asc");
+//             onClose();
+//           }}
+//           className="w-full px-3 py-2 text-left text-white hover:bg-gray-700 flex items-center gap-2 text-sm"
+//         >
+//           {sortOptions.asc.icon}
+//           {sortOptions.asc.label}
+//         </button>
+//         <button
+//           onClick={() => {
+//             onSort("desc");
+//             onClose();
+//           }}
+//           className="w-full px-3 py-2 text-left text-white hover:bg-gray-700 flex items-center gap-2 text-sm"
+//         >
+//           {sortOptions.desc.icon}
+//           {sortOptions.desc.label}
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
 
 function Modal({ isOpen, onClose, title, data, rowIndex }: ModalProps) {
   if (!isOpen) return null;
@@ -300,6 +297,11 @@ export function Table<T extends Record<string, unknown>>({
   dropdownItems,
   selectedRows = new Set(),
   setSelectedRows = () => {},
+  onSelectAll,
+  onSelectRow,
+  isAllSelected = false,
+  isSomeSelected = false,
+  rowIds = [],
 }: TableProps<T>) {
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
@@ -327,8 +329,8 @@ export function Table<T extends Record<string, unknown>>({
   }, [data, setSelectedRows]);
 
   // Update selectAll checkbox when selectedRows changes
-  const selectAll =
-    selectedRows.size === displayData.length && displayData.length > 0;
+  // const selectAll =
+  //   selectedRows.size === displayData.length && displayData.length > 0;
 
   // Generate unique table ID for CSS targeting
   const tableId = `table-${Math.random().toString(36).substr(2, 9)}`;
@@ -374,130 +376,130 @@ export function Table<T extends Record<string, unknown>>({
   };
 
   // Sorting function - sorts ALL data, not just visible data
-  const handleSort = (column: string, direction: "asc" | "desc") => {
-    const columnLower = column.toLowerCase();
+  // const handleSort = (column: string, direction: "asc" | "desc") => {
+  //   const columnLower = column.toLowerCase();
 
-    const sorted = [...displayData].sort((a, b) => {
-      const aValue = a[column];
-      const bValue = b[column];
+  //   const sorted = [...displayData].sort((a, b) => {
+  //     const aValue = a[column];
+  //     const bValue = b[column];
 
-      // Handle null/undefined values
-      if (aValue == null && bValue == null) return 0;
-      if (aValue == null) return direction === "asc" ? 1 : -1;
-      if (bValue == null) return direction === "asc" ? -1 : 1;
+  //     // Handle null/undefined values
+  //     if (aValue == null && bValue == null) return 0;
+  //     if (aValue == null) return direction === "asc" ? 1 : -1;
+  //     if (bValue == null) return direction === "asc" ? -1 : 1;
 
-      // Date sorting
-      if (columnLower.includes("date") || columnLower.includes("expiry")) {
-        const dateA = new Date(String(aValue));
-        const dateB = new Date(String(bValue));
+  //     // Date sorting
+  //     if (columnLower.includes("date") || columnLower.includes("expiry")) {
+  //       const dateA = new Date(String(aValue));
+  //       const dateB = new Date(String(bValue));
 
-        // If dates are invalid, fall back to string comparison
-        if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
-          const strA = String(aValue).toLowerCase();
-          const strB = String(bValue).toLowerCase();
-          return direction === "asc"
-            ? strA.localeCompare(strB)
-            : strB.localeCompare(strA);
-        }
+  //       // If dates are invalid, fall back to string comparison
+  //       if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+  //         const strA = String(aValue).toLowerCase();
+  //         const strB = String(bValue).toLowerCase();
+  //         return direction === "asc"
+  //           ? strA.localeCompare(strB)
+  //           : strB.localeCompare(strA);
+  //       }
 
-        return direction === "asc"
-          ? dateA.getTime() - dateB.getTime()
-          : dateB.getTime() - dateA.getTime();
-      }
+  //       return direction === "asc"
+  //         ? dateA.getTime() - dateB.getTime()
+  //         : dateB.getTime() - dateA.getTime();
+  //     }
 
-      // Status sorting - custom priority order
-      if (columnLower.includes("status")) {
-        const statusPriority: { [key: string]: number } = {
-          approved: 1,
-          verified: 1,
-          pending: 2,
-          "in progress": 2,
-          "pending review": 2,
-          "near expiry": 3,
-          rejected: 4,
-          expired: 4,
-        };
+  //     // Status sorting - custom priority order
+  //     if (columnLower.includes("status")) {
+  //       const statusPriority: { [key: string]: number } = {
+  //         approved: 1,
+  //         verified: 1,
+  //         pending: 2,
+  //         "in progress": 2,
+  //         "pending review": 2,
+  //         "near expiry": 3,
+  //         rejected: 4,
+  //         expired: 4,
+  //       };
 
-        const aStatus = String(aValue).toLowerCase();
-        const bStatus = String(bValue).toLowerCase();
-        const aPriority = statusPriority[aStatus] || 5;
-        const bPriority = statusPriority[bStatus] || 5;
+  //       const aStatus = String(aValue).toLowerCase();
+  //       const bStatus = String(bValue).toLowerCase();
+  //       const aPriority = statusPriority[aStatus] || 5;
+  //       const bPriority = statusPriority[bStatus] || 5;
 
-        if (direction === "asc") {
-          return aPriority - bPriority || aStatus.localeCompare(bStatus);
-        } else {
-          return bPriority - aPriority || bStatus.localeCompare(aStatus);
-        }
-      }
+  //       if (direction === "asc") {
+  //         return aPriority - bPriority || aStatus.localeCompare(bStatus);
+  //       } else {
+  //         return bPriority - aPriority || bStatus.localeCompare(aStatus);
+  //       }
+  //     }
 
-      // Ownership sorting - managers always at top when "Manager First" is selected
-      if (columnLower.includes("ownership")) {
-        const aOwnership = String(aValue).toLowerCase();
-        const bOwnership = String(bValue).toLowerCase();
+  //     // Ownership sorting - managers always at top when "Manager First" is selected
+  //     if (columnLower.includes("ownership")) {
+  //       const aOwnership = String(aValue).toLowerCase();
+  //       const bOwnership = String(bValue).toLowerCase();
 
-        // When Manager First (asc), managers always come first
-        if (direction === "asc") {
-          if (aOwnership === "manager" && bOwnership !== "manager") return -1;
-          if (bOwnership === "manager" && aOwnership !== "manager") return 1;
-          if (aOwnership === "manager" && bOwnership === "manager") return 0;
+  //       // When Manager First (asc), managers always come first
+  //       if (direction === "asc") {
+  //         if (aOwnership === "manager" && bOwnership !== "manager") return -1;
+  //         if (bOwnership === "manager" && aOwnership !== "manager") return 1;
+  //         if (aOwnership === "manager" && bOwnership === "manager") return 0;
 
-          // For non-managers: Owner comes before Agent
-          const ownershipOrder = { owner: 1, agent: 2 };
-          const aOrder =
-            ownershipOrder[aOwnership as keyof typeof ownershipOrder] || 3;
-          const bOrder =
-            ownershipOrder[bOwnership as keyof typeof ownershipOrder] || 3;
-          return aOrder - bOrder;
-        } else {
-          // When Owner First (desc), managers still come first, then Owner, then Agent
-          if (aOwnership === "manager" && bOwnership !== "manager") return -1;
-          if (bOwnership === "manager" && aOwnership !== "manager") return 1;
-          if (aOwnership === "manager" && bOwnership === "manager") return 0;
+  //         // For non-managers: Owner comes before Agent
+  //         const ownershipOrder = { owner: 1, agent: 2 };
+  //         const aOrder =
+  //           ownershipOrder[aOwnership as keyof typeof ownershipOrder] || 3;
+  //         const bOrder =
+  //           ownershipOrder[bOwnership as keyof typeof ownershipOrder] || 3;
+  //         return aOrder - bOrder;
+  //       } else {
+  //         // When Owner First (desc), managers still come first, then Owner, then Agent
+  //         if (aOwnership === "manager" && bOwnership !== "manager") return -1;
+  //         if (bOwnership === "manager" && aOwnership !== "manager") return 1;
+  //         if (aOwnership === "manager" && bOwnership === "manager") return 0;
 
-          // For non-managers: Agent comes before Owner in desc
-          const ownershipOrder = { agent: 1, owner: 2 };
-          const aOrder =
-            ownershipOrder[aOwnership as keyof typeof ownershipOrder] || 3;
-          const bOrder =
-            ownershipOrder[bOwnership as keyof typeof ownershipOrder] || 3;
-          return aOrder - bOrder;
-        }
-      }
+  //         // For non-managers: Agent comes before Owner in desc
+  //         const ownershipOrder = { agent: 1, owner: 2 };
+  //         const aOrder =
+  //           ownershipOrder[aOwnership as keyof typeof ownershipOrder] || 3;
+  //         const bOrder =
+  //           ownershipOrder[bOwnership as keyof typeof ownershipOrder] || 3;
+  //         return aOrder - bOrder;
+  //       }
+  //     }
 
-      // Default alphabetical sorting for other columns
-      const aString = String(aValue).toLowerCase();
-      const bString = String(bValue).toLowerCase();
+  //     // Default alphabetical sorting for other columns
+  //     const aString = String(aValue).toLowerCase();
+  //     const bString = String(bValue).toLowerCase();
 
-      return direction === "asc"
-        ? aString.localeCompare(bString)
-        : bString.localeCompare(aString);
-    });
+  //     return direction === "asc"
+  //       ? aString.localeCompare(bString)
+  //       : bString.localeCompare(aString);
+  //   });
 
-    setDisplayData(sorted);
-    // Clear selections when sorting
-    setSelectedRows(new Set());
-  };
+  //   setDisplayData(sorted);
+  //   // Clear selections when sorting
+  //   setSelectedRows(new Set());
+  // };
 
   // Selection handlers
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedRows(
-        new Set(Array.from({ length: displayData.length }, (_, i) => i))
-      );
-    } else {
-      setSelectedRows(new Set());
-    }
-  };
+  // const handleSelectAll = (checked: boolean) => {
+  //   if (checked) {
+  //     setSelectedRows(
+  //       new Set(Array.from({ length: displayData.length }, (_, i) => i))
+  //     );
+  //   } else {
+  //     setSelectedRows(new Set());
+  //   }
+  // };
 
-  const handleSelectRow = (index: number, checked: boolean) => {
-    const newSelected = new Set(selectedRows);
-    if (checked) {
-      newSelected.add(index);
-    } else {
-      newSelected.delete(index);
-    }
-    setSelectedRows(newSelected);
-  };
+  // const handleSelectRow = (index: number, checked: boolean) => {
+  //   const newSelected = new Set(selectedRows);
+  //   if (checked) {
+  //     newSelected.add(index);
+  //   } else {
+  //     newSelected.delete(index);
+  //   }
+  //   setSelectedRows(newSelected);
+  // };
 
   // Generate dynamic CSS for row colors
   const generateRowCSS = useCallback(() => {
@@ -604,7 +606,7 @@ export function Table<T extends Record<string, unknown>>({
             {title}
           </h2>
         )}
-        <div style={{ padding: 20, textAlign: "center", color: "#666" }}>
+        <div className="text-center flex justify-center" style={{ padding: 20, textAlign: "center", color: "#666" }}>
           No data available
         </div>
       </div>
@@ -693,40 +695,42 @@ export function Table<T extends Record<string, unknown>>({
                 }}
               >
                 {/* Checkbox column for selection - only show if delete is enabled */}
-                {showDeleteButton && (
-                  <th
-                    style={{
-                      padding: paddingSize,
-                      fontWeight: 700,
-                      color: "white",
-                      fontSize: "12px",
-                      lineHeight: "16px",
-                      whiteSpace: "nowrap",
-                      width: "24px",
-                      borderTopLeftRadius: control.borderRadius || 8,
-                    }}
-                  >
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={selectAll}
-                        onChange={(e) => handleSelectAll(e.target.checked)}
-                        className="peer hidden"
-                      />
+{showDeleteButton && (
+  <th
+    style={{
+      padding: paddingSize,
+      fontWeight: 700,
+      color: "white",
+      fontSize: "12px",
+      lineHeight: "16px",
+      whiteSpace: "nowrap",
+      width: "24px",
+      borderTopLeftRadius: control.borderRadius || 8,
+    }}
+  >
+    <label className="relative inline-flex items-center cursor-pointer">
+      <input
+        type="checkbox"
+        checked={isAllSelected}
+        ref={(input) => {
+          if (input) {
+            input.indeterminate = isSomeSelected;
+          }
+        }}
+        onChange={(e) => onSelectAll?.(e.target.checked)}
+        className="peer hidden"
+      />
+      <span className="absolute inset-0 rounded-md border-2 border-[#FFFFFFCC] translate-x-1 translate-y-1 
+           peer-checked:border-[#EFFC76]"></span>
+      <span className="relative w-5 h-5 rounded-md border-2 border-[#FFFFFFCC] bg-[#252628] 
+           flex items-center justify-center 
+           peer-checked:bg-[#EFFC76] peer-checked:border-[#EFFC76]
+           peer-checked:after:content-['✓'] peer-checked:after:text-black peer-checked:after:text-xs peer-checked:after:font-bold">
+      </span>
+    </label>
+  </th>
+)}
 
-                      {/* Outer border */}
-                      <span className="absolute inset-0 rounded-md border-2 border-[#FFFFFFCC] translate-x-1 translate-y-1 
-                   peer-checked:border-[#EFFC76]"></span>
-
-                      {/* Main box */}
-                      <span className="relative w-5 h-5 rounded-md border-2 border-[#FFFFFFCC] bg-[#252628] 
-                   flex items-center justify-center 
-                   peer-checked:bg-[#EFFC76] peer-checked:border-[#EFFC76]
-                   peer-checked:after:content-['✓'] peer-checked:after:text-black peer-checked:after:text-xs peer-checked:after:font-bold">
-                      </span>
-                    </label>
-                  </th>
-                )}
 
                 {keys.map((key, index) => (
                   <th
@@ -774,18 +778,19 @@ export function Table<T extends Record<string, unknown>>({
                         width={16}
                       />
                     </div>
-                    <SortDropdown
+                    {/* <SortDropdown
                       isOpen={activeSortDropdown === key}
                       onClose={() => setActiveSortDropdown(null)}
                       onSort={(direction) => handleSort(key, direction)}
                       column={key}
-                    />
+                    /> */}
                   </th>
                 ))}
 
                 {/* Actions column - only show if delete is enabled */}
                 {showDeleteButton && (
                   <th
+                  className="flex gap-2"
                     style={{
                       padding: paddingSize,
                       fontWeight: 700,
@@ -793,11 +798,17 @@ export function Table<T extends Record<string, unknown>>({
                       fontSize: "12px",
                       lineHeight: "16px",
                       whiteSpace: "nowrap",
-                      width: "80px",
+                      // width: "80px",
                       borderTopRightRadius: control.borderRadius || 8,
                     }}
                   >
-                    Actions
+                    Action
+                    <Image
+                        src="/images/menu.png"
+                        alt="menu"
+                        height={16}
+                        width={16}
+                      />
                   </th>
                 )}
               </tr>
@@ -814,37 +825,37 @@ export function Table<T extends Record<string, unknown>>({
                   onClick={() => handleRowClick(row, idx)}
                 >
                   {/* Checkbox column - only show if delete is enabled */}
-                  {showDeleteButton && (
-                    <td
-                      style={{
-                        padding: paddingSize,
-                        width: "40px",
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={selectedRows.has(idx)}
-                          onChange={(e) => handleSelectRow(idx, e.target.checked)}
-                          className="peer hidden"
-                        />
-
-                        {/* Outer border */}
-                        <span className="absolute inset-0 rounded-md border-2 border-[#FFFFFFCC] translate-x-1 translate-y-1 
-                   peer-checked:border-[#EFFC76]"></span>
-
-                        {/* Main box */}
-                        <span className="relative w-5 h-5 rounded-md border-2 border-[#FFFFFFCC] bg-[#252628] 
-                   flex items-center justify-center 
-                   peer-checked:bg-[#EFFC76] peer-checked:border-[#EFFC76]
-                   peer-checked:after:content-['✓'] peer-checked:after:text-black peer-checked:after:text-xs peer-checked:after:font-bold">
-                        </span>
-                      </label>
-                    </td>
-                  )}
+{showDeleteButton && (
+  <td
+    style={{
+      padding: paddingSize,
+      whiteSpace: "nowrap",
+      width: "24px",
+    }}
+  >
+    <label className="relative inline-flex items-center cursor-pointer">
+      <input
+        type="checkbox"
+        checked={selectedRows.has(parseInt(rowIds[idx]))}
+        onChange={(e) => {
+          const rowId = rowIds[idx];
+          onSelectRow?.(rowId, e.target.checked);
+        }}
+        className="peer hidden"
+      />
+      <span className="absolute inset-0 rounded-md border-2 border-[#FFFFFFCC] translate-x-1 translate-y-1 
+           peer-checked:border-[#EFFC76]"></span>
+      <span className="relative w-5 h-5 rounded-md border-2 border-[#FFFFFFCC] bg-[#252628] 
+           flex items-center justify-center 
+           peer-checked:bg-[#EFFC76] peer-checked:border-[#EFFC76]
+           peer-checked:after:content-['✓'] peer-checked:after:text-black peer-checked:after:text-xs peer-checked:after:font-bold">
+      </span>
+    </label>
+  </td>
+)}
 
                   {keys.map((key) => (
+
                     <td
                       key={key}
                       style={{
@@ -859,39 +870,47 @@ export function Table<T extends Record<string, unknown>>({
                       {renderCellContent(key, row[key])}
                     </td>
                   ))}
+                  
 
-                  {(showDeleteButton || dropdownItems) && (
+                  {(showDeleteButton) && (
                     <td style={{ position: "relative" }}>
                       <button
                         onClick={(e) => {
-                          // Only allow click if checkbox is checked (for individual delete)
-                          if (selectedRows.has(idx)) {
                             handleDropdownToggle(idx, e);
-                          }
+                          
                         }}
-                        className={`px-7 py-1 text-white rounded ${
-                          selectedRows.has(idx) 
-                            ? "cursor-pointer" 
-                            : "cursor-not-allowed opacity-50"
-                        }`}
-                        disabled={!selectedRows.has(idx)}
+                        className={`px-6 py-1 text-white rounded 
+                             cursor-pointer`}
                       >
-                        ⋮
+                        <Image src="/images/menu.svg" alt="Open detail" width={3} height={12}/>
                       </button>
 
-                      {activeDropdown === idx && dropdownItems && (
-                        <Dropdown
-                          isOpen={true}
-                          onClose={() => setActiveDropdown(null)}
-                          items={dropdownItems.map((item) => ({
-                            label: item.label,
-                            onClick: () => {
-                              item.onClick(row, idx);
-                              setActiveDropdown(null);
-                            },
-                          }))}
-                        />
-                      )}
+{activeDropdown === idx && dropdownItems && (
+  <Dropdown
+    isOpen={true}
+    onClose={() => setActiveDropdown(null)}
+    items={dropdownItems
+      // Find this filter logic (around line 880-890):
+.filter(item => {
+  // Show "Delete Application" only if row is selected
+  if (item.label === "Delete Application" || item.label.toLowerCase().includes('delete')) {
+    // Use the actual row ID instead of index
+    const rowId = rowIds[idx];
+    return selectedRows.has(parseInt(rowId)); // Convert to number
+  }
+  // Always show other items
+  return true;
+})
+      .map((item) => ({
+        label: item.label,
+        onClick: () => {
+          item.onClick(row, idx);
+          setActiveDropdown(null);
+        },
+      }))
+    }
+  />
+)}
                     </td>
                   )}
                 </tr>

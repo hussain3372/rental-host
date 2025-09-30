@@ -30,8 +30,16 @@ export default function EditProfileDrawer({
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full p-3 rounded-[10px] bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]"
-                    />
+                        className={`
+                                        w-full p-3 pr-10 rounded-[10px]
+                                        border border-[#404040]        
+                                        hover:border-[#EFFC76]          
+                                        focus:border-[#EFFC76]          
+                                        bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)]
+                                        text-white placeholder:text-white/40
+                                        focus:outline-none
+                                        transition duration-200 ease-in-out
+                                        text-white `} />
                 </div>
 
                 <div>
@@ -40,8 +48,16 @@ export default function EditProfileDrawer({
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full p-3 rounded-[10px] bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]"
-                    />
+                        className={`
+                                        w-full p-3 pr-10 rounded-[10px]
+                                        border border-[#404040]        
+                                        hover:border-[#EFFC76]          
+                                        focus:border-[#EFFC76]          
+                                        bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)]
+                                        text-white placeholder:text-white/40
+                                        focus:outline-none
+                                        transition duration-200 ease-in-out
+                                        text-white `} />
                 </div>
             </div>
 
@@ -49,8 +65,8 @@ export default function EditProfileDrawer({
             <div className="mt-6">
                 <button
                     onClick={() => onSave(name, email)}
-                    className="w-full py-4 bg-[#EFFC76] text-[#121315] rounded-[8px]  text-[18px] leading-[22px] font-semibold cursor-pointer box-shadow: 0 -2px 3px 0 rgba(0, 0, 0, 0.29) inset, 0 -6px 6px 0 rgba(0, 0, 0, 0.26) inset, 0 -14px 8px 0 rgba(0, 0, 0, 0.15) inset, 0 -25px 10px 0 rgba(0, 0, 0, 0.04) inset, 0 -39px 11px 0 rgba(0, 0, 0, 0.01) inset;
-"
+                                       className="yellow-btn cursor-pointer w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
+
                 >
                     Save Changes
                 </button>

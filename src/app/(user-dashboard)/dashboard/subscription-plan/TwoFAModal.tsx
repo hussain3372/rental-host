@@ -50,7 +50,7 @@ export const TwoFAModal: React.FC<TwoFAModalProps> = ({ isOpen, onClose, onConfi
           </div>
           <button
             onClick={handleConfirm}
-            className="w-full mt-8 py-4 rounded-lg bg-[#EFFC76] text-[#121315] text-[18px] leading-[22px] font-semibold cursor-pointer"
+                    className="yellow-btn mt-8 py-4 cursor-pointer w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
           >
             Continue
           </button>

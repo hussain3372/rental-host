@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Table } from "@/app/shared/tables/Tables";
 import DatePicker from "react-datepicker";
@@ -35,10 +35,7 @@ export default function HelpSupport() {
     const [singleRowToDelete, setSingleRowToDelete] = useState<{ row: Omit<CertificationData, "id">; index: number } | null>(null);
     const [modalType, setModalType] = useState<'single' | 'multiple'>('multiple');
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const handleDeleteSelected = () => {
-        console.log("Deleting selected rows:", Array.from(selectedRows));
-    };
-    // State
+
     // New state for selected ticket
     const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
     const [selectedTicket, setSelectedTicket] = useState<CertificationData | null>(null);
@@ -52,6 +49,16 @@ export default function HelpSupport() {
 
     // State for date picker
     const [submittedDate, setSubmittedDate] = useState<Date | null>(null);
+
+    // Dropdown states
+    const [subjectDropdownOpen, setSubjectDropdownOpen] = useState(false);
+    const [propertyDropdownOpen, setPropertyDropdownOpen] = useState(false);
+    const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+
+    // Refs for dropdown containers
+    const subjectDropdownRef = useRef<HTMLDivElement>(null);
+    const propertyDropdownRef = useRef<HTMLDivElement>(null);
+    const statusDropdownRef = useRef<HTMLDivElement>(null);
 
     const [allCertificationData, setAllCertificationData] = useState<CertificationData[]>([
         {
@@ -134,165 +141,7 @@ export default function HelpSupport() {
             "Created On": "Aug 12, 2025",
             Status: "Pending",
         },
-        {
-            id: 11,
-            "Ticket Id": "TIK - 8765",
-            "Issue Type": "762 Evergreen Terrace",
-            Subject: "Agent",
-            "Created On": "Aug 12, 2025",
-            Status: "Rejected",
-        },
-        {
-            id: 12,
-            "Ticket Id": "TIK - 8765",
-            "Issue Type": "762 Evergreen Terrace",
-            Subject: "Agent",
-            "Created On": "Aug 12, 2025",
-            Status: "Approved",
-        },
-        {
-            id: 13,
-            "Ticket Id": "TIK - 8765",
-            "Issue Type": "Support Queries",
-            Subject: "View and man...",
-            "Created On": "Aug 12, 2025",
-            Status: "Approved",
-        },
-        {
-            id: 14,
-            "Ticket Id": "Skyline Residences",
-            "Issue Type": "456 Tower Street",
-            Subject: "Manager",
-            "Created On": "Oct 1, 2025",
-            Status: "Approved",
-        },
-        {
-            id: 15,
-            "Ticket Id": "TIK - 8765",
-            "Issue Type": "762 Evergreen Terrace",
-            Subject: "Owner",
-            "Created On": "Aug 12, 2025",
-            Status: "Approved",
-        },
-        {
-            id: 16,
-            "Ticket Id": "TIK - 8765",
-            "Issue Type": "Support Queries",
-            Subject: "View and man...",
-            "Created On": "Aug 12, 2025",
-            Status: "Pending",
-        },
-        {
-            id: 17,
-            "Ticket Id": "TIK - 8765",
-            "Issue Type": "762 Evergreen Terrace",
-            Subject: "Agent",
-            "Created On": "Aug 12, 2025",
-            Status: "Rejected",
-        },
-        {
-            id: 18,
-            "Ticket Id": "TIK - 8765",
-            "Issue Type": "Support Queries",
-            Subject: "View and man...",
-            "Created On": "Aug 12, 2025",
-            Status: "Approved",
-        },
-        {
-            id: 19,
-            "Ticket Id": "TIK - 8765",
-            "Issue Type": "Support Queries",
-            Subject: "View and man...",
-            "Created On": "Aug 12, 2025",
-            Status: "Pending",
-        },
-        {
-            id: 20,
-            "Ticket Id": "TIK - 8765",
-            "Issue Type": "Support Queries",
-            Subject: "View and man...",
-            "Created On": "Aug 12, 2025",
-            Status: "Approved",
-        },
-
     ]);
-
-    // Delete handlers for application data - matching Tracking component style
-    const handleDeleteApplications = (selectedRows: Set<number>) => {
-        // Find the actual data items by matching the display data to full data
-        const idsToDelete = Array.from(selectedRows);
-
-        // Remove the items from the main data
-        const updatedData = allCertificationData.filter(item => !idsToDelete.includes(item.id));
-        setAllCertificationData(updatedData);
-
-        // Close modal and reset selected rows
-        setIsModalOpen(false);
-        setSelectedRows(new Set());
-
-        // Optional: Show success message - removed alert to match Tracking component
-    };
-
-    const handleDeleteSingleApplication = (_row: Omit<CertificationData, "id">, index: number) => {
-        // Find the actual item using the global index
-        const globalIndex = startIndex + index;
-        const itemToDelete = filteredCertificationData[globalIndex];
-
-        if (itemToDelete) {
-            // Remove the item from the main data
-            const updatedData = allCertificationData.filter(item => item.id !== itemToDelete.id);
-            setAllCertificationData(updatedData);
-        }
-
-        // Close modal and reset
-        setIsModalOpen(false);
-        setSingleRowToDelete(null);
-
-        // Optional: Show success message - removed alert to match Tracking component
-    };
-
-    // Functions to open modal for deletions
-    // const openDeleteModal = (selectedRows: Set<number>) => {
-    //     setSelectedRows(selectedRows);
-    //     setModalType('multiple');
-    //     setIsModalOpen(true);
-    // };
-
-    const openDeleteSingleModal = (row: Omit<CertificationData, "id">, index: number) => {
-        setSingleRowToDelete({ row, index });
-        setModalType('single');
-        setIsModalOpen(true);
-    };
-
-    // Handle confirmation from modal
-    const handleModalConfirm = () => {
-        if (modalType === 'multiple' && selectedRows.size > 0) {
-            handleDeleteApplications(selectedRows);
-        } else if (modalType === 'single' && singleRowToDelete) {
-            handleDeleteSingleApplication(singleRowToDelete.row, singleRowToDelete.index);
-        }
-    };
-
-    // Table control
-    const tableControl = {
-        hover: true,
-        striped: false,
-        bordered: false,
-        shadow: false,
-        compact: false,
-        headerBgColor: "#252628",
-        headerTextColor: "white",
-        rowBgColor: "black",
-        rowTextColor: "#e5e7eb",
-        hoverBgColor: "black",
-        hoverTextColor: "#ffffff",
-        fontSize: 13,
-        textAlign: "left" as const,
-        rowBorder: false,
-        headerBorder: true,
-        borderColor: "#374151",
-        highlightRowOnHover: true,
-    };
 
     // Unique dropdown values
     const uniqueProperties = [
@@ -347,10 +196,24 @@ export default function HelpSupport() {
         return filtered;
     }, [searchTerm, certificationFilters, allCertificationData]);
 
+    // Fix selection state calculations for ALL filtered data - MOVED AFTER filteredCertificationData definition
+    const isAllDisplayedSelected = useMemo(() => {
+        return filteredCertificationData.length > 0 &&
+            filteredCertificationData.every(item => selectedRows.has(item.id));
+    }, [filteredCertificationData, selectedRows]);
+
+    const isSomeDisplayedSelected = useMemo(() => {
+        return filteredCertificationData.some(item => selectedRows.has(item.id)) &&
+            !isAllDisplayedSelected;
+    }, [filteredCertificationData, selectedRows, isAllDisplayedSelected]);
+
     // Transform data to exclude ID from display but keep it for navigation
     const displayData = useMemo(() => {
-        return filteredCertificationData.map(({ id, ...rest }) => rest);
-    }, [filteredCertificationData]);
+  return filteredCertificationData.map(({ id, ...rest }) => {
+    id; // Just reference it without doing anything
+    return rest;
+  });
+}, [filteredCertificationData]);
 
     // Pagination logic
     const totalPages = Math.ceil(displayData.length / itemsPerPage);
@@ -359,13 +222,128 @@ export default function HelpSupport() {
         startIndex,
         startIndex + itemsPerPage
     );
-    const [subjectDropdownOpen, setSubjectDropdownOpen] = useState(false);
-    const [propertyDropdownOpen, setPropertyDropdownOpen] = useState(false);
-    const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
 
+    // Close dropdowns on outside click
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                subjectDropdownRef.current &&
+                !subjectDropdownRef.current.contains(event.target as Node)
+            ) {
+                setSubjectDropdownOpen(false);
+            }
+            if (
+                propertyDropdownRef.current &&
+                !propertyDropdownRef.current.contains(event.target as Node)
+            ) {
+                setPropertyDropdownOpen(false);
+            }
+            if (
+                statusDropdownRef.current &&
+                !statusDropdownRef.current.contains(event.target as Node)
+            ) {
+                setStatusDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    // Delete handlers for application data - matching Tracking component style
+    const handleDeleteApplications = (selectedRows: Set<number>) => {
+        const idsToDelete = Array.from(selectedRows);
+        const updatedData = allCertificationData.filter(item => !idsToDelete.includes(item.id));
+        setAllCertificationData(updatedData);
+        setIsModalOpen(false);
+        setSelectedRows(new Set());
+    };
+
+    const handleDeleteSingleApplication = (_row: Omit<CertificationData, "id">, index: number) => {
+        const globalIndex = startIndex + index;
+        const itemToDelete = filteredCertificationData[globalIndex];
+
+        if (itemToDelete) {
+            const updatedData = allCertificationData.filter(item => item.id !== itemToDelete.id);
+            setAllCertificationData(updatedData);
+
+            // Remove the deleted row from selection
+            const newSelected = new Set(selectedRows);
+            newSelected.delete(itemToDelete.id);
+            setSelectedRows(newSelected);
+        }
+
+        setIsModalOpen(false);
+        setSingleRowToDelete(null);
+    };
+
+    const openDeleteSingleModal = (row: Omit<CertificationData, "id">, index: number) => {
+        setSingleRowToDelete({ row, index });
+        setModalType('single');
+        setIsModalOpen(true);
+    };
+
+    // Handle select all for ALL filtered data (not just current page)
+    const handleSelectAll = (checked: boolean) => {
+        const newSelected = new Set(selectedRows);
+
+        if (checked) {
+            // Add ALL filtered data IDs
+            filteredCertificationData.forEach(item => newSelected.add(item.id));
+        } else {
+            // Remove ALL filtered data IDs
+            filteredCertificationData.forEach(item => newSelected.delete(item.id));
+        }
+
+        setSelectedRows(newSelected);
+    };
+
+    // Handle individual row selection
+    const handleSelectRow = (id: string, checked: boolean) => {
+        const newSelected = new Set(selectedRows);
+        const numericId = parseInt(id); // Convert string back to number
+
+        if (checked) {
+            newSelected.add(numericId);
+        } else {
+            newSelected.delete(numericId);
+        }
+        setSelectedRows(newSelected);
+    };
+
+    // Handle confirmation from modal
+    const handleModalConfirm = () => {
+        if (modalType === 'multiple' && selectedRows.size > 0) {
+            handleDeleteApplications(selectedRows);
+        } else if (modalType === 'single' && singleRowToDelete) {
+            handleDeleteSingleApplication(singleRowToDelete.row, singleRowToDelete.index);
+        }
+    };
+
+    // Table control
+    const tableControl = {
+        hover: true,
+        striped: false,
+        bordered: false,
+        shadow: false,
+        compact: false,
+        headerBgColor: "#252628",
+        headerTextColor: "white",
+        rowBgColor: "black",
+        rowTextColor: "#e5e7eb",
+        hoverBgColor: "black",
+        hoverTextColor: "#ffffff",
+        fontSize: 13,
+        textAlign: "left" as const,
+        rowBorder: false,
+        headerBorder: true,
+        borderColor: "#374151",
+        highlightRowOnHover: true,
+    };
 
     // Reset pagination when filters change
-    React.useEffect(() => {
+    useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, certificationFilters]);
 
@@ -381,7 +359,6 @@ export default function HelpSupport() {
     };
 
     const handleApplyFilter = () => {
-        // Convert selected date to string format for filtering
         if (submittedDate) {
             setCertificationFilters(prev => ({
                 ...prev,
@@ -394,6 +371,14 @@ export default function HelpSupport() {
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
+    };
+
+    // Handle delete selected - opens modal for confirmation
+    const handleDeleteSelected = () => {
+        if (selectedRows.size > 0) {
+            setModalType('multiple');
+            setIsModalOpen(true);
+        }
     };
 
     // Custom input component for date picker to match the design
@@ -490,7 +475,6 @@ export default function HelpSupport() {
         <>
             {/* Modal with proper onConfirm handler - matching Tracking component */}
             {isModalOpen &&
-
                 <Modal
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
@@ -499,9 +483,7 @@ export default function HelpSupport() {
                     description="Deleting this ticket means it will no longer appear in your requests."
                     image="/images/delete-modal.png"
                     confirmText="Delete"
-                //   cancelText="Cancel"
                 />
-
             }
             <div className="flex flex-col gap-3 sm:gap-0 sm:flex-row items-start justify-between mb-[22px]">
                 <div>
@@ -514,7 +496,7 @@ export default function HelpSupport() {
                 </div>
                 <button
                     onClick={() => setIsDrawerOpen(true)}
-                    className="yellow-btn cursor-pointer text-black px-[20px] py-[12px] rounded-[8px] font-semibold text-[16px] leading-[20px] hover:bg-[#E5F266] transition-colors duration-300"
+                    className="yellow-btn cursor-pointer text-black px-[20px] py-[12px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
                 >
                     Create Ticket
                 </button>
@@ -526,17 +508,16 @@ export default function HelpSupport() {
 
                     {/* Header */}
                     <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-5 flex-shrink-0">
-                        <div>
-                            <h2>Tickets</h2>
-                        </div>
-                        <div className="inline-flex flex-col-reverse sm:flex-row item-start sm:items-center pt-3 sm:pt-0 gap-3">
-                            <div className="relative">
+
+                        <h2>Tickets</h2>
+                        <div className="flex flex-wrap sm:flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
+                            <div className="relative w-full sm:w-[204px]">
                                 <input
                                     type="text"
                                     placeholder="Search"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="bg-white/12 border rounded-lg text-white/40 placeholder-white/60 w-[204px] px-3 py-2 text-sm pl-8 border-none outline-none"
+                                    className="bg-white/12 border rounded-lg text-white/40 placeholder-white/60 w-full px-3 py-2 text-sm pl-8 border-none outline-none"
                                 />
                                 <div className="absolute left-2.5 top-2.5 w-4 h-4 text-gray-500">
                                     <Image
@@ -547,6 +528,7 @@ export default function HelpSupport() {
                                     />
                                 </div>
                             </div>
+
                             <button
                                 onClick={() => setIsFilterOpen(true)}
                                 className="h-[34px] cursor-pointer w-[86px] rounded-md bg-[#2e2f31] py-2 px-3 flex items-center gap-1"
@@ -561,16 +543,17 @@ export default function HelpSupport() {
                                     width={13}
                                 />
                             </button>
-                            <button
-                                onClick={handleDeleteSelected}
-                                disabled={selectedRows.size === 0}
-                                className="flex cursor-pointer items-center disabled:hidden gap-[6px] p-2 rounded-[8px] 
-                    border border-[rgba(239,252,118,0.32)] text-[#EFFC76] text-[12px] font-normal leading-[16px]
-                    disabled:bg-[transparent] disabled:cursor-not-allowed disabled:border-gray-600 disabled:text-gray-600"
-                            >
-                                <Image src="/images/delete-row.svg" alt='Delete selected' width={12} height={12} />
-                                Delete All
-                            </button>
+
+                                <button
+                                disabled={!isAllDisplayedSelected}
+                                    onClick={handleDeleteSelected}
+                                    className="flex cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 items-center gap-[6px] p-2 rounded-[8px] 
+            border border-[rgba(239,252,118,0.32)] text-[#EFFC76] text-[12px] font-normal leading-[16px]
+             transition-colors duration-300"
+                                >
+                                    <Image src="/images/delete-row.svg" alt='Delete selected' width={12} height={12} />
+                                    Delete All
+                                </button>
                         </div>
                     </div>
 
@@ -584,6 +567,11 @@ export default function HelpSupport() {
                             modalTitle="Ticket Details"
                             selectedRows={selectedRows}
                             setSelectedRows={setSelectedRows}
+                            onSelectAll={handleSelectAll}
+                            onSelectRow={handleSelectRow}
+                            isAllSelected={isAllDisplayedSelected}
+                            isSomeSelected={isSomeDisplayedSelected}
+                            rowIds={filteredCertificationData.map(item => item.id.toString())}
                             dropdownItems={[
                                 {
                                     label: "View Details",
@@ -608,6 +596,7 @@ export default function HelpSupport() {
                     </div>
                 </div>
             </div>
+
             {/* Full Page Overlay */}
             {isFilterOpen && (
                 <div
@@ -615,8 +604,6 @@ export default function HelpSupport() {
                     onClick={() => setIsFilterOpen(false)}
                 />
             )}
-
-
 
             {/* Right Slide Panel Filter */}
             <div
@@ -647,7 +634,7 @@ export default function HelpSupport() {
                             </p>
 
                             <div className="space-y-[20px]">
-                                <div>
+                                <div ref={subjectDropdownRef}>
                                     <label className="text-white text-sm font-medium mb-3 block">
                                         Subject
                                     </label>
@@ -699,7 +686,7 @@ export default function HelpSupport() {
                                 </div>
 
                                 {/* Property */}
-                                <div>
+                                <div ref={propertyDropdownRef}>
                                     <label className="text-white text-sm font-medium mb-3 block">
                                         Property
                                     </label>
@@ -751,7 +738,7 @@ export default function HelpSupport() {
                                 </div>
 
                                 {/* Status */}
-                                <div>
+                                <div ref={statusDropdownRef}>
                                     <label className="text-white text-sm font-medium mb-3 block">
                                         Status
                                     </label>
@@ -801,7 +788,6 @@ export default function HelpSupport() {
                                     </div>
                                 </div>
 
-
                                 {/* Submitted Date */}
                                 <div>
                                     <label className="text-white text-sm font-medium mb-3 block">
@@ -826,7 +812,7 @@ export default function HelpSupport() {
                     <div className="p-6">
                         <button
                             onClick={handleApplyFilter}
-                            className="w-full bg-[#EFFC76] cursor-pointer text-black font-semibold py-4 rounded-xl hover:bg-[#e8f566] transition-colors text-sm"
+              className="yellow-btn cursor-pointer w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
                         >
                             Apply Filter
                         </button>
@@ -834,7 +820,7 @@ export default function HelpSupport() {
                 </div>
             </div>
 
-            {/* Help Support Drawer - Moved outside filter panel */}
+            {/* Help Support Drawer */}
             <div
                 className={`fixed inset-0 bg-[#121315CC] z-[3000000000] flex justify-end transition-opacity duration-300 ${isDrawerOpen ? "opacity-100" : "opacity-0 pointer-events-none"
                     }`}
@@ -852,6 +838,7 @@ export default function HelpSupport() {
                 </div>
             </div>
 
+            {/* Ticket Detail Drawer */}
             <div
                 className={`fixed inset-0 bg-[#121315CC] z-[3000000001] flex justify-end transition-opacity duration-300 ${isDetailDrawerOpen ? "opacity-100" : "opacity-0 pointer-events-none"
                     }`}
@@ -862,7 +849,6 @@ export default function HelpSupport() {
                         }`}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {/* Content area scrollable, footer fixed */}
                     <div className="flex-1 overflow-y-auto scrollbar-hide">
                         <TicketDetailDrawer
                             isOpen={isDetailDrawerOpen}
@@ -883,7 +869,6 @@ export default function HelpSupport() {
                     </div>
                 </div>
             </div>
-
         </>
     );
 }

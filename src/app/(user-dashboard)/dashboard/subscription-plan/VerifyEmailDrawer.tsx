@@ -136,7 +136,7 @@ export default function EmailVerifyDrawer({
             <div className="mt-6">
                 <button
                     onClick={handleVerify}
-                    className="w-full py-3 bg-[#EFFC76] text-[#121315] rounded-lg font-semibold cursor-pointer shadow-inner"
+                    className="yellow-btn cursor-pointer w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
                 >
                     Verify
                 </button>

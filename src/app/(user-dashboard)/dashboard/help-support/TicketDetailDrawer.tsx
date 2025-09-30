@@ -43,13 +43,13 @@ export default function TicketDetailDrawer({
             </div>
 
             {/* Body - Scrollable content (without the button) */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-10 scrollbar-hide">
+            <div className="flex-1 overflow-y-auto px-7 space-y-10 scrollbar-hide">
                 <p className="text-[16px] leading-5 font-normal text-[#FFFFFF99]">
                     Submitted on {ticket.createdOn} • Status:{" "}
                     <span className="text-yellow-300 font-medium">{ticket.status}</span>
                 </p>
 
-                <div className="bg-[#121315] p-4 rounded-lg space-y-4">
+                <div className="bg-[#121315] p-3 rounded-[8px] space-y-4">
                     {/* Subject */}
                     <div className=" ">
                         <h3 className="text-[14] leading-[18px] text-gray-300 font-medium  mb-2">Subject</h3>
@@ -90,10 +90,10 @@ export default function TicketDetailDrawer({
             </div>
 
             {/* Footer with Go Back button - Always fixed at bottom */}
-            <div className="p-5 flex-shrink-0 ">
+            <div className="p-7 flex-shrink-0 ">
                 <button
                     onClick={onClose}
-                    className="yellow-btn cursor-pointer w-full text-black px-[20px] py-[12px] rounded-[8px] font-semibold text-[16px] leading-[20px] hover:bg-[#E5F266] transition-colors duration-300"
+                    className="yellow-btn cursor-pointer w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
                 >
                     Go Back
                 </button>

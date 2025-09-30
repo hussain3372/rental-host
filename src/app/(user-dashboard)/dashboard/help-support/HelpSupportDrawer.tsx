@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Dropdown from "@/app/shared/InputDropDown";
+
 type HelpSupportDrawerProps = {
     isOpen: boolean;
     onClose: () => void;
@@ -14,11 +15,29 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
     const [description, setDescription] = useState("");
     const [image, setImage] = useState<File | null>(null);
 
+    // Ref for the dropdown container
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // Handle outside clicks to close dropdown
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIssueDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setImage(e.target.files[0]);
         }
     };
+
     const uniqueIssueTypes = [
         "Login Issue",
         "Payment Issue",
@@ -37,7 +56,8 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
                     View and update your personal details to keep your account information accurate.
                 </p>
 
-                <div className="relative">
+                {/* Issue Type Dropdown with ref */}
+                <div ref={dropdownRef} className="relative">
                     <label className="text-white text-sm font-medium mb-3 block">
                         Issue Type
                     </label>
@@ -51,6 +71,7 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
                             text-white placeholder:text-white/40
                             focus:outline-none
                             transition duration-200 ease-in-out
+                            cursor-pointer
                         `}
                         onClick={() => setIssueDropdownOpen(!issueDropdownOpen)}
                     >
@@ -88,7 +109,7 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
                         value={subject}
                         onChange={(e) => setSubject(e.target.value)}
                         className={`
-                            w-full p-3 pr-10 rounded-[10px]
+                            w-full p-3 rounded-[10px]
                             border border-[#404040]         
                             hover:border-[#EFFC76]          
                             focus:border-[#EFFC76]          
@@ -107,10 +128,12 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
                         placeholder="Describe your problem..."
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl  px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
+                        className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none appearance-none"
                         rows={4}
                     />
                 </div>
+
+                {/* Image Upload */}
                 <div>
                     <label
                         className="flex flex-col justify-center items-center text-center rounded-[10px] border border-dashed border-[#EFFC76] bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]"
@@ -158,7 +181,7 @@ export default function HelpSupportDrawer({ onClose }: HelpSupportDrawerProps) {
             <div className="mt-5 lg:mt-auto py-5">
                 <button
                     onClick={onClose}
-                    className="w-full py-4 bg-[#EFFC76] text-[#121315] rounded-[8px] text-[18px] leading-[22px] font-semibold cursor-pointer"
+                    className="yellow-btn cursor-pointer w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
                 >
                     Report Issue
                 </button>

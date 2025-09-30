@@ -39,12 +39,12 @@ export default function Verification() {
                 alt='Star'
                 height={220}
                 width={220}
-                className='h-[120px] w-[120px] sm:h-[160px] sm:w-[160px] lg:h-[220px] lg:w-[220px] absolute -top-16 sm:-top-24 lg:-top-36 left-1/2 transform -translate-x-1/2 sm:left-1/2 sm:transform sm:-translate-x-1/2 lg:left-77 lg:transform-none z-[0]'
+                className='h-[120px] w-[120px] sm:h-[160px] sm:w-[160px] lg:h-[220px] lg:w-[220px] absolute  -top-18 sm:-top-32 left-1/2 transform -translate-x-1/2 sm:left-1/2 sm:transform sm:-translate-x-1/2 lg:left-77 lg:transform-none z-[0]'
               />
 
               {/* Button - responsive */}
-             <button
-  className="
+              <button
+                className="
     px-[24px] sm:px-[40px] md:px-[60px] lg:px-[80px] 
     w-full 
     py-[16px] sm:py-[18px] lg:py-[21px] 
@@ -56,10 +56,10 @@ export default function Verification() {
     z-[10]
     whitespace-nowrap
   "
->
-  <span className="hidden sm:inline">Verify This Property</span>
-  <span className="sm:hidden">Verify Property</span>
-</button>
+              >
+                <span className="hidden sm:inline">Verify This Property</span>
+                <span className="sm:hidden">Verify Property</span>
+              </button>
 
             </div>
 

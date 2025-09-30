@@ -47,7 +47,7 @@ function CardSection() {
       </div>
 
       {/* Cards Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-45 md:gap-y-[115px] md:gap-x-[17px] lg:gap-[24px] mt-[148px] sm:mt-[211px] ">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-38 md:gap-y-[115px] md:gap-x-[17px] lg:gap-[24px] mt-[148px] sm:mt-[211px] ">
         {steps.map((step) => (
           <div key={step.id} className="relative flex flex-col items-center text-left ">
             {/* Glow Background */}

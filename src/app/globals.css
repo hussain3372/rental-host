@@ -99,9 +99,7 @@ html {
   color:  #101010;
 }
 
-.custom-height {
-  height: calc(100vh - 200px);
-}
+
 
 .hollow-btn{
   border: 1px solid #EFFC76  ;
@@ -139,4 +137,10 @@ html {
     top: 0;
     background: #121315;
     z-index: 10;
+}
+.custom-height {
+  height: calc(100vh - 196px);
+}
+.home-table {
+  height: 440px;
 }

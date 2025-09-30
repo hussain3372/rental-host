@@ -68,8 +68,8 @@ export default function Step4a() {
           const isSelected = selectedCard === item.id;
 
           const cardBackground = isSelected
-            ? "bg-gradient-to-b from-[#2a2e1a] to-[#121315]"
-            : "bg-[#121315]";
+            ? "bg-gradient-to-b from-[#2a2e1a] via-[#2a2e1a] to-[#121315]"
+            : "bg-[#121315]   ";
 
           const defaultBorderColor = isSelected ? "#c5d168" : "#373739";
           const hoverBorderColor = "#c5d168";

@@ -46,7 +46,7 @@ export const AuthenticationEnable: React.FC<AuthenticationEnableProps> = ({ isOp
               toast.success("2FA authentication enabled successfully");
               onClose(); // ✅ close the modal
             }}
-            className="w-full mt-8 py-4 rounded-lg bg-[#EFFC76] text-[#121315] text-[18px] leading-[22px] font-semibold cursor-pointer"
+                    className="yellow-btn cursor-pointer py-4 mt-8 w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
           >
             Got It
           </button>

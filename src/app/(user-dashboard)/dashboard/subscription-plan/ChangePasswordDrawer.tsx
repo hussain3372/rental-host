@@ -58,7 +58,7 @@ export default function ChangePasswordDrawer({ onClose }: ChangePasswordDrawerPr
           />
           <button
             type="button"
-            className="absolute right-3 top-[46px] text-gray-400"
+            className="absolute right-3 top-[46px] text-gray-400 cursor-pointer"
             onClick={() => setShowCurrent(!showCurrent)}
           >
             {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -89,7 +89,7 @@ export default function ChangePasswordDrawer({ onClose }: ChangePasswordDrawerPr
           />
           <button
             type="button"
-            className="absolute right-3 top-[46px] text-gray-400"
+            className="absolute right-3 top-[46px] text-gray-400 cursor-pointer"
             onClick={() => setShowNew(!showNew)}
           >
             {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -114,7 +114,7 @@ export default function ChangePasswordDrawer({ onClose }: ChangePasswordDrawerPr
           />
           <button
             type="button"
-            className="absolute right-3 top-[46px] text-gray-400"
+            className="absolute right-3 top-[46px] text-gray-400 cursor-pointer"
             onClick={() => setShowConfirm(!showConfirm)}
           >
             {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -126,7 +126,7 @@ export default function ChangePasswordDrawer({ onClose }: ChangePasswordDrawerPr
       <div className="mt-6 lg:mt-auto">
         <button
           onClick={handlePasswordUpdate}
-          className="w-full py-3 bg-[#EFFC76] text-[#121315] rounded-lg font-semibold cursor-pointer"
+                    className="yellow-btn cursor-pointer w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
         >
           Update Password
         </button>

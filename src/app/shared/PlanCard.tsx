@@ -283,7 +283,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
   return (
     <div
       style={cardStyle}
-      className={`${cardRadius} ${cardMaxWidth}  ${
+      className={`${cardRadius} ${cardMaxWidth} ${isHovered ? "hover:bg-gradient-to-b from-[#2a2e1a] via-[#2a2e1a] to-[#121315]" : ""} ${
         showBorder ? borderStyle : ``
       }  ${cardShadow} ${borderStyle} ${
         bgColor?.startsWith("#") ? "" : bgColor
@@ -327,7 +327,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
           onClick={onBuyNow}
           className={`${buttonSpacing} ${buttonWidth} ${buttonPadding} ${buttonRadius} ${buttonClass} ${buttonWeight} ${buttonClasses} cursor-pointer transition-all duration-300 flex items-center justify-center relative z-10 ${
             isHovered && enableHoverEffects
-              ? `${hoverButtonBg} ${hoverButtonText} shadow-[inset_5px_-54px_22px_0px_#00000008,inset_3px_-30px_18px_0px_#0000001A,inset_1px_-14px_14px_0px_#0000002B]`
+              ? `${hoverButtonBg} ${hoverButtonText} shadow-[inset_5px_-54px_22px_0px_#00000008,inset_3px_-30px_18px_0px_#0000001A,inset_1px_-14px_14px_0px_#0000002B] `
               : `${buttonBg} ${buttonTextColor} shadow-[inset_5px_-54px_22px_0px_#00000008,inset_3px_-30px_18px_0px_#0000001A,inset_1px_-14px_14px_0px_#0000002B]`
           }`}
         >

@@ -1,11 +1,9 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,7 +25,6 @@ useEffect(() => {
         maxEntry = entry;
       }
     }
-
     if (maxEntry && maxEntry.target) {
       const targetElement = maxEntry.target as HTMLElement;
       const id = targetElement.id;
@@ -50,7 +47,6 @@ useEffect(() => {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-
     const handleHashChange = () => {
       const hash = window.location.hash.replace("#", "");
       if (hash && ["plans", "how-it-works", "hosts"].includes(hash)) {
@@ -59,28 +55,21 @@ useEffect(() => {
         setActiveSection("home");
       }
     };
-
     handleHashChange();
-
     window.addEventListener("hashchange", handleHashChange);
-    
     return () => {
       window.removeEventListener("hashchange", handleHashChange);
     };
   }, [pathname]);
-
   const linkClasses = (isActive: boolean) =>
     `text-[20px] cursor-pointer pro-medium leading-5 relative group transition-colors duration-300
      ${isActive ? "text-[#FFFFFF]" : "text-[#FFFFFF99]"} hover:text-[#FFFFFF]`;
-
   const isSectionActive = (section: string) => {
     return activeSection === section;
   };
-
   // Handle manual click on navigation links
   const handleNavClick = (section: string) => {
     setActiveSection(section);
-    
     setTimeout(() => {
       const element = document.getElementById(section);
       if (element) {
@@ -92,10 +81,9 @@ useEffect(() => {
       }
     }, 10);
   };
-
   return (
     <>
-      <header className="fixed top-0 left-0 w-full z-50 bg-[#17181a] px-[0px] md:px-[89px] shadow-md">
+      <header className="fixed top-0 left-0 w-full z-50 bg-[#17181A] px-[0px] md:px-[89px] shadow-md">
         <div className="bg-[#0A0C0B] rounded-lg relative w-full max-w-[1304px] mx-auto">
           <nav className="mx-auto flex items-center justify-between py-[24px] px-3 sm:px-[20px]">
             {/* Mobile Menu Button */}
@@ -111,7 +99,6 @@ useEffect(() => {
                 <Image src="/images/auth-logo.png" width={37} height={13} alt="logo" />
               </Link>
             </div>
-
             {/* Logo with text */}
             <div className="hidden sm:flex lg:flex-1">
               <Link href="/" className="flex items-center gap-2 -m-1.5 p-1.5">
@@ -124,18 +111,17 @@ useEffect(() => {
                 />
               </Link>
             </div>
-
             {/* Desktop Menu */}
             <div className="hidden lg:flex lg:gap-x-8 px-5 py-3 items-center relative">
-              <Link 
-                href="/" 
+              <Link
+                href="/"
                 className={linkClasses(isSectionActive("home"))}
                 onClick={() => handleNavClick("home")}
               >
                 Home
               </Link>
-              <Link 
-                href="/#plans" 
+              <Link
+                href="/#plans"
                 className={linkClasses(isSectionActive("plans"))}
                 onClick={() => handleNavClick("plans")}
               >
@@ -148,15 +134,14 @@ useEffect(() => {
               >
                 How It Works
               </Link>
-              <Link 
-                href="/#hosts" 
+              <Link
+                href="/#hosts"
                 className={linkClasses(isSectionActive("hosts"))}
                 onClick={() => handleNavClick("hosts")}
               >
                 Our Hosts
               </Link>
             </div>
-
             {/* CTA Buttons */}
             <div className="flex gap-3 lg:flex-1 lg:justify-end">
               <Link
@@ -177,7 +162,6 @@ useEffect(() => {
               </Link>
             </div>
           </nav>
-
           {/* Mobile Menu */}
           {mobileMenuOpen && (
             <div className="fixed inset-0 z-50 bg-black px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
@@ -193,14 +177,13 @@ useEffect(() => {
                   <XMarkIcon className="h-6 w-6 text-[#FFFFFF99]" />
                 </button>
               </div>
-
               <div className="mt-6">
                 <div className="space-y-4">
                   <Link
                     href="/"
                     className={`block text-base px-3 py-2 transition-colors duration-300 ${
-                      isSectionActive("home") 
-                        ? "text-[#FFFFFF]" 
+                      isSectionActive("home")
+                        ? "text-[#FFFFFF]"
                         : "text-[#FFFFFF99] hover:text-[#FFFFFF]"
                     }`}
                     onClick={() => {
@@ -213,8 +196,8 @@ useEffect(() => {
                   <Link
                     href="/#plans"
                     className={`block text-base px-3 py-2 transition-colors duration-300 ${
-                      isSectionActive("plans") 
-                        ? "text-[#FFFFFF]" 
+                      isSectionActive("plans")
+                        ? "text-[#FFFFFF]"
                         : "text-[#FFFFFF99] hover:text-[#FFFFFF]"
                     }`}
                     onClick={() => {
@@ -227,8 +210,8 @@ useEffect(() => {
                   <Link
                     href="/#how-it-works"
                     className={`block text-base px-3 py-2 transition-colors duration-300 ${
-                      isSectionActive("how-it-works") 
-                        ? "text-[#FFFFFF]" 
+                      isSectionActive("how-it-works")
+                        ? "text-[#FFFFFF]"
                         : "text-[#FFFFFF99] hover:text-[#FFFFFF]"
                     }`}
                     onClick={() => {
@@ -241,8 +224,8 @@ useEffect(() => {
                   <Link
                     href="/#hosts"
                     className={`block text-base px-3 py-2 transition-colors duration-300 ${
-                      isSectionActive("hosts") 
-                        ? "text-[#FFFFFF]" 
+                      isSectionActive("hosts")
+                        ? "text-[#FFFFFF]"
                         : "text-[#FFFFFF99] hover:text-[#FFFFFF]"
                     }`}
                     onClick={() => {
@@ -258,7 +241,6 @@ useEffect(() => {
           )}
         </div>
       </header>
-
       <div className="h-[112px] lg:h-[112px]"></div>
     </>
   );

@@ -78,7 +78,7 @@ export const Modal: React.FC<ModalProps> = ({
             )} */}
             <button
               onClick={handleConfirm}
-              className="px-6 py-3 rounded-[8px] bg-[#EFFC76] text-[#121315] text-[16px] cursor-pointer font-semibold w-full"
+                    className="yellow-btn cursor-pointer w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[16px] leading-[20px] hover:bg-[#E5F266] transition-colors duration-300"
             >
               {confirmText}
             </button>

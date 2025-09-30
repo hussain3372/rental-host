@@ -43,8 +43,8 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ isOpen, on
           </div>
           <button
             onClick={handleConfirm} 
-            className="w-full mt-8 py-4 rounded-[8px] bg-[#EFFC76] text-[#121315] text-[18px] leading-[22px] font-semibold cursor-pointer box-shadow: 0 -2px 3px 0 rgba(0, 0, 0, 0.29) inset, 0 -6px 6px 0 rgba(0, 0, 0, 0.26) inset, 0 -14px 8px 0 rgba(0, 0, 0, 0.15) inset, 0 -25px 10px 0 rgba(0, 0, 0, 0.04) inset, 0 -39px 11px 0 rgba(0, 0, 0, 0.01) inset;
-"
+                    className="yellow-btn cursor-pointer mt-8 w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
+
           >
             Start Listing
           </button>

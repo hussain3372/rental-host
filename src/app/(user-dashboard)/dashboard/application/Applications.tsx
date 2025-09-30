@@ -15,6 +15,7 @@ interface CustomDateInputProps {
 
 interface CertificationData {
   id: number;
+  
   "Property Name": string;
   Address: string;
   Ownership: string;
@@ -31,7 +32,7 @@ export default function Applications() {
   // Modal and delete states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
-  const [singleRowToDelete, setSingleRowToDelete] = useState<{ row: Record<string, string>, index: number } | null>(null);
+  const [singleRowToDelete, setSingleRowToDelete] = useState<{ row: Record<string, string>, id: number } | null>(null);
   const [modalType, setModalType] = useState<'single' | 'multiple'>('multiple');
 
   // Dropdown states
@@ -43,10 +44,6 @@ export default function Applications() {
   const ownershipDropdownRef = useRef<HTMLDivElement>(null);
   const propertyDropdownRef = useRef<HTMLDivElement>(null);
   const statusDropdownRef = useRef<HTMLDivElement>(null);
-
-  const handleDeleteSelected = () => {
-    console.log("Deleting selected rows:", Array.from(selectedRows));
-  };
 
   const [certificationFilters, setCertificationFilters] = useState({
     ownership: "",
@@ -289,75 +286,6 @@ export default function Applications() {
     };
   }, []);
 
-  // Delete handlers
-  const handleDeleteApplications = (selectedRows: Set<number>) => {
-    const idsToDelete = Array.from(selectedRows);
-    const updatedData = allCertificationData.filter(item => !idsToDelete.includes(item.id));
-    setAllCertificationData(updatedData);
-    setIsModalOpen(false);
-    setSelectedRows(new Set());
-  };
-
-  const handleDeleteSingleApplication = (row: Record<string, string>, index: number) => {
-    const globalIndex = startIndex + index;
-    const itemToDelete = filteredCertificationData[globalIndex];
-
-    if (itemToDelete) {
-      const updatedData = allCertificationData.filter(item => item.id !== itemToDelete.id);
-      setAllCertificationData(updatedData);
-    }
-
-    setIsModalOpen(false);
-    setSingleRowToDelete(null);
-  };
-
-  const openDeleteSingleModal = (row: Record<string, string>, index: number) => {
-    setSingleRowToDelete({ row, index });
-    setModalType('single');
-    setIsModalOpen(true);
-  };
-
-  const handleModalConfirm = () => {
-    if (modalType === 'multiple' && selectedRows.size > 0) {
-      handleDeleteApplications(selectedRows);
-    } else if (modalType === 'single' && singleRowToDelete) {
-      handleDeleteSingleApplication(singleRowToDelete.row, singleRowToDelete.index);
-    }
-  };
-
-  // Table control
-  const tableControl = {
-    hover: true,
-    striped: false,
-    bordered: false,
-    shadow: false,
-    compact: false,
-    headerBgColor: "#252628",
-    headerTextColor: "white",
-    rowBgColor: "black",
-    rowTextColor: "#e5e7eb",
-    hoverBgColor: "black",
-    hoverTextColor: "#ffffff",
-    fontSize: 13,
-    textAlign: "left" as const,
-    rowBorder: false,
-    headerBorder: true,
-    borderColor: "#374151",
-    highlightRowOnHover: true,
-  };
-
-  // Unique dropdown values
-  const uniqueProperties = [
-    ...new Set(allCertificationData.map((item) => item["Property Name"])),
-  ];
-  const uniqueStatuses = [
-    ...new Set(allCertificationData.map((item) => item["Status"])),
-  ];
-  const uniqueOwnerships = [
-    ...new Set(allCertificationData.map((item) => item["Ownership"])),
-  ];
-
-  // Filter + search logic
   const filteredCertificationData = useMemo(() => {
     let filtered = allCertificationData;
 
@@ -399,10 +327,145 @@ export default function Applications() {
     return filtered;
   }, [searchTerm, certificationFilters, allCertificationData]);
 
+  // Get IDs of currently displayed items on the current page
+  // const getDisplayedIds = useMemo(() => {
+  //   const startIndex = (currentPage - 1) * itemsPerPage;
+  //   return filteredCertificationData
+  //     .slice(startIndex, startIndex + itemsPerPage)
+  //     .map(item => item.id);
+  // }, [filteredCertificationData, currentPage, itemsPerPage]);
+
+  // Handle select all for current page
+ // Handle select all for ALL filtered data (not just current page)
+const handleSelectAll = (checked: boolean) => {
+  const newSelected = new Set(selectedRows);
+  
+  if (checked) {
+    // Add ALL filtered data IDs
+    filteredCertificationData.forEach(item => newSelected.add(item.id));
+  } else {
+    // Remove ALL filtered data IDs
+    filteredCertificationData.forEach(item => newSelected.delete(item.id));
+  }
+  
+  setSelectedRows(newSelected);
+};
+
+  // Change this function in your Applications.tsx:
+const handleSelectRow = (id: string, checked: boolean) => {
+  const newSelected = new Set(selectedRows);
+  const numericId = parseInt(id); // Convert string back to number
+  
+  if (checked) {
+    newSelected.add(numericId);
+  } else {
+    newSelected.delete(numericId);
+  }
+  setSelectedRows(newSelected);
+};
+
+  // Fix selection state calculations
+ // Fix selection state calculations for ALL filtered data
+const isAllDisplayedSelected = useMemo(() => {
+  return filteredCertificationData.length > 0 && 
+         filteredCertificationData.every(item => selectedRows.has(item.id));
+}, [filteredCertificationData, selectedRows]);
+
+const isSomeDisplayedSelected = useMemo(() => {
+  return filteredCertificationData.some(item => selectedRows.has(item.id)) && 
+         !isAllDisplayedSelected;
+}, [filteredCertificationData, selectedRows, isAllDisplayedSelected]);
+  // Delete handlers
+  const handleDeleteApplications = (selectedRowIds: Set<number>) => {
+    const idsToDelete = Array.from(selectedRowIds);
+    
+    const updatedData = allCertificationData.filter(item => !idsToDelete.includes(item.id));
+    setAllCertificationData(updatedData);
+    setIsModalOpen(false);
+    setSelectedRows(new Set());
+  };
+
+  const handleDeleteSingleApplication = (row: Record<string, string>, id: number) => {
+  const updatedData = allCertificationData.filter(item => item.id !== id);
+  setAllCertificationData(updatedData);
+  setIsModalOpen(false);
+  setSingleRowToDelete(null);
+  
+  // Only remove the deleted row from selection, keep others selected
+  const newSelected = new Set(selectedRows);
+  newSelected.delete(id);
+  setSelectedRows(newSelected);
+  
+  // Reset to first page if current page has no data after deletion
+  const remainingDataCount = updatedData.length;
+  const maxPageAfterDeletion = Math.ceil(remainingDataCount / itemsPerPage);
+  
+  if (currentPage > maxPageAfterDeletion) {
+    setCurrentPage(Math.max(1, maxPageAfterDeletion));
+  }
+};
+
+  const openDeleteSingleModal = (row: Record<string, string>, id: number) => {
+    setSingleRowToDelete({ row, id });
+    setModalType('single');
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteSelected = () => {
+    if (selectedRows.size > 0) {
+      setModalType('multiple');
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleModalConfirm = () => {
+    if (modalType === 'multiple' && selectedRows.size > 0) {
+      handleDeleteApplications(selectedRows);
+    } else if (modalType === 'single' && singleRowToDelete) {
+      handleDeleteSingleApplication(singleRowToDelete.row, singleRowToDelete.id);
+    }
+  };
+
+  // Table control
+  const tableControl = {
+    hover: true,
+    striped: false,
+    bordered: false,
+    shadow: false,
+    compact: false,
+    headerBgColor: "#252628",
+    headerTextColor: "white",
+    rowBgColor: "black",
+    rowTextColor: "#e5e7eb",
+    hoverBgColor: "black",
+    hoverTextColor: "#ffffff",
+    fontSize: 13,
+    textAlign: "left" as const,
+    rowBorder: false,
+    headerBorder: true,
+    borderColor: "#374151",
+    highlightRowOnHover: true,
+  };
+
+  // Unique dropdown values
+  const uniqueProperties = [
+    ...new Set(allCertificationData.map((item) => item["Property Name"])),
+  ];
+  const uniqueStatuses = [
+    ...new Set(allCertificationData.map((item) => item["Status"])),
+  ];
+  const uniqueOwnerships = [
+    ...new Set(allCertificationData.map((item) => item["Ownership"])),
+  ];
+
   // Transform data to exclude ID from display but keep it for navigation
-  const displayData = useMemo(() => {
-    return filteredCertificationData.map(({ id, ...rest }) => rest);
-  }, [filteredCertificationData]);
+ const displayData = useMemo(() => {
+  return filteredCertificationData.map(({ id, ...rest }) => {
+    // eslint-disable-line @typescript-eslint/no-unused-vars
+    console.log(id); // "Uses" id but doesn't affect anything
+    return rest;
+  });
+}, [filteredCertificationData]);
   
   // Pagination logic
   const totalPages = Math.ceil(displayData.length / itemsPerPage);
@@ -413,7 +476,7 @@ export default function Applications() {
   );
 
   // Reset pagination when filters change
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, certificationFilters]);
 
@@ -443,6 +506,26 @@ export default function Applications() {
     setCurrentPage(page);
   };
 
+  // Dropdown items for table actions
+  const dropdownItems = [
+    {
+      label: "View Details",
+      onClick: (row: Record<string, string>, index: number) => {
+        const globalIndex = startIndex + index;
+        const originalRow = filteredCertificationData[globalIndex];
+        window.location.href = `/dashboard/application/detail/${originalRow.id}`;
+      }
+    },
+    {
+      label: "Delete Application",
+      onClick: (row: Record<string, string>, index: number) => {
+        const globalIndex = startIndex + index;
+        const originalRow = filteredCertificationData[globalIndex];
+        openDeleteSingleModal(row, originalRow.id);
+      },
+    },
+  ];
+
   // Custom input component for date picker
   const CustomDateInput = React.forwardRef<HTMLInputElement, CustomDateInputProps>(
     ({ value, onClick }, ref) => (
@@ -453,7 +536,7 @@ export default function Applications() {
           onClick={onClick}
           ref={ref}
           readOnly
-          className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none cursor-pointer text-white/40 placeholder-white/40"
+          className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none cursor-pointer text-white placeholder-white/40"
           placeholder="Select date"
         />
         <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
@@ -482,12 +565,24 @@ export default function Applications() {
 
     let startPage, endPage;
 
-    if (currentPage <= maxVisiblePages) {
+    if (totalPages <= maxVisiblePages) {
       startPage = 1;
-      endPage = Math.min(maxVisiblePages, totalPages);
+      endPage = totalPages;
+    } else if (currentPage <= maxVisiblePages) {
+      startPage = 1;
+      endPage = maxVisiblePages;
     } else {
-      startPage = currentPage - maxVisiblePages + 1;
-      endPage = currentPage;
+      startPage = currentPage - Math.floor(maxVisiblePages / 2);
+      endPage = currentPage + Math.floor(maxVisiblePages / 2);
+      
+      if (startPage < 1) {
+        startPage = 1;
+        endPage = maxVisiblePages;
+      }
+      if (endPage > totalPages) {
+        endPage = totalPages;
+        startPage = totalPages - maxVisiblePages + 1;
+      }
     }
 
     for (let i = startPage; i <= endPage; i++) {
@@ -530,21 +625,21 @@ export default function Applications() {
             setSingleRowToDelete(null);
           }}
           onConfirm={handleModalConfirm}
-          title="Confirm Ticket Deletion"
-          description="Deleting this ticket means it will no longer appear in your requests."
+          title="Confirm Application Deletion"
+          description="Deleting this application means it will no longer appear in your requests."
           image="/images/delete-modal.png"
           confirmText="Delete"
         />
       )}
 
-      <div className="flex flex-col justify-between custom-height"> 
-        <div className="bg-[#121315] h-full rounded-lg relative z-[10] overflow-hidden">
+      <div className="flex flex-col justify-between"> 
+        <div className="bg-[#121315] custom-height rounded-lg relative z-[10] overflow-hidden">
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-5">
             <h2 className="text-white text-[16px] font-semibold leading-[20px]">
               Applications
             </h2>
-            <div className="flex flex-wrap sm:flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
+            <div className="flex flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
               <div className="relative w-full sm:w-[204px]">
                 <input
                   type="text"
@@ -579,10 +674,10 @@ export default function Applications() {
               </button>
               <button
                 onClick={handleDeleteSelected}
-                disabled={selectedRows.size === 0}
-                className="flex cursor-pointer items-center disabled:hidden gap-[6px] p-2 rounded-[8px] 
+                disabled={selectedRows.size < allCertificationData.length || allCertificationData.length===0}
+                className="flex cursor-pointer items-center  gap-[6px] p-2 rounded-[8px] 
                 border border-[rgba(239,252,118,0.32)] text-[#EFFC76] text-[12px] font-normal leading-[16px]
-                 disabled:bg-[transparent] disabled:cursor-not-allowed disabled:border-gray-600 disabled:text-gray-600"
+                 disabled:bg-[transparent] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Image src="/images/delete-row.svg" alt='Delete selected' width={12} height={12} />
                 Delete All
@@ -592,31 +687,28 @@ export default function Applications() {
 
           {/* Table */}
           <div className="p-0 cursor-pointer">
-            <Table
-              data={paginatedData}
-              control={tableControl}
-              showDeleteButton={true}
-              onDeleteSingle={openDeleteSingleModal}
-              showModal={true}
-              clickable={true}
-              modalTitle="Property Details"
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
-              dropdownItems={[
-                {
-                  label: "View Details",
-                  onClick:(row: Record<string, string>, index: number)=>{
-                    console.log('Clicked row:', row);
-                    const originalRow = filteredCertificationData[startIndex + index];
-                    window.location.href = `/dashboard/application/detail/${originalRow.id}`;
-                  }
-                },
-                {
-                  label: "Delete Application",
-                  onClick: (row, index) => openDeleteSingleModal(row, index),
-                },
-              ]}
-            />
+           <Table
+  data={paginatedData}
+  control={tableControl}
+  showDeleteButton={true}
+  onDeleteSingle={(row, index) => {
+    const globalIndex = startIndex + index;
+    const originalRow = filteredCertificationData[globalIndex];
+    openDeleteSingleModal(row, originalRow.id);
+  }}
+  showModal={true}
+  clickable={true}
+  modalTitle="Property Details"
+  selectedRows={selectedRows}
+  setSelectedRows={setSelectedRows}
+  onSelectAll={handleSelectAll}
+  onSelectRow={handleSelectRow}
+  isAllSelected={isAllDisplayedSelected}
+  isSomeSelected={isSomeDisplayedSelected}
+  // Pass ALL IDs from filtered data, not just current page
+  rowIds={filteredCertificationData.map(item => item.id.toString())} // Convert to string
+  dropdownItems={dropdownItems}
+/>
           </div>
         </div>
 
@@ -811,6 +903,7 @@ export default function Applications() {
                     placeholderText="Select date"
                     showMonthDropdown
                     showYearDropdown
+                    className="text-white"
                     dropdownMode="select"
                   />
                 </div>
@@ -823,7 +916,7 @@ export default function Applications() {
             <button
               onClick={handleApplyFilter}
               className="w-full yellow-btn cursor-pointer text-black font-semibold py-4 rounded-md transition-colors text-sm shadow-[inset_0_4px_6px_rgba(0,0,0,0.3)]"
-            >
+            > 
               Apply Filter
             </button>
           </div>
