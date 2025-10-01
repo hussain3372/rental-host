@@ -45,7 +45,7 @@ export default function PropertyDetailPage() {
     }
   };
   return (
-    <div className="pt-[80px]  px-4 sm:px-6 lg:px-[120px]">
+    <div className="sm:pt-[80px] pt-0  px-4 sm:px-6 lg:px-[120px]">
 
       <nav className="py-3 mb-5 bg-transparent">
         <ol className="flex flex-wrap items-center gap-1 sm:gap-2 text-sm md:text-base">

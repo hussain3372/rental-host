@@ -9,7 +9,6 @@ const manrope = Manrope({
   display: "swap",
 });
 
-
 // Define props type
 type RootLayoutProps = {
   children: ReactNode;

@@ -63,7 +63,7 @@ export default function Step4a() {
       </div>
 
       {/* Responsive Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 place-items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 gap-y-5 sm:gap-y-0 place-items-center">
         {CardData.map((item) => {
           const isSelected = selectedCard === item.id;
 
@@ -103,10 +103,12 @@ export default function Step4a() {
                 priceSize="font-semibold text-[40px] leading-[48px]"
                 periodSize="text-white/40 text-[12px] leading-4"
                 periodWeight="font-regular"
-                cardMaxWidth="max-w-[300px] ml-0 cursor-pointer"
+                cardMaxWidth="max-w-[245px] ml-0 cursor-pointer"
                 featureSize="text-[12px] leading-[16px]"
                 featureWeight="font-regular"
                 dividerWidth="w-[204px]"
+                  padding = "sm:p-[20px] p-[16px]"
+
                 buttonClass="hidden"
               />
             </div>

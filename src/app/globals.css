@@ -139,8 +139,9 @@ html {
     z-index: 10;
 }
 .custom-height {
-  height: calc(100vh - 196px);
+  height: calc(100vh - 215px);
 }
 .home-table {
   height: 440px;
 }
+

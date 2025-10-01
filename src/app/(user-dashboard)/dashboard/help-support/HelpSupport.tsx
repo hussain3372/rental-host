@@ -208,12 +208,10 @@ export default function HelpSupport() {
     }, [filteredCertificationData, selectedRows, isAllDisplayedSelected]);
 
     // Transform data to exclude ID from display but keep it for navigation
-    const displayData = useMemo(() => {
-  return filteredCertificationData.map(({ id, ...rest }) => {
-    id; // Just reference it without doing anything
-    return rest;
-  });
+const displayData = useMemo(() => {
+    return filteredCertificationData.map(({ id, ...rest }) => rest);
 }, [filteredCertificationData]);
+
 
     // Pagination logic
     const totalPages = Math.ceil(displayData.length / itemsPerPage);
@@ -501,7 +499,7 @@ export default function HelpSupport() {
                     Create Ticket
                 </button>
             </div>
-            <div className="flex flex-col justify-between custom-height">
+            <div className="flex flex-col justify-between mb-5 custom-height">
 
                 {/* Table Container */}
                 <div className="bg-[#121315] h-full rounded-lg relative z-[10] overflow-hidden flex flex-col">
@@ -544,16 +542,16 @@ export default function HelpSupport() {
                                 />
                             </button>
 
-                                <button
+                            <button
                                 disabled={!isAllDisplayedSelected}
-                                    onClick={handleDeleteSelected}
-                                    className="flex cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 items-center gap-[6px] p-2 rounded-[8px] 
+                                onClick={handleDeleteSelected}
+                                className="flex cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 items-center gap-[6px] p-2 rounded-[8px] 
             border border-[rgba(239,252,118,0.32)] text-[#EFFC76] text-[12px] font-normal leading-[16px]
              transition-colors duration-300"
-                                >
-                                    <Image src="/images/delete-row.svg" alt='Delete selected' width={12} height={12} />
-                                    Delete All
-                                </button>
+                            >
+                                <Image src="/images/delete-row.svg" alt='Delete selected' width={12} height={12} />
+                                Delete All
+                            </button>
                         </div>
                     </div>
 
@@ -590,7 +588,7 @@ export default function HelpSupport() {
                     </div>
                 </div>
 
-                <div className="flex justify-center mt-4">
+                <div className="flex justify-center mt-[20px] ">
                     <div className="flex items-center gap-2">
                         {renderPaginationButtons()}
                     </div>
@@ -812,7 +810,7 @@ export default function HelpSupport() {
                     <div className="p-6">
                         <button
                             onClick={handleApplyFilter}
-              className="yellow-btn cursor-pointer w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
+                            className="yellow-btn cursor-pointer w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
                         >
                             Apply Filter
                         </button>

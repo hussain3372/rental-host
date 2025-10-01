@@ -52,7 +52,7 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
   return (
     <>
       {/* Mobile top bar */}
-      <div className="lg:hidden flex items-center z-[100] justify-between px-4 py-6  fixed w-full ">
+      <div className="lg:hidden w-fit flex items-center z-[100] justify-between px-4 py-6  fixed  ">
         <button onClick={toggleMobileMenu} className="text-white">
           <Menu size={28} />
         </button>

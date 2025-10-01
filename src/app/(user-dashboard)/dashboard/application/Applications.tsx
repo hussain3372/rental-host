@@ -15,7 +15,7 @@ interface CustomDateInputProps {
 
 interface CertificationData {
   id: number;
-  
+
   "Property Name": string;
   Address: string;
   Ownership: string;
@@ -32,8 +32,11 @@ export default function Applications() {
   // Modal and delete states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
-  const [singleRowToDelete, setSingleRowToDelete] = useState<{ row: Record<string, string>, id: number } | null>(null);
-  const [modalType, setModalType] = useState<'single' | 'multiple'>('multiple');
+  const [singleRowToDelete, setSingleRowToDelete] = useState<{
+    row: Record<string, string>;
+    id: number;
+  } | null>(null);
+  const [modalType, setModalType] = useState<"single" | "multiple">("multiple");
 
   // Dropdown states
   const [showOwnershipDropdown, setShowOwnershipDropdown] = useState(false);
@@ -55,7 +58,9 @@ export default function Applications() {
   // State for date picker
   const [submittedDate, setSubmittedDate] = useState<Date | null>(null);
 
-  const [allCertificationData, setAllCertificationData] = useState<CertificationData[]>([
+  const [allCertificationData, setAllCertificationData] = useState<
+    CertificationData[]
+  >([
     {
       id: 1,
       "Property Name": "Coastal Hillside Estate",
@@ -336,93 +341,105 @@ export default function Applications() {
   // }, [filteredCertificationData, currentPage, itemsPerPage]);
 
   // Handle select all for current page
- // Handle select all for ALL filtered data (not just current page)
-const handleSelectAll = (checked: boolean) => {
-  const newSelected = new Set(selectedRows);
-  
-  if (checked) {
-    // Add ALL filtered data IDs
-    filteredCertificationData.forEach(item => newSelected.add(item.id));
-  } else {
-    // Remove ALL filtered data IDs
-    filteredCertificationData.forEach(item => newSelected.delete(item.id));
-  }
-  
-  setSelectedRows(newSelected);
-};
+  // Handle select all for ALL filtered data (not just current page)
+  const handleSelectAll = (checked: boolean) => {
+    const newSelected = new Set(selectedRows);
+
+    if (checked) {
+      // Add ALL filtered data IDs
+      filteredCertificationData.forEach((item) => newSelected.add(item.id));
+    } else {
+      // Remove ALL filtered data IDs
+      filteredCertificationData.forEach((item) => newSelected.delete(item.id));
+    }
+
+    setSelectedRows(newSelected);
+  };
 
   // Change this function in your Applications.tsx:
-const handleSelectRow = (id: string, checked: boolean) => {
-  const newSelected = new Set(selectedRows);
-  const numericId = parseInt(id); // Convert string back to number
-  
-  if (checked) {
-    newSelected.add(numericId);
-  } else {
-    newSelected.delete(numericId);
-  }
-  setSelectedRows(newSelected);
-};
+  const handleSelectRow = (id: string, checked: boolean) => {
+    const newSelected = new Set(selectedRows);
+    const numericId = parseInt(id); // Convert string back to number
+
+    if (checked) {
+      newSelected.add(numericId);
+    } else {
+      newSelected.delete(numericId);
+    }
+    setSelectedRows(newSelected);
+  };
 
   // Fix selection state calculations
- // Fix selection state calculations for ALL filtered data
-const isAllDisplayedSelected = useMemo(() => {
-  return filteredCertificationData.length > 0 && 
-         filteredCertificationData.every(item => selectedRows.has(item.id));
-}, [filteredCertificationData, selectedRows]);
+  // Fix selection state calculations for ALL filtered data
+  const isAllDisplayedSelected = useMemo(() => {
+    return (
+      filteredCertificationData.length > 0 &&
+      filteredCertificationData.every((item) => selectedRows.has(item.id))
+    );
+  }, [filteredCertificationData, selectedRows]);
 
-const isSomeDisplayedSelected = useMemo(() => {
-  return filteredCertificationData.some(item => selectedRows.has(item.id)) && 
-         !isAllDisplayedSelected;
-}, [filteredCertificationData, selectedRows, isAllDisplayedSelected]);
+  const isSomeDisplayedSelected = useMemo(() => {
+    return (
+      filteredCertificationData.some((item) => selectedRows.has(item.id)) &&
+      !isAllDisplayedSelected
+    );
+  }, [filteredCertificationData, selectedRows, isAllDisplayedSelected]);
   // Delete handlers
   const handleDeleteApplications = (selectedRowIds: Set<number>) => {
     const idsToDelete = Array.from(selectedRowIds);
-    
-    const updatedData = allCertificationData.filter(item => !idsToDelete.includes(item.id));
+
+    const updatedData = allCertificationData.filter(
+      (item) => !idsToDelete.includes(item.id)
+    );
     setAllCertificationData(updatedData);
     setIsModalOpen(false);
     setSelectedRows(new Set());
   };
 
-  const handleDeleteSingleApplication = (row: Record<string, string>, id: number) => {
-  const updatedData = allCertificationData.filter(item => item.id !== id);
-  setAllCertificationData(updatedData);
-  setIsModalOpen(false);
-  setSingleRowToDelete(null);
-  
-  // Only remove the deleted row from selection, keep others selected
-  const newSelected = new Set(selectedRows);
-  newSelected.delete(id);
-  setSelectedRows(newSelected);
-  
-  // Reset to first page if current page has no data after deletion
-  const remainingDataCount = updatedData.length;
-  const maxPageAfterDeletion = Math.ceil(remainingDataCount / itemsPerPage);
-  
-  if (currentPage > maxPageAfterDeletion) {
-    setCurrentPage(Math.max(1, maxPageAfterDeletion));
-  }
-};
+  const handleDeleteSingleApplication = (
+    row: Record<string, string>,
+    id: number
+  ) => {
+    const updatedData = allCertificationData.filter((item) => item.id !== id);
+    setAllCertificationData(updatedData);
+    setIsModalOpen(false);
+    setSingleRowToDelete(null);
+
+    // Only remove the deleted row from selection, keep others selected
+    const newSelected = new Set(selectedRows);
+    newSelected.delete(id);
+    setSelectedRows(newSelected);
+
+    // Reset to first page if current page has no data after deletion
+    const remainingDataCount = updatedData.length;
+    const maxPageAfterDeletion = Math.ceil(remainingDataCount / itemsPerPage);
+
+    if (currentPage > maxPageAfterDeletion) {
+      setCurrentPage(Math.max(1, maxPageAfterDeletion));
+    }
+  };
 
   const openDeleteSingleModal = (row: Record<string, string>, id: number) => {
     setSingleRowToDelete({ row, id });
-    setModalType('single');
+    setModalType("single");
     setIsModalOpen(true);
   };
 
   const handleDeleteSelected = () => {
     if (selectedRows.size > 0) {
-      setModalType('multiple');
+      setModalType("multiple");
       setIsModalOpen(true);
     }
   };
 
   const handleModalConfirm = () => {
-    if (modalType === 'multiple' && selectedRows.size > 0) {
+    if (modalType === "multiple" && selectedRows.size > 0) {
       handleDeleteApplications(selectedRows);
-    } else if (modalType === 'single' && singleRowToDelete) {
-      handleDeleteSingleApplication(singleRowToDelete.row, singleRowToDelete.id);
+    } else if (modalType === "single" && singleRowToDelete) {
+      handleDeleteSingleApplication(
+        singleRowToDelete.row,
+        singleRowToDelete.id
+      );
     }
   };
 
@@ -459,14 +476,14 @@ const isSomeDisplayedSelected = useMemo(() => {
   ];
 
   // Transform data to exclude ID from display but keep it for navigation
- const displayData = useMemo(() => {
-  return filteredCertificationData.map(({ id, ...rest }) => {
-    // eslint-disable-line @typescript-eslint/no-unused-vars
-    console.log(id); // "Uses" id but doesn't affect anything
-    return rest;
-  });
-}, [filteredCertificationData]);
-  
+  const displayData = useMemo(() => {
+    return filteredCertificationData.map(({ id, ...rest }) => {
+      // eslint-disable-line @typescript-eslint/no-unused-vars
+      console.log(id); // "Uses" id but doesn't affect anything
+      return rest;
+    });
+  }, [filteredCertificationData]);
+
   // Pagination logic
   const totalPages = Math.ceil(displayData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -493,9 +510,13 @@ const isSomeDisplayedSelected = useMemo(() => {
 
   const handleApplyFilter = () => {
     if (submittedDate) {
-      setCertificationFilters(prev => ({
+      setCertificationFilters((prev) => ({
         ...prev,
-        submittedDate: submittedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        submittedDate: submittedDate.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
       }));
     }
 
@@ -514,7 +535,7 @@ const isSomeDisplayedSelected = useMemo(() => {
         const globalIndex = startIndex + index;
         const originalRow = filteredCertificationData[globalIndex];
         window.location.href = `/dashboard/application/detail/${originalRow.id}`;
-      }
+      },
     },
     {
       label: "Delete Application",
@@ -527,26 +548,32 @@ const isSomeDisplayedSelected = useMemo(() => {
   ];
 
   // Custom input component for date picker
-  const CustomDateInput = React.forwardRef<HTMLInputElement, CustomDateInputProps>(
-    ({ value, onClick }, ref) => (
-      <div className="relative">
-        <input
-          type="text"
-          value={value}
-          onClick={onClick}
-          ref={ref}
-          readOnly
-          className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none cursor-pointer text-white placeholder-white/40"
-          placeholder="Select date"
+  const CustomDateInput = React.forwardRef<
+    HTMLInputElement,
+    CustomDateInputProps
+  >(({ value, onClick }, ref) => (
+    <div className="relative">
+      <input
+        type="text"
+        value={value}
+        onClick={onClick}
+        ref={ref}
+        readOnly
+        className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none cursor-pointer text-white placeholder-white/40"
+        placeholder="Select date"
+      />
+      <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+        <Image
+          src="/images/calender.svg"
+          alt="Pick date"
+          width={20}
+          height={20}
         />
-        <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-          <Image src="/images/calender.svg" alt='Pick date' width={20} height={20} />
-        </div>
       </div>
-    )
-  );
+    </div>
+  ));
 
-  CustomDateInput.displayName = 'CustomDateInput';
+  CustomDateInput.displayName = "CustomDateInput";
 
   const renderPaginationButtons = () => {
     const buttons = [];
@@ -559,7 +586,13 @@ const isSomeDisplayedSelected = useMemo(() => {
         disabled={currentPage === 1}
         className="w-8 h-8 flex items-center p-[13px] justify-center text-gray-400 hover:text-white transition-colors border border-gray-600 rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
       >
-        <Image src="/images/arrow-left.svg" height={14} width={14} alt="Back" className="" />
+        <Image
+          src="/images/arrow-left.svg"
+          height={14}
+          width={14}
+          alt="Back"
+          className=""
+        />
       </button>
     );
 
@@ -574,7 +607,7 @@ const isSomeDisplayedSelected = useMemo(() => {
     } else {
       startPage = currentPage - Math.floor(maxVisiblePages / 2);
       endPage = currentPage + Math.floor(maxVisiblePages / 2);
-      
+
       if (startPage < 1) {
         startPage = 1;
         endPage = maxVisiblePages;
@@ -607,7 +640,13 @@ const isSomeDisplayedSelected = useMemo(() => {
         disabled={currentPage === totalPages}
         className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white transition-colors border border-gray-600 rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 p-[13px]"
       >
-        <Image src="/images/arrow-right.svg" height={14} width={14} alt="Back" className="" />
+        <Image
+          src="/images/arrow-right.svg"
+          height={14}
+          width={14}
+          alt="Back"
+          className=""
+        />
       </button>
     );
 
@@ -632,14 +671,14 @@ const isSomeDisplayedSelected = useMemo(() => {
         />
       )}
 
-      <div className="flex flex-col justify-between"> 
-        <div className="bg-[#121315] custom-height rounded-lg relative z-[10] overflow-hidden">
+            <div className="flex flex-col justify-between mb-5 custom-height">
+        <div className="bg-[#121315] h-full rounded-lg relative z-[10] overflow-hidden flex flex-col">
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-5">
             <h2 className="text-white text-[16px] font-semibold leading-[20px]">
               Applications
             </h2>
-            <div className="flex flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
+            <div className="flex flex-wrap sm:flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
               <div className="relative w-full sm:w-[204px]">
                 <input
                   type="text"
@@ -674,41 +713,51 @@ const isSomeDisplayedSelected = useMemo(() => {
               </button>
               <button
                 onClick={handleDeleteSelected}
-                disabled={selectedRows.size < allCertificationData.length || allCertificationData.length===0}
+                disabled={
+                  selectedRows.size < allCertificationData.length ||
+                  allCertificationData.length === 0
+                }
                 className="flex cursor-pointer items-center  gap-[6px] p-2 rounded-[8px] 
                 border border-[rgba(239,252,118,0.32)] text-[#EFFC76] text-[12px] font-normal leading-[16px]
                  disabled:bg-[transparent] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <Image src="/images/delete-row.svg" alt='Delete selected' width={12} height={12} />
+                <Image
+                  src="/images/delete-row.svg"
+                  alt="Delete selected"
+                  width={12}
+                  height={12}
+                />
                 Delete All
               </button>
             </div>
           </div>
 
           {/* Table */}
-          <div className="p-0 cursor-pointer">
-           <Table
-  data={paginatedData}
-  control={tableControl}
-  showDeleteButton={true}
-  onDeleteSingle={(row, index) => {
-    const globalIndex = startIndex + index;
-    const originalRow = filteredCertificationData[globalIndex];
-    openDeleteSingleModal(row, originalRow.id);
-  }}
-  showModal={true}
-  clickable={true}
-  modalTitle="Property Details"
-  selectedRows={selectedRows}
-  setSelectedRows={setSelectedRows}
-  onSelectAll={handleSelectAll}
-  onSelectRow={handleSelectRow}
-  isAllSelected={isAllDisplayedSelected}
-  isSomeSelected={isSomeDisplayedSelected}
-  // Pass ALL IDs from filtered data, not just current page
-  rowIds={filteredCertificationData.map(item => item.id.toString())} // Convert to string
-  dropdownItems={dropdownItems}
-/>
+          <div className="p-0 cursor-pointer overflow-auto scrollbar-hide">
+            <Table
+              data={paginatedData}
+              control={tableControl}
+              showDeleteButton={true}
+              onDeleteSingle={(row, index) => {
+                const globalIndex = startIndex + index;
+                const originalRow = filteredCertificationData[globalIndex];
+                openDeleteSingleModal(row, originalRow.id);
+              }}
+              showModal={true}
+              clickable={true}
+              modalTitle="Property Details"
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+              onSelectAll={handleSelectAll}
+              onSelectRow={handleSelectRow}
+              isAllSelected={isAllDisplayedSelected}
+              isSomeSelected={isSomeDisplayedSelected}
+              // Pass ALL IDs from filtered data, not just current page
+              rowIds={filteredCertificationData.map((item) =>
+                item.id.toString()
+              )} // Convert to string
+              dropdownItems={dropdownItems}
+            />
           </div>
         </div>
 
@@ -730,9 +779,8 @@ const isSomeDisplayedSelected = useMemo(() => {
 
       {/* Right Slide Panel Filter */}
       <div
-        className={`fixed top-0 right-0 h-full bg-[#0A0C0B] z-[2000000000] transform transition-transform duration-300 ease-in-out ${
-          isFilterOpen ? "translate-x-0" : "translate-x-full"
-        } w-[250px] sm:w-1/2 lg:w-2/5 xl:w-1/3`}
+        className={`fixed top-0 right-0 h-full bg-[#0A0C0B] z-[2000000000] transform transition-transform duration-300 ease-in-out ${isFilterOpen ? "translate-x-0" : "translate-x-full"
+          } w-[250px] sm:w-1/2 lg:w-2/5 xl:w-1/3`}
       >
         <div
           className="h-full justify-between flex flex-col bg-[#0A0C0B] overflow-y-auto"
@@ -766,12 +814,15 @@ const isSomeDisplayedSelected = useMemo(() => {
                   <div className="relative">
                     <button
                       type="button"
-                      onClick={() => setShowOwnershipDropdown(prev => !prev)}
+                      onClick={() => setShowOwnershipDropdown((prev) => !prev)}
                       className={`
                         w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
                         bg-gradient-to-b from-[#202020] to-[#101010]
                         text-[14px] font-medium text-left
-                        ${certificationFilters.ownership === "" ? "text-white/40" : "text-white"}
+                        ${certificationFilters.ownership === ""
+                          ? "text-white/40"
+                          : "text-white"
+                        }
                         cursor-pointer transition duration-200 ease-in-out
                         hover:border-[#EFFC76]
                       `}
@@ -789,12 +840,15 @@ const isSomeDisplayedSelected = useMemo(() => {
                     {showOwnershipDropdown && (
                       <div className="absolute z-10 mt-1 w-full">
                         <Dropdown
-                          items={uniqueOwnerships.map(ownership => ({
+                          items={uniqueOwnerships.map((ownership) => ({
                             label: ownership,
                             onClick: () => {
-                              setCertificationFilters(prev => ({ ...prev, ownership: ownership }));
+                              setCertificationFilters((prev) => ({
+                                ...prev,
+                                ownership: ownership,
+                              }));
                               setShowOwnershipDropdown(false);
-                            }
+                            },
                           }))}
                         />
                       </div>
@@ -810,12 +864,15 @@ const isSomeDisplayedSelected = useMemo(() => {
                   <div className="relative">
                     <button
                       type="button"
-                      onClick={() => setShowPropertyDropdown(prev => !prev)}
+                      onClick={() => setShowPropertyDropdown((prev) => !prev)}
                       className={`
                         w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
                         bg-gradient-to-b from-[#202020] to-[#101010]
                         text-[14px] font-medium text-left
-                        ${certificationFilters.property === "" ? "text-white/40" : "text-white"}
+                        ${certificationFilters.property === ""
+                          ? "text-white/40"
+                          : "text-white"
+                        }
                         cursor-pointer transition duration-200 ease-in-out
                         hover:border-[#EFFC76]
                       `}
@@ -833,12 +890,15 @@ const isSomeDisplayedSelected = useMemo(() => {
                     {showPropertyDropdown && (
                       <div className="absolute z-10 mt-1 w-full">
                         <Dropdown
-                          items={uniqueProperties.map(property => ({
+                          items={uniqueProperties.map((property) => ({
                             label: property,
                             onClick: () => {
-                              setCertificationFilters(prev => ({ ...prev, property: property }));
+                              setCertificationFilters((prev) => ({
+                                ...prev,
+                                property: property,
+                              }));
                               setShowPropertyDropdown(false);
-                            }
+                            },
                           }))}
                         />
                       </div>
@@ -854,12 +914,15 @@ const isSomeDisplayedSelected = useMemo(() => {
                   <div className="relative">
                     <button
                       type="button"
-                      onClick={() => setShowStatusDropdown(prev => !prev)}
+                      onClick={() => setShowStatusDropdown((prev) => !prev)}
                       className={`
                         w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
                         bg-gradient-to-b from-[#202020] to-[#101010]
                         text-[14px] font-medium text-left
-                        ${certificationFilters.status === "" ? "text-white/40" : "text-white"}
+                        ${certificationFilters.status === ""
+                          ? "text-white/40"
+                          : "text-white"
+                        }
                         cursor-pointer transition duration-200 ease-in-out
                         hover:border-[#EFFC76]
                       `}
@@ -877,12 +940,15 @@ const isSomeDisplayedSelected = useMemo(() => {
                     {showStatusDropdown && (
                       <div className="absolute z-10 mt-1 w-full">
                         <Dropdown
-                          items={uniqueStatuses.map(status => ({
+                          items={uniqueStatuses.map((status) => ({
                             label: status,
                             onClick: () => {
-                              setCertificationFilters(prev => ({ ...prev, status: status }));
+                              setCertificationFilters((prev) => ({
+                                ...prev,
+                                status: status,
+                              }));
                               setShowStatusDropdown(false);
-                            }
+                            },
                           }))}
                         />
                       </div>
@@ -916,7 +982,7 @@ const isSomeDisplayedSelected = useMemo(() => {
             <button
               onClick={handleApplyFilter}
               className="w-full yellow-btn cursor-pointer text-black font-semibold py-4 rounded-md transition-colors text-sm shadow-[inset_0_4px_6px_rgba(0,0,0,0.3)]"
-            > 
+            >
               Apply Filter
             </button>
           </div>

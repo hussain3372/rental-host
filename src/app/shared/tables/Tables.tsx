@@ -65,7 +65,11 @@ interface TableProps<T> {
   data: T[];
   control?: TableControl;
   onRowClick?: (row: T, index: number) => void;
-  dropdownItems?: { label: string; onClick: (row: T, index: number) => void }[];
+  dropdownItems?: {
+    label: string;
+    onClick: (row: T, index: number) => void;
+    disabled?: boolean;
+  }[];
   showModal?: boolean;
   modalTitle?: string;
   clickable?: boolean;
@@ -296,7 +300,7 @@ export function Table<T extends Record<string, unknown>>({
   showDeleteButton = false,
   dropdownItems,
   selectedRows = new Set(),
-  setSelectedRows = () => {},
+  setSelectedRows = () => { },
   onSelectAll,
   onSelectRow,
   isAllSelected = false,
@@ -308,7 +312,7 @@ export function Table<T extends Record<string, unknown>>({
     data: T | null;
     index: number;
   }>({ isOpen: false, data: null, index: -1 });
-  
+
   const [displayData, setDisplayData] = useState<T[]>(data);
   const [activeSortDropdown, setActiveSortDropdown] = useState<string | null>(
     null
@@ -606,7 +610,10 @@ export function Table<T extends Record<string, unknown>>({
             {title}
           </h2>
         )}
-        <div className="text-center flex justify-center" style={{ padding: 20, textAlign: "center", color: "#666" }}>
+        <div
+          className="text-center flex justify-center"
+          style={{ padding: 20, textAlign: "center", color: "#666" }}
+        >
           No data available
         </div>
       </div>
@@ -630,8 +637,8 @@ export function Table<T extends Record<string, unknown>>({
       // Check if click was on checkbox, button, or inside actions dropdown
       if (
         !target.closest('input[type="checkbox"]') &&
-        !target.closest('button') &&
-        !target.closest('label')
+        !target.closest("button") &&
+        !target.closest("label")
       ) {
         onRowClick(row, index);
       }
@@ -695,42 +702,44 @@ export function Table<T extends Record<string, unknown>>({
                 }}
               >
                 {/* Checkbox column for selection - only show if delete is enabled */}
-{showDeleteButton && (
-  <th
-    style={{
-      padding: paddingSize,
-      fontWeight: 700,
-      color: "white",
-      fontSize: "12px",
-      lineHeight: "16px",
-      whiteSpace: "nowrap",
-      width: "24px",
-      borderTopLeftRadius: control.borderRadius || 8,
-    }}
-  >
-    <label className="relative inline-flex items-center cursor-pointer">
-      <input
-        type="checkbox"
-        checked={isAllSelected}
-        ref={(input) => {
-          if (input) {
-            input.indeterminate = isSomeSelected;
-          }
-        }}
-        onChange={(e) => onSelectAll?.(e.target.checked)}
-        className="peer hidden"
-      />
-      <span className="absolute inset-0 rounded-md border-2 border-[#FFFFFFCC] translate-x-1 translate-y-1 
-           peer-checked:border-[#EFFC76]"></span>
-      <span className="relative w-5 h-5 rounded-md border-2 border-[#FFFFFFCC] bg-[#252628] 
+                {showDeleteButton && (
+                  <th
+                    style={{
+                      padding: paddingSize,
+                      fontWeight: 700,
+                      color: "white",
+                      fontSize: "12px",
+                      lineHeight: "16px",
+                      whiteSpace: "nowrap",
+                      width: "24px",
+                      borderTopLeftRadius: control.borderRadius || 8,
+                    }}
+                  >
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={isAllSelected}
+                        ref={(input) => {
+                          if (input) {
+                            input.indeterminate = isSomeSelected;
+                          }
+                        }}
+                        onChange={(e) => onSelectAll?.(e.target.checked)}
+                        className="peer hidden"
+                      />
+                      <span
+                        className="absolute inset-0 rounded-md border-2 border-[#FFFFFFCC] translate-x-1 translate-y-1 
+           peer-checked:border-[#EFFC76]"
+                      ></span>
+                      <span
+                        className="relative w-5 h-5 rounded-md border-2 border-[#FFFFFFCC] bg-[#252628] 
            flex items-center justify-center 
            peer-checked:bg-[#EFFC76] peer-checked:border-[#EFFC76]
-           peer-checked:after:content-['✓'] peer-checked:after:text-black peer-checked:after:text-xs peer-checked:after:font-bold">
-      </span>
-    </label>
-  </th>
-)}
-
+           peer-checked:after:content-['✓'] peer-checked:after:text-black peer-checked:after:text-xs peer-checked:after:font-bold"
+                      ></span>
+                    </label>
+                  </th>
+                )}
 
                 {keys.map((key, index) => (
                   <th
@@ -790,7 +799,7 @@ export function Table<T extends Record<string, unknown>>({
                 {/* Actions column - only show if delete is enabled */}
                 {showDeleteButton && (
                   <th
-                  className="flex gap-2"
+                    className="flex gap-2"
                     style={{
                       padding: paddingSize,
                       fontWeight: 700,
@@ -804,11 +813,11 @@ export function Table<T extends Record<string, unknown>>({
                   >
                     Action
                     <Image
-                        src="/images/menu.png"
-                        alt="menu"
-                        height={16}
-                        width={16}
-                      />
+                      src="/images/menu.png"
+                      alt="menu"
+                      height={16}
+                      width={16}
+                    />
                   </th>
                 )}
               </tr>
@@ -825,37 +834,39 @@ export function Table<T extends Record<string, unknown>>({
                   onClick={() => handleRowClick(row, idx)}
                 >
                   {/* Checkbox column - only show if delete is enabled */}
-{showDeleteButton && (
-  <td
-    style={{
-      padding: paddingSize,
-      whiteSpace: "nowrap",
-      width: "24px",
-    }}
-  >
-    <label className="relative inline-flex items-center cursor-pointer">
-      <input
-        type="checkbox"
-        checked={selectedRows.has(parseInt(rowIds[idx]))}
-        onChange={(e) => {
-          const rowId = rowIds[idx];
-          onSelectRow?.(rowId, e.target.checked);
-        }}
-        className="peer hidden"
-      />
-      <span className="absolute inset-0 rounded-md border-2 border-[#FFFFFFCC] translate-x-1 translate-y-1 
-           peer-checked:border-[#EFFC76]"></span>
-      <span className="relative w-5 h-5 rounded-md border-2 border-[#FFFFFFCC] bg-[#252628] 
+                  {showDeleteButton && (
+                    <td
+                      style={{
+                        padding: paddingSize,
+                        whiteSpace: "nowrap",
+                        width: "24px",
+                      }}
+                    >
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.has(parseInt(rowIds[idx]))}
+                          onChange={(e) => {
+                            const rowId = rowIds[idx];
+                            onSelectRow?.(rowId, e.target.checked);
+                          }}
+                          className="peer hidden"
+                        />
+                        <span
+                          className="absolute inset-0 rounded-md border-2 border-[#FFFFFFCC] translate-x-1 translate-y-1 
+           peer-checked:border-[#EFFC76]"
+                        ></span>
+                        <span
+                          className="relative w-5 h-5 rounded-md border-2 border-[#FFFFFFCC] bg-[#252628] 
            flex items-center justify-center 
            peer-checked:bg-[#EFFC76] peer-checked:border-[#EFFC76]
-           peer-checked:after:content-['✓'] peer-checked:after:text-black peer-checked:after:text-xs peer-checked:after:font-bold">
-      </span>
-    </label>
-  </td>
-)}
+           peer-checked:after:content-['✓'] peer-checked:after:text-black peer-checked:after:text-xs peer-checked:after:font-bold"
+                        ></span>
+                      </label>
+                    </td>
+                  )}
 
                   {keys.map((key) => (
-
                     <td
                       key={key}
                       style={{
@@ -870,47 +881,61 @@ export function Table<T extends Record<string, unknown>>({
                       {renderCellContent(key, row[key])}
                     </td>
                   ))}
-                  
 
-                  {(showDeleteButton) && (
+                  {showDeleteButton && (
                     <td style={{ position: "relative" }}>
                       <button
                         onClick={(e) => {
-                            handleDropdownToggle(idx, e);
-                          
+                          handleDropdownToggle(idx, e);
                         }}
                         className={`px-6 py-1 text-white rounded 
                              cursor-pointer`}
                       >
-                        <Image src="/images/menu.svg" alt="Open detail" width={3} height={12}/>
+                        <Image
+                          src="/images/menu.svg"
+                          alt="Open detail"
+                          width={3}
+                          height={12}
+                        />
                       </button>
 
-{activeDropdown === idx && dropdownItems && (
-  <Dropdown
-    isOpen={true}
-    onClose={() => setActiveDropdown(null)}
-    items={dropdownItems
-      // Find this filter logic (around line 880-890):
-.filter(item => {
-  // Show "Delete Application" only if row is selected
-  if (item.label === "Delete Application" || item.label.toLowerCase().includes('delete')) {
-    // Use the actual row ID instead of index
-    const rowId = rowIds[idx];
-    return selectedRows.has(parseInt(rowId)); // Convert to number
-  }
-  // Always show other items
-  return true;
-})
-      .map((item) => ({
-        label: item.label,
-        onClick: () => {
-          item.onClick(row, idx);
-          setActiveDropdown(null);
-        },
-      }))
-    }
-  />
-)}
+                      {activeDropdown === idx && dropdownItems && (
+                        <Dropdown
+                          isOpen={true}
+                          onClose={() => setActiveDropdown(null)}
+                          items={dropdownItems
+                            .map((item) => {
+                              // For delete items, always show but disable based on selection
+                              if (
+                                item.label === "Delete History" ||
+                                item.label.toLowerCase().includes("delete")
+                              ) {
+                                const rowId = rowIds[idx];
+                                const isRowSelected = selectedRows.has(parseInt(rowId));
+
+                                return {
+                                  label: item.label,
+                                  disabled: !isRowSelected,
+                                  onClick: isRowSelected
+                                    ? () => {
+                                      item.onClick(row, idx);
+                                      setActiveDropdown(null);
+                                    }
+                                    : () => { }, // Provide empty function instead of undefined
+                                };
+                              }
+
+                              // For other items
+                              return {
+                                label: item.label,
+                                onClick: () => {
+                                  item.onClick(row, idx);
+                                  setActiveDropdown(null);
+                                },
+                              };
+                            })}
+                        />
+                      )}
                     </td>
                   )}
                 </tr>

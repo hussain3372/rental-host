@@ -206,8 +206,8 @@ export default function BillingHistory() {
 
   // Transform data to exclude ID from display
   const displayData = useMemo(() => {
-  return filteredCertificationData.map(({ id, ...rest }) => rest); // eslint-disable-line @typescript-eslint/no-unused-vars
-}, [filteredCertificationData]);
+    return filteredCertificationData.map(({ id, ...rest }) => rest); // eslint-disable-line @typescript-eslint/no-unused-vars
+  }, [filteredCertificationData]);
 
   // Convert display data to string records
   const paginatedData = useMemo(() => {
@@ -415,34 +415,22 @@ export default function BillingHistory() {
               isAllSelected={isAllDisplayedSelected}
               isSomeSelected={isSomeDisplayedSelected}
               rowIds={filteredCertificationData.map(item => item.id.toString())}
-             dropdownItems={
-                selectedRows.size === 0
-                  ? [
-                      {
-                        label: "View Details",
-                        onClick: (row: Record<string, string>, index: number) => {
-                          const originalRow = filteredCertificationData[index];
-                          window.location.href = `/dashboard/application/detail/${originalRow.id}`;
-                        },
-                      },
-                    ]
-                  : [
-                      {
-                        label: "View Details",
-                        onClick: (row: Record<string, string>, index: number) => {
-                          const originalRow = filteredCertificationData[index];
-                          window.location.href = `/dashboard/application/detail/${originalRow.id}`;
-                        },
-                      },
-                      {
-                        label: "Delete History",
-                        onClick: (row, index) => {
-                          const originalRow = filteredCertificationData[index];
-                          openDeleteSingleModal(row, originalRow.id);
-                        },
-                      },
-                    ]
-              }
+              dropdownItems={[
+                {
+                  label: "View Details",
+                  onClick: (row: Record<string, string>, index: number) => {
+                    const originalRow = filteredCertificationData[index];
+                    window.location.href = `/dashboard/application/detail/${originalRow.id}`;
+                  },
+                },
+                {
+                  label: "Delete History",
+                  onClick: (row, index) => {
+                    const originalRow = filteredCertificationData[index];
+                    openDeleteSingleModal(row, originalRow.id);
+                  },
+                },
+              ]}
             />
           </div>
         </div>

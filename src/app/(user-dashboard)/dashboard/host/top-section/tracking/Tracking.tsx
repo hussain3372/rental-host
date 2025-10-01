@@ -233,12 +233,12 @@ export default function Tracking() {
     setIsModalOpen(true);
   };
 
-  const handleDeleteSelected = () => {
-    if (selectedRows.size > 0) {
-      setModalType('multiple');
-      setIsModalOpen(true);
-    }
-  };
+  // const handleDeleteSelected = () => {
+  //   if (selectedRows.size > 0) {
+  //     setModalType('multiple');
+  //     setIsModalOpen(true);
+  //   }
+  // };
 
   const handleModalConfirm = () => {
     if (modalType === 'multiple' && selectedRows.size > 0) {
@@ -580,8 +580,8 @@ const isSomeDisplayedSelected = useMemo(() => {
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between sm:items-center pt-5 px-5">
               <h2 className="text-white text-[16px] font-semibold leading-[20px]">Certification</h2>
-              <div className="flex flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
-                <div className="relative w-full sm:w-[204px]">
+               <div className="flex flex-wrap sm:flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
+            <div className="relative w-full sm:w-[204px]">
                   <input
                     type="text"
                     placeholder="Search"
@@ -613,7 +613,7 @@ const isSomeDisplayedSelected = useMemo(() => {
                     width={13}
                   />
                 </button>
-                <button
+                {/* <button
                   onClick={handleDeleteSelected}
                   disabled={selectedRows.size === 0 ||selectedRows.size < certificationData.length }
                   className="flex cursor-pointer items-center disabled:opacity-50 gap-[6px] p-2 rounded-[8px] 
@@ -622,7 +622,7 @@ const isSomeDisplayedSelected = useMemo(() => {
                 >
                   <Image src="/images/delete-row.svg" alt='Delete selected' width={12} height={12} />
                   Delete All
-                </button>
+                </button> */}
               </div>
             </div>
 

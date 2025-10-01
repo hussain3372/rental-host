@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState ,useEffect } from "react";
 import Image from "next/image";
 import FilterTab from "@/app/shared/FilterTab";
 import Button from "@/app/shared/Button";
@@ -17,11 +17,19 @@ const HeroSection = () => {
     }
   };
 
+  const [isMobile, setIsMobile] = useState(false);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint in Tailwind
+    };
 
-  // const handleSearchClick = () => {
-  //   router.push("/search-page");
-  // };
+    handleResize(); // check on mount
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+ 
 
   const filters = [
     { id: "verified", label: "Verified Property", icon: "/images/search-by-property.png" },
@@ -141,17 +149,22 @@ const HeroSection = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="w-full max-w-[336px] md:max-w-[700px] lg:max-w-[860px] sm:h-[220px] md:h-[273px] lg:h-auto 
-  bg-[#0A0C0B] rounded-[16px] sm:rounded-[24px] relative 
-  p-4 sm:px-8"
+        <div
+          className="w-full max-w-[336px] md:max-w-[700px] lg:max-w-[860px] sm:h-[220px] md:h-[273px] lg:h-auto 
+        bg-[#0A0C0B] rounded-[16px] sm:rounded-[24px] relative p-4 sm:px-8"
         >
-
           <input
             type="text"
-            placeholder='"Search for certified and verified properties..."'
+            placeholder={
+              isMobile
+                ? "Search properties..." // short placeholder for sm
+                : "Search for certified and verified properties..." // long placeholder for md & lg
+            }
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full h-[140px] max-w-[828px] px-6 py-4 outline-none text-[18px] leading-[24px] font-medium text-white  pb-[100px] ps-[16px] !pt-[16px]"
+            className="w-full h-[140px] max-w-[828px] px-6 py-4 outline-none 
+          text-[18px] leading-[24px] font-medium text-white  
+          pb-[100px] ps-[16px] !pt-[16px]"
           />
 
 

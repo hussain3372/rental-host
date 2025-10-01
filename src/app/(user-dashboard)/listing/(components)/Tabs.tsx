@@ -235,7 +235,7 @@ export default function MultiStepForm() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col lg:flex-row pl-4 md:pl-10 py-10">
+    <div className="min-h-screen bg-black text-white flex flex-col lg:flex-row px-4 md:pl-10  py-10">
       {/* Sidebar */}
 <div className="w-full lg:w-1/3 bg-[#121315] p-6 md:p-10 lg:p-20 relative 
                 lg:sticky lg:top-0 lg:h-screen lg:max-h-[748px] self-start">
@@ -315,7 +315,7 @@ export default function MultiStepForm() {
 
       {/* Main Content */}
 <div className={`w-full lg:flex-1 ${step===5?"":"max-h-[748px] justify-between"} md:pt-10 md:px-10 flex flex-col lg:ml-1/3`}>      <div>
-        <div className="flex gap-2 items-center mb-5">
+        <div className="flex gap-2 items-center mb-5  mt-5 sm:mt-0">
           <Image src="/images/step.svg" alt="steps" width={16} height={16} />
           <p className="text-[#EFFC76] font-semibold text-[14px]">
             STEP {step} OF 5
