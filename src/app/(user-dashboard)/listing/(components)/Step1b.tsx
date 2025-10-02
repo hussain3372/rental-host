@@ -16,22 +16,22 @@ interface Step1bProps {
 export default function Step1b({ formData, errors, onFieldChange }: Step1bProps) {
   const [images, setImages] = useState<File[]>(formData.images || []);
 
- const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-  if (e.target.files) {
-    const newFiles = Array.from(e.target.files);
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
 
-    // Merge with existing images
-    const updatedFiles = [...images, ...newFiles];
+      // Merge with existing images
+      const updatedFiles = [...images, ...newFiles];
 
-    if (updatedFiles.length > 5) {
-      toast.error("Maximum 5 images allowed");
-      return;
+      if (updatedFiles.length > 5) {
+        toast.error("Maximum 5 images allowed");
+        return;
+      }
+
+      setImages(updatedFiles);
+      onFieldChange("images", updatedFiles);
     }
-
-    setImages(updatedFiles);
-    onFieldChange("images", updatedFiles);
-  }
-};
+  };
 
 
   const removeImage = (index: number) => {
@@ -89,7 +89,7 @@ export default function Step1b({ formData, errors, onFieldChange }: Step1bProps)
           Please upload a clear and readable file in JPG, or PNG format. The maximum file size allowed is 10MB.
         </p>
       </div>
-      
+
       {errors.images && (
         <p className="text-red-500 text-sm mt-2">{errors.images}</p>
       )}
@@ -97,11 +97,11 @@ export default function Step1b({ formData, errors, onFieldChange }: Step1bProps)
       {/* Image Count Status */}
       <div className="mt-4">
         <div className="flex items-center gap-2">
-          <Image src="/images/warning.svg" 
-                 alt="Status" height={20} width={20} />
+          <Image src="/images/warning.svg"
+            alt="Status" height={20} width={20} />
           <p className={`text-[14px] text-[#FFB52B] font-regular leading-[18px]`}>
-               Upload at least 3 images for faster approval.
-            
+            Upload at least 3 images for faster approval.
+
           </p>
         </div>
       </div>
@@ -109,12 +109,11 @@ export default function Step1b({ formData, errors, onFieldChange }: Step1bProps)
       {/* Images Preview */}
       {images.length > 0 && (
         <div className="mt-6">
-          
-          <div className="flex gap-4 flex-wrap">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap gap-4">
             {images.map((file, index) => {
               const url = URL.createObjectURL(file);
               return (
-                <div key={index} className="relative w-[120px] h-[90px] rounded-lg overflow-hidden group">
+                <div key={index} className="relative w-full sm:w-[120px] h-[90px] rounded-lg overflow-hidden group">
                   <Image
                     src={url}
                     alt={`Preview ${index + 1}`}
@@ -124,11 +123,10 @@ export default function Step1b({ formData, errors, onFieldChange }: Step1bProps)
                   />
                   <button
                     onClick={() => removeImage(index)}
-                    className="absolute top-2 right-2 cursor-pointer "
+                    className="absolute top-2 right-2 cursor-pointer"
                   >
                     <Image src="/images/delete.svg" alt="remove image" height={30} width={30} />
                   </button>
-                  
                 </div>
               );
             })}

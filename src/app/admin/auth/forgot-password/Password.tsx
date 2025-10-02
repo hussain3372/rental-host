@@ -1,5 +1,5 @@
+import AuthForm from "@/app/Layout/auth-layout/AuthForm";
 import React from "react";
-import AuthForm from "@/app/layout/auth-layout/AuthForm";
 export default function Password() {
   return (
     <div>

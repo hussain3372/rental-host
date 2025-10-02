@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import AuthForm from "@/app/layout/auth-layout/AuthForm";
+import AuthForm from "@/app/Layout/auth-layout/AuthForm";
 
 export default function Login() {
   return (

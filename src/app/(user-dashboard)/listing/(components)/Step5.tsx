@@ -88,7 +88,7 @@ export default function ReviewSubmission() {
   return (
     <div className="mx-auto text-white">
       <h2 className="text-[28px] leading-[32px] font-bold mb-3">Review Your Submission</h2>
-      <p className="text-white/60 text-[16px] leading-[20px] mb-10 w-[573px]">
+      <p className="text-white/60 text-[16px] leading-[20px] mb-10 max-w-[573px] w-full">
         Please review the details below before proceeding. You can go back and edit if needed.
       </p>
 
@@ -226,64 +226,68 @@ export default function ReviewSubmission() {
         </div>
       </div>
 
-      {/* ==== Property Photos Modal ==== */}
-      {isPropertyOpen && (
-        <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
-          onClick={closePropertyPreview} 
-        >
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              closePropertyPreview();
-            }}
-            className="absolute top-5 right-5 text-white p-2 cursor-pointer"
-          >
-            <X size={28} />
-          </button>
+     {isPropertyOpen && (
+  <div
+    className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 sm:p-0"
+    onClick={closePropertyPreview}
+  >
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        closePropertyPreview();
+      }}
+      className="absolute top-4 right-4 sm:top-5 sm:right-5 text-white p-2 cursor-pointer z-10 bg-black/50 rounded-full"
+    >
+      <X size={20} className="sm:w-7 sm:h-7" />
+    </button>
 
-          {/* Prev Button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              prevProperty();
-            }}
-            className="absolute left-5 text-white p-2 cursor-pointer"
-          >
-            <ChevronLeft size={40} />
-          </button>
+    {/* Prev Button */}
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        prevProperty();
+      }}
+      className="absolute left-4 sm:left-5 text-white p-2 cursor-pointer z-10 bg-black/50 rounded-full"
+    >
+      <ChevronLeft size={20} className="sm:w-10 sm:h-10" />
+    </button>
 
-          {/* Current Image */}
-          <div
-            className="max-w-4xl max-h-[80vh]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Image
-              src={propertyImages[propertyIndex]}
-              alt={`Property ${propertyIndex + 1}`}
-              width={300}
-              height={400}
-              className="object-contain rounded-lg"
-            />
-          </div>
+    {/* Current Image - Using same classes as document modal */}
+    <div
+      className="w-full max-w-4xl max-h-[80vh] flex items-center justify-center p-2"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <Image
+        src={propertyImages[propertyIndex]}
+        alt={`Property ${propertyIndex + 1}`}
+        width={600}
+        height={500}
+        className="w-auto h-auto max-w-full max-h-[70vh] sm:max-h-[80vh] object-contain rounded-lg"
+      />
+    </div>
 
-          {/* Next Button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              nextProperty();
-            }}
-            className="absolute right-5 text-white p-2 cursor-pointer"
-          >
-            <ChevronRight size={40} />
-          </button>
-        </div>
-      )}
+    {/* Next Button */}
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        nextProperty();
+      }}
+      className="absolute right-4 sm:right-5 text-white p-2 cursor-pointer z-10 bg-black/50 rounded-full"
+    >
+      <ChevronRight size={20} className="sm:w-10 sm:h-10" />
+    </button>
 
-      {/* ==== Document Uploads Modal ==== */}
+    {/* Image Counter */}
+    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white bg-black/50 px-3 py-1 rounded-full text-sm">
+      {propertyIndex + 1} / {propertyImages.length}
+    </div>
+  </div>
+)}
+
+      {/*  Document Uploads Modal */}
       {isDocOpen && (
         <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 sm:p-0"
           onClick={closeDocPreview}
         >
           <button
@@ -291,9 +295,9 @@ export default function ReviewSubmission() {
               e.stopPropagation();
               closeDocPreview();
             }}
-            className="absolute top-5 right-5 text-white p-2 cursor-pointer"
+            className="absolute top-4 right-4 sm:top-5 sm:right-5 text-white p-2 cursor-pointer z-10 bg-black/50 rounded-full"
           >
-            <X size={28} />
+            <X size={20} className="sm:w-7 sm:h-7" />
           </button>
 
           {/* Prev Button */}
@@ -302,22 +306,22 @@ export default function ReviewSubmission() {
               e.stopPropagation();
               prevDoc();
             }}
-            className="absolute left-5 text-white p-2 cursor-pointer"
+            className="absolute left-4 sm:left-5 text-white p-2 cursor-pointer z-10 bg-black/50 rounded-full"
           >
-            <ChevronLeft size={40} />
+            <ChevronLeft size={20} className="sm:w-10 sm:h-10" />
           </button>
 
           {/* Current Document */}
           <div
-            className="max-w-4xl max-h-[80vh]"
-            onClick={(e) => e.stopPropagation()} 
+            className="w-full max-w-4xl max-h-[80vh] flex items-center justify-center p-2"
+            onClick={(e) => e.stopPropagation()}
           >
             <Image
               src={documentImages[docIndex]}
               alt={`Document ${docIndex + 1}`}
-              width={400}
-              height={400}
-              className="object-contain rounded-lg"
+              width={600}
+              height={500}
+              className="w-auto h-auto max-w-full max-h-[70vh] sm:max-h-[80vh] object-contain rounded-lg"
             />
           </div>
 
@@ -327,14 +331,17 @@ export default function ReviewSubmission() {
               e.stopPropagation();
               nextDoc();
             }}
-            className="absolute right-5 text-white p-2 cursor-pointer"
+            className="absolute right-4 sm:right-5 text-white p-2 cursor-pointer z-10 bg-black/50 rounded-full"
           >
-            <ChevronRight size={40} />
+            <ChevronRight size={20} className="sm:w-10 sm:h-10" />
           </button>
+
+          {/* Document Counter */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white bg-black/50 px-3 py-1 rounded-full text-sm">
+            {docIndex + 1} / {documentImages.length}
+          </div>
         </div>
       )}
-
-
       {/* Compliance Checklist */}
       <div className="bg-[#121315] border border-[#2e2f31] rounded-xl p-5 mb-6">
         <div className="flex border-b border-b-[#2e2f31] pb-3 justify-between items-center mb-4">
@@ -436,6 +443,7 @@ export default function ReviewSubmission() {
       </div>
 
       {/* Document Uploads */}
+      {/* Document Uploads */}
       <div className="bg-[#121315] border border-[#2e2f31] rounded-xl p-5 mb-6">
         <div className="flex justify-between border-b border-b-[#2e2f31] pb-3 items-center mb-[28px]">
           <h3 className="font-semibold">Document Uploads</h3>
@@ -449,14 +457,16 @@ export default function ReviewSubmission() {
             { label: "Safety Permits", file: "/images/doc3.png" },
             { label: "Insurance Certificate", file: "/images/doc4.png" },
           ].map((doc, i) => (
-            <div key={i}>
-              {/* Label */}
-              <p className="text-sm text-white/60 mb-1">{doc.label}</p>
+            <div key={i} className="flex flex-col">
+              {/* Label with fixed height */}
+              <div className="min-h-[40px] flex items-start mb-1">
+                <p className="text-sm text-white/60 line-clamp-2">{doc.label}</p>
+              </div>
 
-              {/* Image container with preview trigger */}
+              {/* Image container with fixed height */}
               <div
-                className="relative mt-2 w-full h-40 rounded-lg overflow-hidden group cursor-pointer"
-                onClick={() => openDocPreview(i)} // 🔑 Open doc modal
+                className="relative w-full h-40 rounded-lg overflow-hidden group cursor-pointer"
+                onClick={() => openDocPreview(i)}
               >
                 <Image
                   src={doc.file}
@@ -467,7 +477,7 @@ export default function ReviewSubmission() {
 
                 {/* Hover Preview Icon */}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 
-                          flex items-center justify-center transition-opacity">
+                    flex items-center justify-center transition-opacity">
                   <Eye className="text-white w-8 h-8" />
                 </div>
               </div>

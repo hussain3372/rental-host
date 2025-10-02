@@ -116,7 +116,7 @@ export default function MultiStepForm() {
 
     if (step === 5) {
       toast.success("Form submitted successfully");
-      window.location.href="/dashboard/application"
+      window.location.href = "/dashboard/application"
     } else {
       handleNext();
     }
@@ -235,19 +235,19 @@ export default function MultiStepForm() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col lg:flex-row px-4 md:pl-10  py-10">
+<div className="min-h-screen bg-black text-white flex flex-col lg:flex-row px-4 md:pl-10 py-10 w-full h-auto">
       {/* Sidebar */}
-<div className="w-full lg:w-1/3 bg-[#121315] p-6 md:p-10 lg:p-20 relative 
+      <div className="w-full lg:w-1/3 bg-[#121315] p-6 md:p-10 lg:p-20 relative 
                 lg:sticky lg:top-0 lg:h-screen lg:max-h-[748px] self-start">
-  <Image
-    src="/images/shape1.png"
-    alt="gradient"
-    fill
-    className="absolute bottom-0 left-0 object-cover"
-  />
+        <Image
+          src="/images/shape1.png"
+          alt="gradient"
+          fill
+          className="absolute bottom-0 left-0 object-cover"
+        />
 
-  <div className="relative flex lg:flex-col flex-row items-start lg:items-stretch gap-8 lg:gap-12 overflow-x-auto prevent-scroller lg:overflow-visible">
-              {steps.map((s, idx) => {
+        <div className="relative flex lg:flex-col flex-row items-start lg:items-stretch gap-8 lg:gap-12 overflow-x-auto prevent-scroller lg:overflow-visible">
+          {steps.map((s, idx) => {
             const isCompleted = step > s.id;
             const isActive = step === s.id;
 
@@ -262,16 +262,14 @@ export default function MultiStepForm() {
               >
                 <div className="flex flex-col lg:flex-col items-center">
                   <div
-                    className={` flex justify-center items-center rounded-full  ${
-                      isCompleted || isActive ? "bg-[#353825] h-[56px] w-[56px]" : " h-[56px] lg:h-[30px] w-[56px]"
-                    }`}
+                    className={` flex justify-center items-center rounded-full  ${isCompleted || isActive ? "bg-[#353825] h-[56px] w-[56px]" : " h-[56px] lg:h-[30px] w-[56px]"
+                      }`}
                   >
                     <div
-                      className={`w-[44px] h-[44px] flex items-center justify-center rounded-full  ${
-                        isCompleted || isActive
+                      className={`w-[44px] h-[44px] flex items-center justify-center rounded-full  ${isCompleted || isActive
                           ? "bg-[#EFFC76]"
                           : "bg-white/12"
-                      }`}
+                        }`}
                     >
                       <Image
                         src={iconSrc}
@@ -290,9 +288,8 @@ export default function MultiStepForm() {
 
                 <div className="text-center lg:text-left min-w-[140px]">
                   <p
-                    className={`font-regular text-[14px] leading-[18px] ${
-                      isActive ? "text-[#EFFC76]" : "text-white"
-                    }`}
+                    className={`font-regular text-[14px] leading-[18px] ${isActive ? "text-[#EFFC76]" : "text-white"
+                      }`}
                   >
                     STEP {s.id}
                   </p>
@@ -314,40 +311,45 @@ export default function MultiStepForm() {
       </div>
 
       {/* Main Content */}
-<div className={`w-full lg:flex-1 ${step===5?"":"max-h-[748px] justify-between"} md:pt-10 md:px-10 flex flex-col lg:ml-1/3`}>      <div>
-        <div className="flex gap-2 items-center mb-5  mt-5 sm:mt-0">
-          <Image src="/images/step.svg" alt="steps" width={16} height={16} />
-          <p className="text-[#EFFC76] font-semibold text-[14px]">
-            STEP {step} OF 5
-          </p>
-        </div>
+      {/* Main Content */}
+<div className={`w-full lg:flex-1 md:pt-10 md:px-10 flex flex-col lg:ml-1/3 ${step === 5 ? "" : "min-h-screen lg:max-h-[748px] justify-between"}`}>
+  <div className="flex-1">
+    <div className="flex gap-2 items-center mb-5 mt-5 sm:mt-0">
+      <Image src="/images/step.svg" alt="steps" width={16} height={16} />
+      <p className="text-[#EFFC76] font-semibold text-[14px]">
+        STEP {step} OF 5
+      </p>
+    </div>
 
-        <div className="">{renderStepContent()}</div>
-        </div>
+    <div className="pb-6">{renderStepContent()}</div>
+  </div>
 
-        <div className="flex flex-col sm:flex-row justify-between sm:items-end">
-          <div className="flex flex-col pt-6 sm:flex-row gap-3">
+  <div className="flex flex-col sm:flex-row justify-between sm:items-end mt-auto">
+    <div className="flex flex-col pt-6 sm:flex-row gap-3">
+      <button
+        onClick={handlePrev}
+        className={`w-full sm:w-auto px-8 py-3 black-btn text-[16px] bg-gradient-to-b text-#101010 font-semibold rounded-md shadow-lg ${
+          step === 1 && subStep === 1 ? "hidden" : "block"
+        }`}
+      >
+        Back
+      </button>
+      <button
+        onClick={handleNextClick}
+        className="w-full sm:w-auto px-8 py-3 text-[16px] bg-gradient-to-b yellow-btn text-black font-semibold rounded-md shadow-lg hover:opacity-90"
+      >
+        {step === 5 ? "Submit" : "Continue"}
+      </button>
+    </div>
 
-          <button
-            onClick={handlePrev}
-            className={`w-full sm:w-auto px-8 py-3 black-btn text-[16px] bg-gradient-to-b  text-#101010 font-semibold rounded-md shadow-lg  ${
-              step === 1 && subStep === 1 ? "hidden" : "block"
-            }`}
-          >
-            Back
-          </button>
-          <button
-            onClick={handleNextClick}
-            className="w-full sm:w-auto px-8 py-3 text-[16px] bg-gradient-to-b yellow-btn text-black font-semibold rounded-md shadow-lg hover:opacity-90"
-          >
-            {step === 5 ? "Submit" : "Continue"}
-          </button>
-            </div>
-
-            <button onClick={()=>{toast.success("Your data drafted successfully")}} className="font-medium text-[16px] pt-3 sm:pt-0 leading-5 text-[#EFFC76] cursor-pointer">Save as Draft</button>
-          
-        </div>
-      </div>
+    <button 
+      onClick={() => { toast.success("Your data drafted successfully") }} 
+      className="font-medium text-[16px] pt-3 sm:pt-0 leading-5 text-[#EFFC76] cursor-pointer"
+    >
+      Save as Draft
+    </button>
+  </div>
+</div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 // import React from 'react'
-import AuthForm from "@/app/layout/auth-layout/AuthForm";
+import AuthForm from "@/app/Layout/auth-layout/AuthForm";
 // import toast from 'react-hot-toast'
 export default function NewPassword() {
   return (

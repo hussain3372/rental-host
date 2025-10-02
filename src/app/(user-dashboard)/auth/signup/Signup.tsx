@@ -1,4 +1,4 @@
-import AuthForm from "@/app/layout/auth-layout/AuthForm";
+import AuthForm from "@/app/Layout/auth-layout/AuthForm";
 import React from "react";
 
 export default function Signup() {
