@@ -1,13 +1,17 @@
 import Image from 'next/image'
 import React from 'react'
 
-export default function Checklist() {
-  
+interface ChecklistProps {
+  notes: string[];
+}
 
+export default function Checklist({ notes }: ChecklistProps) {
   const checklist = [
-    "Fire safety measures in place","Fire safety measures in place","Fire safety measures in place","Fire safety measures in place","Fire safety measures in place","Fire safety measures in place"
+    "Fire safety measures in place", "Fire safety measures in place", "Fire safety measures in place", 
+    "Fire safety measures in place", "Fire safety measures in place", "Fire safety measures in place"
   ]
-  const identity =[
+  
+  const identity = [
     {
       id:1,
       img:"/images/id.png",
@@ -34,50 +38,69 @@ export default function Checklist() {
     },
   ]
 
-  // const handleDownload = (url: string) => {
-  //   const link = document.createElement("a");
-  //   link.href = url;
-  //   link.download = url.split("/").pop() || "file.png"; // file name
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // };
-
   return (
-    <div className='pb-5'>
-      <h3 className='font-semibold text-[16px] leading-[20px] tracking-normal'>Compliance Checklist</h3>
-      <div className='pt-3 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6'>
-        {
-          checklist.map((items,index)=>(
-            <p key={index} className='font-regular text-[14px] leading-[18px] tracking-normal py-[15px] pl-[12px]  sm:w-[391px] text-white bg-gradient-to-b from-[#202020] to-[#101010] border border-[#323232] rounded-lg'>{items}</p>
-          ))
-        }
-        
+    <div className='pb-5 pt-[60px]'>
+      {/* Notes Section - Add this above the Compliance Checklist */}
+      
+
+      <h3 className='font-semibold text-[16px] leading-[20px] tracking-normal pb-5'>Compliance Checklist</h3>
+      <div className='pt-3 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 w-full'>
+        {checklist.map((items, index) => (
+          <div key={index} className='py-[15px] pl-[12px]  text-white bg-gradient-to-b w-full from-[#202020] to-[#101010] border border-[#323232] rounded-lg'>
+          <p  className='font-regular text-[14px] leading-[18px] tracking-normal '>
+            {items}
+          </p>
+          </div>
+        ))}
       </div>
+      
       <div className="flex flex-col md:flex-row pt-[60px] gap-5">
-  <div className='w-full'>
-    <div className='rounded-lg w-full grid grid-cols-1 sm:grid-cols-2 gap-3'> {/* Change to 1 column */}
-      {identity.map((items) => (
-        <div key={items.id} className='flex p-3 bg-[#121315] w-full items-center gap-5'>
-          <Image src={items.img} alt='ID' width={100} height={60} />
-          <div>
-            <h3 className='font-medium text-[12px] sm:text-[18px] leading-[16px] sm:leading-[22px] text-white xl:w-[353px]'>
-              {items.title}
-            </h3>
-            <h4 className='text-white/60 font-medium text-[16px] leading-[20px] pt-2'>{items.size}</h4>
+        <div className='w-full'>
+          <div className='rounded-lg w-full grid grid-cols-1 sm:grid-cols-2 gap-3'>
+            {identity.map((items) => (
+              <div key={items.id} className='flex p-3 bg-[#121315] w-full items-center gap-5'>
+                <Image src={items.img} alt='ID' width={100} height={60} />
+                <div>
+                  <h3 className='font-medium text-[12px] sm:text-[18px] leading-[16px] sm:leading-[22px] text-white xl:w-[353px]'>
+                    {items.title}
+                  </h3>
+                  <h4 className='text-white/60 font-medium text-[16px] leading-[20px] pt-2'>{items.size}</h4>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-</div>
+      </div>
+
+      {notes.length > 0 && (
+        <div className="mb-8 pt-10">
+          <h3 className='font-semibold text-[16px] leading-[20px] tracking-normal pb-3'>Your note</h3>
+          <div className="space-y-3">
+            {notes.map((note, index) => (
+              <div 
+                key={index} 
+                className="p-3 bg-gradient-to-b from-[#202020] via-[#101010] to-[#101010] border border-[#323232] rounded-lg"
+              >
+                <div className="flex items-start gap-3">
+                  
+                  <p className="text-white font-regular text-[16px] leading-[18px] tracking-normal">
+                    {note}
+                  </p>
+                </div>
+                
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      
       <div className="pt-15 flex w-full justify-end gap-3">
-      <button className='hollow-btn font-semibold text-[16px] leading-5 py-3 px-[27px] rounded-lg'>
-      Reject
-      </button>
-      <button className='yellow-btn text-[#101010]  font-semibold text-[16px] leading-5 py-3 px-[27px] rounded-lg'>
-      Approve
-      </button>
+        <button className='hollow-btn font-semibold text-[16px] leading-5 py-3 px-[27px] rounded-lg'>
+          Reject
+        </button>
+        <button className='yellow-btn text-[#101010] font-semibold text-[16px] leading-5 py-3 px-[27px] rounded-lg'>
+          Approve
+        </button>
       </div>
     </div>
   )

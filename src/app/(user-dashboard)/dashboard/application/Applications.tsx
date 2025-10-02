@@ -478,8 +478,7 @@ export default function Applications() {
   // Transform data to exclude ID from display but keep it for navigation
   const displayData = useMemo(() => {
     return filteredCertificationData.map(({ id, ...rest }) => {
-      // eslint-disable-line @typescript-eslint/no-unused-vars
-      console.log(id); // "Uses" id but doesn't affect anything
+      console.log(id); 
       return rest;
     });
   }, [filteredCertificationData]);

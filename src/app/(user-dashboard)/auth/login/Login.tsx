@@ -1,11 +1,24 @@
-'use client'
-import React from 'react';
-import AuthForm from "@/app/auth-layout/AuthForm"
+"use client";
+import React from "react";
+import AuthForm from "@/app/layout/auth-layout/AuthForm";
 
 export default function Login() {
   return (
     <div>
-       <AuthForm showAlter={true} mode="login" onSubmit={()=>window.location.href='/dashboard'} />
+      <AuthForm
+      emptyemailmessage="Email address is required"
+        wronginputmessage="Please enter a valid email address"
+        emptypasswordmessage="Please enter your password"
+        title="Welcome Back!"
+        subtitle="Sign in to explore your personalized dashboard."
+        submitText="Login"
+        showAlter={true}
+        alterText="Don’t have an account?"
+        linktext=" SignUp"
+        link="/auth/signup"
+        mode="login"
+        onSubmit={() => (window.location.href = "/dashboard")}
+      />
     </div>
-  )
+  );
 }

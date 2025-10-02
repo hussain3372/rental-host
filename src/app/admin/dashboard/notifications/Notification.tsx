@@ -10,7 +10,7 @@ const notifications = [
         message:
             'Your application for the "Occupational Safety Certificate" has been successfully submitted. Our team will review your documents and notify you once the evaluation process is complete.',
         time: "2m ago",
-        // status: "unread",
+        status: "unread",
         image: "/images/notification1.png",
         highlight: true,
     },
@@ -20,7 +20,7 @@ const notifications = [
         message:
             "Your application is currently under review by the certification committee. This step may take 5–7 working days. You will be informed once the review process is finalized.",
         time: "2h ago",
-        // status: "read",
+        status: "read",
         image: "/images/notification2.png",
         highlight: false,
     },
@@ -30,7 +30,7 @@ const notifications = [
         message:
             "Your application requires additional documentation to proceed. Please upload a copy of your identity verification within the next 3 days to avoid delays in the approval process.",
         time: "2h ago",
-        // status: "read",
+        status: "read",
         image: "/images/notification3.png",
         highlight: true,
     },
@@ -40,7 +40,7 @@ const notifications = [
         message:
             'Your application for the "Occupational Safety Certificate" has been successfully submitted. Our team will review your documents and notify you once the evaluation process is complete.',
         time: "2h ago",
-        // status: "read",
+        status: "read",
         image: "/images/notification4.png",
         highlight: false,
     },
@@ -50,17 +50,15 @@ export default function NotificationsPage() {
     const [activeTab, setActiveTab] = useState("all");
     const [allRead, setAllRead] = useState(false);
 
-    const [status ] = useState('unread')
-
-    const filteredNotifications = notifications.filter(() => {
+    const filteredNotifications = notifications.filter((notif) => {
         if (activeTab === "all") return true;
-        if (activeTab === "unread") return status === "unread";
-        if (activeTab === "read") return status === "read";
+        if (activeTab === "unread") return notif.status === "unread";
+        if (activeTab === "read") return notif.status === "read";
         return true;
     });
 
     return (
-        <div className="container-class text-white  pb-[190px] ">
+        <div className=" text-white  pb-[190px] ">
 
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-[20px] leading-[24px] font-semibold">Notifications</h1>
@@ -78,7 +76,7 @@ export default function NotificationsPage() {
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`px-4 py-2 rounded-md cursor-pointer text-sm sm:text-base font-medium capitalize leading-5
+                            className={`px-4 py-2 rounded-md text-sm sm:text-base font-medium capitalize leading-5
                                       ${activeTab === tab
                                     ? "bg-[rgba(239,252,118,0.08)] border border-[rgba(239,252,118,0.60)] text-white"
                                     : "bg-[#121315] text-gray-300"
@@ -133,19 +131,19 @@ export default function NotificationsPage() {
                         <span className="mt-8 text-white text-[24px] leading-[28px] font-medium">
                             No notifications available
                         </span>
-                        <p className="mt-3 font-normal text-[#FFFFFF99] text-[18px] leading-[22px]  max-w-[690px]">
+                        <p className="mt-3 font-normal text-[#FFFFFF99] text-[18px] leading-[22px] font-normal max-w-[690px]">
                             Once you start submitting applications, you will receive notifications about your
                             property verification, certificate progress, and other important updates.
                         </p>
-                        <Button  text="Apply Now" />
+                        <Button text="Apply Now" />
                     </div>
                 ) : filteredNotifications.length > 0 ? (
 
-                    filteredNotifications.map((notif) => (
+                    filteredNotifications.map((notif, index) => (
                         <div
                             key={notif.id}
                             className={`flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-xl bg-[#121315] border-l-2
-      ${status === "unread"? "border-[#EFFC76]" : "border-transparent"}
+      ${index < 3 ? "border-[#EFFC76]" : notif.highlight ? "border-[#EFFC76]" : "border-transparent"}
     `}
                         >
 

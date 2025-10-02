@@ -2,7 +2,7 @@ export const allProperties = [
   {
     id: 1,
     "Application Id": "TAQ-65432",
-
+    certificate: "CER - 8765",
     title: "Skyline Residences",
     author: "Sarah Mitchell",
     images: [
@@ -17,6 +17,7 @@ export const allProperties = [
   {
     id: 2,
     "Application Id": "TAQ-65433",
+    certificate: "CER - 8765",
 
     title: "Modern White Villa",
     author: "Sarah Mitchell",
@@ -33,6 +34,7 @@ export const allProperties = [
   {
     id: 3,
     "Application Id": "TAQ-65434",
+    certificate: "CER - 8765",
 
     title: "Luxury Townhouses",
     author: "Sarah Mitchell",
@@ -49,6 +51,7 @@ export const allProperties = [
   {
     id: 4,
     "Application Id": "TAQ-65435",
+    certificate: "CER - 8765",
 
     title: "Tropical Retreat",
     author: "Sarah Mitchell",
@@ -65,6 +68,7 @@ export const allProperties = [
   {
     id: 5,
     "Application Id": "TAQ-65435",
+    certificate: "CER - 8765",
 
     title: "Minimalist Apartment",
     author: "Sarah Mitchell",
@@ -81,6 +85,7 @@ export const allProperties = [
   {
     id: 6,
     "Application Id": "TAQ-65435",
+    certificate: "CER - 8765",
 
     title: "Beachside Villa",
     author: "Sarah Mitchell",
@@ -97,6 +102,7 @@ export const allProperties = [
   {
     id: 7,
     "Application Id": "TAQ-65435",
+    certificate: "CER - 8765",
 
     title: "Urban Flat",
     author: "Sarah Mitchell",
@@ -113,6 +119,7 @@ export const allProperties = [
   {
     id: 8,
     "Application Id": "TAQ-65435",
+    certificate: "CER - 8765",
 
     title: "Garden House",
     author: "Sarah Mitchell",

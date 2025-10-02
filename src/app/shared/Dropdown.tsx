@@ -1,19 +1,16 @@
 "use client";
 import React, { useEffect, useRef } from "react";
-
 interface DropdownProps {
   items: { label: string; onClick: () => void; disabled?: boolean }[];
   isOpen?: boolean;
   onClose?: () => void;
 }
-
 const Dropdown: React.FC<DropdownProps> = ({
   items,
   isOpen = true,
   onClose,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
-
   // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -40,7 +37,6 @@ const Dropdown: React.FC<DropdownProps> = ({
   };
 
   if (!isOpen) return null;
-
   return (
     <div
       ref={dropdownRef}
@@ -65,5 +61,4 @@ const Dropdown: React.FC<DropdownProps> = ({
     </div>
   );
 };
-
 export default Dropdown;

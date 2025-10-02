@@ -11,7 +11,7 @@ export default function Verification() {
     },
     {
       id: "1",
-      value: "239876",
+      value: "CER - 8765",
       title: "Certificate ID",
     },
     {
@@ -27,14 +27,18 @@ export default function Verification() {
   ]
 
   return (
-    <div className="pt-[60px] pb-[41px]">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-[20px] max-w-[100%]">
+    <div className="pt-[40px] pb-[41px]">
+      <div className="flex justify-between items-center ">
+        <h2 className='font-semibold text-[16px] leading-5'>Certificate Details</h2>
+        <p className='font-medium text-[18px]leading-[22px] text-[#EFFC76CC] underline'>Add Note</p>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-[20px] max-w-[100%] pt-5">
         <div className="col-span-12 lg:col-span-7 sm:mr-[25px] mr-0">
 
           <div className='bg-[#121315] rounded-lg max-h-none pb-[20px] w-full '>
            
             <div className='flex flex-col items-center gap-2 justify-center px-4 sm:px-6 lg:px-0'>
-                <h2 className='font-semibold pt-[20px] text-[24px] text-center leading-[28px]'>Your Certificate</h2>
+                <h2 className='font-semibold pt-[20px] text-[24px] text-center leading-[28px]'>Certificate</h2>
               <p className=" font-medium text-[12px] sm:text-[16px] leading-[20px] w-full max-w-[352px] text-center items-center text-white/40">
                 Scan the QR code below to confirm this property&apos;s certification and authenticity.
               </p>
@@ -52,7 +56,7 @@ export default function Verification() {
                 />
               </div>
 
-              <Link href="/dashboard/coming-soon">
+              <Link href="/docs/certificates.pdf" target='_blank'>
                 <p className='text-[#EFFC76] font-regular underline text-[20px] leading-[24px]'>View Certificate</p>
               </Link>
           </div>
@@ -72,7 +76,7 @@ export default function Verification() {
                 </p>
                 {/* Divider - responsive width */}
                 {index !== verification.length - 1 && (
-                  <div className='w-full sm:w-[350px] lg:w-[422px] h-[1px] bg-gradient-to-r from-[#121315] via-white to-[#121315] mt-[26px]'></div>
+                  <div className='w-full sm:max-w-[350px] lg:max-w-[386px] h-[1px] bg-gradient-to-r from-[#121315] via-white to-[#121315] mt-[26px]'></div>
                 )}
               </div>
             ))}

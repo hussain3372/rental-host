@@ -208,8 +208,11 @@ export default function HelpSupport() {
     }, [filteredCertificationData, selectedRows, isAllDisplayedSelected]);
 
     // Transform data to exclude ID from display but keep it for navigation
-const displayData = useMemo(() => {
-    return filteredCertificationData.map(({ id, ...rest }) => rest);
+    const displayData = useMemo(() => {
+  return filteredCertificationData.map(({ id, ...rest }) => {
+    id; 
+    return rest;
+  });
 }, [filteredCertificationData]);
 
 

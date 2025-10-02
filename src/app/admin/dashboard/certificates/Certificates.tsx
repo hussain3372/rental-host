@@ -1,161 +1,511 @@
 "use client";
-import React from "react";
-import Image from "next/image";
-import Link from "next/link";
-import StatusPill from "@/app/shared/StatusPills";
-// import BlackButton from "@/app/shared/BlackButton";
+  import React, { useMemo, useState, useEffect } from "react";
+  import { Table } from "@/app/admin/tables-essentials/Tables";
+  import { Modal } from "@/app/shared/Modal";
+  import FilterDrawer from "../../tables-essentials/Filter";
 
-type Property = {
+  interface CertificationData {
     id: number;
-    title: string;
-    author: string;
-    images: string[];
-    status: string;
-    expiry: string;
-};
+    "Certificate ID": string;
+    "Host ID": string;
+    "Property Name": string;
+    "Issue Date": string;
+    "Expiry Date": string;
+    "Status": "active" | "revoked" | "expired";
+  }
 
-// Static properties data based on the screenshot
-const staticProperties: Property[] = [
-    {
+  export default function Applications() {
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [activeTab, setActiveTab] = useState<"active" | "revoked" | "expired">("active");
+    const itemsPerPage = 6;
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
+    const [singleRowToDelete, setSingleRowToDelete] = useState<{
+      row: Record<string, string>;
+      id: number;
+    } | null>(null);
+    const [modalType, setModalType] = useState<"single" | "multiple">("multiple");
+
+    const [showOwnershipDropdown, setShowOwnershipDropdown] = useState(false);
+    const [showPropertyDropdown, setShowPropertyDropdown] = useState(false);
+    const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+    const [issueDate, setIssueDate] = useState<Date | null>(null);
+    const [expiryDate, setExpiryDate] = useState<Date | null>(null);
+
+    const [certificationFilters, setCertificationFilters] = useState({
+      issueDate: "", 
+      expiryDate: "", 
+    });
+
+    const [submittedDate, setSubmittedDate] = useState<Date | null>(null);
+
+    const [allCertificationData, setAllCertificationData] = useState<CertificationData[]>([
+      {
         id: 1,
-        title: "Skyline Residences",
-        author: "742 Evergreen Terrace",
-        images: ["/images/property1.png"],
-        status: "Verified",
-        expiry: "Aug 12, 2025"
-    },
-    {
+        "Certificate ID": "CER-8765",
+        "Property Name": "Coastal Hillside Estate",
+        "Host ID": "76890",
+        "Issue Date": "Aug 12, 2024",
+        "Expiry Date": "Aug 12, 2025",
+        "Status": "active"
+      },
+      {
         id: 2,
-        title: "Skyline Residences",
-        author: "742 Evergreen Terrace",
-        images: ["/images/property2.png"],
-        status: "Verified",
-        expiry: "Aug 12, 2025"
-    },
-    {
+        "Certificate ID": "CER-8766",
+        "Host ID": "76891",
+        "Property Name": "Coastal Hillside Estate",
+        "Issue Date": "Jul 15, 2024",
+        "Expiry Date": "Jul 15, 2025",
+        "Status": "active"
+      },
+      {
         id: 3,
-        title: "Skyline Residences",
-        author: "742 Evergreen Terrace",
-        images: ["/images/property3.png"],
-        status: "Verified",
-        expiry: "Aug 12, 2025"
-    },
-    {
+        "Certificate ID": "CER-8767",
+        "Host ID": "76892",
+        "Property Name": "Coastal Hillside Estate",
+        "Issue Date": "Jun 20, 2024",
+        "Expiry Date": "Jun 20, 2025",
+        "Status": "active"
+      },
+      {
         id: 4,
-        title: "Skyline Residences",
-        author: "742 Evergreen Terrace",
-        images: ["/images/property4.png"],
-        status: "Verified",
-        expiry: "Aug 12, 2025"
-    },
-    {
+        "Certificate ID": "CER-8768",
+        "Host ID": "76893",
+        "Property Name": "Coastal Hillside Estate",
+        "Issue Date": "May 10, 2024",
+        "Expiry Date": "May 10, 2025",
+        "Status": "active"
+      },
+      {
         id: 5,
-        title: "Skyline Residences",
-        author: "742 Evergreen Terrace",
-        images: ["/images/property5.png"],
-        status: "Verified",
-        expiry: "Aug 12, 2025"
-    },
-    {
+        "Certificate ID": "CER-8769",
+        "Host ID": "76894",
+        "Property Name": "Coastal Hillside Estate",
+        "Issue Date": "Apr 05, 2024",
+        "Expiry Date": "Apr 05, 2025",
+        "Status": "active"
+      },
+      {
         id: 6,
-        title: "Skyline Residences",
-        author: "742 Evergreen Terrace",
-        images: ["/images/property6.png"],
-        status: "Verified",
-        expiry: "Aug 12, 2025"
-    }
-];
+        "Certificate ID": "CER-8770",
+        "Host ID": "76895",
+        "Property Name": "Coastal Hillside Estate",
+        "Issue Date": "Mar 18, 2024",
+        "Expiry Date": "Mar 18, 2025",
+        "Status": "active"
+      },
+      {
+        id: 7,
+        "Certificate ID": "CER-8771",
+        "Host ID": "76896",
+        "Property Name": "Mountain View Complex",
+        "Issue Date": "Feb 22, 2024",
+        "Expiry Date": "Feb 22, 2025",
+        "Status": "active"
+      },
+      {
+        id: 8,
+        "Certificate ID": "CER-8772",
+        "Host ID": "76897",
+        "Property Name": "Skyline Residences",
+        "Issue Date": "Jan 30, 2024",
+        "Expiry Date": "Jan 30, 2025",
+        "Status": "active"
+      },
+      {
+        id: 9,
+        "Certificate ID": "CER-8773",
+        "Host ID": "76898",
+        "Property Name": "Coastal Hillside Estate",
+        "Issue Date": "Dec 15, 2023",
+        "Expiry Date": "Dec 15, 2024",
+        "Status": "expired"
+      },
+      {
+        id: 10,
+        "Certificate ID": "CER-8774",
+        "Host ID": "76899",
+        "Property Name": "Coastal Hillside Estate",
+        "Issue Date": "Nov 10, 2023",
+        "Expiry Date": "Nov 10, 2024",
+        "Status": "expired"
+      },
+      {
+        id: 11,
+        "Certificate ID": "CER-8775",
+        "Host ID": "76900",
+        "Property Name": "Coastal Hillside Estate",
+        "Issue Date": "Oct 05, 2023",
+        "Expiry Date": "Oct 05, 2024",
+        "Status": "expired"
+      },
+      {
+        id: 12,
+        "Certificate ID": "CER-8776",
+        "Host ID": "76901",
+        "Property Name": "Coastal Hillside Estate",
+        "Issue Date": "Sep 01, 2023",
+        "Expiry Date": "Sep 01, 2024",
+        "Status": "expired"
+      },
+      {
+        id: 13,
+        "Certificate ID": "CER-8777",
+        "Host ID": "76902",
+        "Property Name": "Mountain View Complex",
+        "Issue Date": "Aug 15, 2023",
+        "Expiry Date": "Aug 15, 2024",
+        "Status": "expired"
+      },
+      {
+        id: 14,
+        "Certificate ID": "CER-8778",
+        "Host ID": "76903",
+        "Property Name": "Skyline Residences",
+        "Issue Date": "Jul 20, 2024",
+        "Expiry Date": "Jul 20, 2025",
+        "Status": "revoked"
+      },
+      {
+        id: 15,
+        "Certificate ID": "CER-8779",
+        "Host ID": "76904",
+        "Property Name": "Coastal Hillside Estate",
+        "Issue Date": "Jun 10, 2024",
+        "Expiry Date": "Jun 10, 2025",
+        "Status": "revoked"
+      },
+      {
+        id: 16,
+        "Certificate ID": "CER-8780",
+        "Host ID": "76905",
+        "Property Name": "Mountain View Complex",
+        "Issue Date": "May 05, 2024",
+        "Expiry Date": "May 05, 2025",
+        "Status": "revoked"
+      }
+    ]);
 
-const getVariantFromStatus = (
-    status: string
-): "success" | "error" | "warning" | "info" | "default" => {
-    switch (status) {
-        case "Verified":
-            return "success";
-        case "Expired":
-            return "error";
-        case "Near Expiry":
-            return "warning";
-        default:
-            return "default";
-    }
-};
+    const filteredCertificationData = useMemo(() => {
+      let filtered = allCertificationData.filter(item => item.Status === activeTab);
 
-const Certificates: React.FC = () => {
+      if (searchTerm) {
+        filtered = filtered.filter(
+          (item) =>
+            item["Property Name"].toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item["Certificate ID"].toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item["Host ID"].toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item["Issue Date"].toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item["Expiry Date"].toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+
+      // Apply Issue Date filter
+      if (certificationFilters.issueDate) {
+        filtered = filtered.filter(
+          (item) => item["Issue Date"] === certificationFilters.issueDate
+        );
+      }
+
+      // Apply Expiry Date filter
+      if (certificationFilters.expiryDate) {
+        filtered = filtered.filter(
+          (item) => item["Expiry Date"] === certificationFilters.expiryDate
+        );
+      }
+
+      return filtered;
+    }, [searchTerm, certificationFilters, allCertificationData, activeTab]);
+
+    const handleSelectAll = (checked: boolean) => {
+      const newSelected = new Set(selectedRows);
+      if (checked) {
+        filteredCertificationData.forEach((item) => newSelected.add(item.id));
+      } else {
+        filteredCertificationData.forEach((item) => newSelected.delete(item.id));
+      }
+      setSelectedRows(newSelected);
+    };
+
+    const handleSelectRow = (id: string, checked: boolean) => {
+      const newSelected = new Set(selectedRows);
+      const numericId = parseInt(id);
+      if (checked) {
+        newSelected.add(numericId);
+      } else {
+        newSelected.delete(numericId);
+      }
+      setSelectedRows(newSelected);
+    };
+
+    const isAllDisplayedSelected = useMemo(() => {
+      return (
+        filteredCertificationData.length > 0 &&
+        filteredCertificationData.every((item) => selectedRows.has(item.id))
+      );
+    }, [filteredCertificationData, selectedRows]);
+
+    const isSomeDisplayedSelected = useMemo(() => {
+      return (
+        filteredCertificationData.some((item) => selectedRows.has(item.id)) &&
+        !isAllDisplayedSelected
+      );
+    }, [filteredCertificationData, selectedRows, isAllDisplayedSelected]);
+
+    const handleDeleteApplications = (selectedRowIds: Set<number>) => {
+      const idsToDelete = Array.from(selectedRowIds);
+      const updatedData = allCertificationData.filter((item) => !idsToDelete.includes(item.id));
+      setAllCertificationData(updatedData);
+      setIsModalOpen(false);
+      setSelectedRows(new Set());
+    };
+
+    const handleDeleteSingleApplication = (row: Record<string, string>, id: number) => {
+      const updatedData = allCertificationData.filter((item) => item.id !== id);
+      setAllCertificationData(updatedData);
+      setIsModalOpen(false);
+      setSingleRowToDelete(null);
+
+      const newSelected = new Set(selectedRows);
+      newSelected.delete(id);
+      setSelectedRows(newSelected);
+
+      const remainingDataCount = updatedData.length;
+      const maxPageAfterDeletion = Math.ceil(remainingDataCount / itemsPerPage);
+
+      if (currentPage > maxPageAfterDeletion) {
+        setCurrentPage(Math.max(1, maxPageAfterDeletion));
+      }
+    };
+
+    const openDeleteSingleModal = (row: Record<string, string>, id: number) => {
+      setSingleRowToDelete({ row, id });
+      setModalType("single");
+      setIsModalOpen(true);
+    };
+
+    const handleDeleteSelected = () => {
+      if (selectedRows.size > 0) {
+        setModalType("multiple");
+        setIsModalOpen(true);
+      }
+    };
+
+    const handleModalConfirm = () => {
+      if (modalType === "multiple" && selectedRows.size > 0) {
+        handleDeleteApplications(selectedRows);
+      } else if (modalType === "single" && singleRowToDelete) {
+        handleDeleteSingleApplication(singleRowToDelete.row, singleRowToDelete.id);
+      }
+    };
+
+    const displayData = useMemo(() => {
+      return filteredCertificationData.map(({ id, Status, ...rest }) => {
+        console.log(id,Status)
+        return rest;
+      });
+    }, [filteredCertificationData]);
+
+    useEffect(() => {
+      setCurrentPage(1);
+      setSelectedRows(new Set());
+    }, [searchTerm, certificationFilters, activeTab]);
+
+    const handleResetFilter = () => {
+      setCertificationFilters({
+        issueDate: "",
+        expiryDate: "",
+      });
+      setSearchTerm("");
+      setIssueDate(null);
+      setExpiryDate(null);
+    };
+
+    const handleApplyFilter = () => {
+      const newFilters = { ...certificationFilters };
+      
+      if (issueDate) {
+        newFilters.issueDate = issueDate.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+      }
+      
+      if (expiryDate) {
+        newFilters.expiryDate = expiryDate.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+      }
+
+      setCertificationFilters(newFilters);
+      setIsFilterOpen(false);
+    };
+
+    const dropdownItems = [
+      {
+        label: "View Details",
+        onClick: (row: Record<string, string>, index: number) => {
+          const globalIndex = (currentPage - 1) * itemsPerPage + index;
+          const originalRow = filteredCertificationData[globalIndex];
+          window.location.href = `/admin/dashboard/certificates/detail/${originalRow.id}`;
+        },
+      },
+      {
+        label: "Delete Application",
+        onClick: (row: Record<string, string>, index: number) => {
+          const globalIndex = (currentPage - 1) * itemsPerPage + index;
+          const originalRow = filteredCertificationData[globalIndex];
+          openDeleteSingleModal(row, originalRow.id);
+        },
+      },
+    ];
+
     return (
-        <div className=" text-white pb-5">
-            {/* Header Section */}
-            <div className="flex flex-col gap-3 sm:gap-0 sm:flex-row items-start justify-between mb-2">
-                <div>
-                    <h1 className="text-[20px] leading-[24px] font-semibold text-white mb-2">
-                        Earned Certificates
-                    </h1>
-                    <p className="text-[16px] leading-[20px] text-[#FFFFFF99] font-regular max-w-[573px]">
-                        Access the certificates you&apos;ve achieved. Download official copies or share them as proof of your accomplishments.
-                    </p>
-                </div>
-                <Link href="/listing">
-                <button className="yellow-btn cursor-pointer text-black px-[20px] py-[12px] rounded-[8px] font-semibold text-[16px] leading-[20px] hover:bg-[#E5F266] transition-colors duration-300">
-                    Apply Now
-                </button>
-                </Link>
-            </div>
-
-            {/* Properties Grid */}
-            <div className="grid gap-x-4 gap-y-[16px] sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-[40px]">
-                {staticProperties.map((property) => (
-                    <Link href={`/dashboard/certificates/detail/${property.id}`} key={property.id}>
-                        <div className="flex bg-[#121315] rounded-lg group flex-col cursor-pointer">
-                            <div className=" shadow-md overflow-hidden ">
-                                <div className="relative  w-full">
-                                    <Image
-                                        src={property.images[0]}
-                                        alt={property.title}
-                                        width={373}
-                                        height={300}
-                                        className="object-cover w-full"
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex pb-4 px-4 flex-col ">
-                                <div className="flex items-center justify-between mt-5">
-                                    <h3 className="text-[18px] leading-[22px] text-white font-medium">{property.title}</h3>
-                                    <StatusPill
-                                        status={property.status}
-                                        variant={getVariantFromStatus(property.status)}
-                                    />
-                                </div>
-                                <p className="text-[14px] leading-[18px] text-white/60 mt-2 font-regular">
-                                    {property.author}
-                                </p>
-                                <div className="flex items-center justify-between mt-[33px]">
-                                    <p className="text-[14px] leading-[18px] text-white/80 font-normal">
-                                        Expiry: {property.expiry}
-                                    </p>
-                                    <div className="relative w-[32px] h-[32px] ">
-                                        <Image
-                                            src="/images/white-arrow-right.svg"
-                                            alt="arrow"
-                                            width={32}
-                                            height={32}
-                                            className="cursor-pointer absolute top-0 left-0 transition-opacity duration-300 group-hover:opacity-0"
-                                        />
-                                        <Image
-                                            src="/images/yellow-arrow-right.svg"
-                                            alt="arrow-yellow"
-                                            width={32}
-                                            height={32}
-                                            className="cursor-pointer absolute top-0 left-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                ))}
-            </div>
+      <>
+        {isModalOpen && (
+          <Modal
+            isOpen={isModalOpen}
+            onClose={() => {
+              setIsModalOpen(false);
+              setSelectedRows(new Set());
+              setSingleRowToDelete(null);
+            }}
+            onConfirm={handleModalConfirm}
+            title="Confirm Application Deletion"
+            description="Deleting this application means it will no longer appear in your requests."
+            image="/images/delete-modal.png"
+            confirmText="Delete"
+          />
+        )}
+          <div className="flex justify-between items-center">
+        <div>
+          <h2 className="font-semibold text-[20px] leading-[20px]">Certification Management</h2>
+          <p className="font-regular text-[16px] leading-5 mb-[22px] pt-2 text-[#FFFFFF99]">
+            View and manage all certifications issued on the platform.
+          </p>
         </div>
-    );
-};
 
-export default Certificates;
+        {/* Tabs */}
+        <div className="flex space-x-4 mb-6 ">
+          <button
+            className={`py-2 px-4 font-medium cursor-pointer text-sm rounded-lg transition-colors ${
+              activeTab === "active"
+                ? "bg-[#EFFC761F] text-[#EFFC76]"
+                : "text-[#FFFFFFCC] "
+            }`}
+            onClick={() => setActiveTab("active")}
+          >
+            Active 
+          </button>
+          <button
+            className={`py-2 px-4 font-medium cursor-pointer text-sm rounded-lg transition-colors ${
+              activeTab === "revoked"
+                ? "bg-[#EFFC761F] text-[#EFFC76]"
+                : "text-[#FFFFFFCC] "
+            }`}
+            onClick={() => setActiveTab("revoked")}
+          >
+            Revoked 
+          </button>
+          <button
+            className={`py-2 px-4 font-medium cursor-pointer text-sm rounded-lg transition-colors ${
+              activeTab === "expired"
+                ? "bg-[#EFFC761F] text-[#EFFC76]"
+                : "text-[#FFFFFFCC] "
+            }`}
+            onClick={() => setActiveTab("expired")}
+          >
+            Expired 
+          </button>
+        </div>
+        </div>
+
+        <div className="flex flex-col justify-between">
+          <Table
+            data={displayData}
+            title="Certificates"
+            showDeleteButton={true}
+            onDeleteSingle={(row, index) => {
+              const globalIndex = (currentPage - 1) * itemsPerPage + index;
+              const originalRow = filteredCertificationData[globalIndex];
+              openDeleteSingleModal(row, originalRow.id);
+            }}
+            // showModal={true}
+            showPagination={false}
+            clickable={true}
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+            onSelectAll={handleSelectAll}
+            onSelectRow={handleSelectRow}
+            isAllSelected={isAllDisplayedSelected}
+            isSomeSelected={isSomeDisplayedSelected}
+            rowIds={filteredCertificationData.map((item) => item.id.toString())}
+            dropdownItems={dropdownItems}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            totalItems={filteredCertificationData.length}
+            showFilter={true}
+            // isFilterOpen={isFilterOpen}
+            onFilterToggle={setIsFilterOpen}
+            onDeleteAll={handleDeleteSelected}
+            isDeleteAllDisabled={selectedRows.size === 0 || selectedRows.size < displayData.length }
+          />
+        </div>
+
+        <FilterDrawer
+          isOpen={isFilterOpen}
+          onClose={() => setIsFilterOpen(false)}
+          title="Apply Filter"
+          description="Refine listings to find the right property faster."
+          resetLabel="Reset"
+          onReset={handleResetFilter}
+          buttonLabel="Apply Filter"
+          onApply={handleApplyFilter}
+          filterValues={{
+            "issue Date": issueDate,
+            "Expiry Date": expiryDate,
+          }}
+          onFilterChange={(newValues) => {
+            if (newValues["issue Date"] !== undefined) {
+              setIssueDate(newValues["issue Date"] as Date | null);
+            }
+            if (newValues["Expiry Date"] !== undefined) {
+              setExpiryDate(newValues["Expiry Date"] as Date | null);
+            }
+          }}
+          // dateValue={submittedDate}
+          // onDateChange={setSubmittedDate}
+          dropdownStates={{
+            ownership: showOwnershipDropdown,
+            property: showPropertyDropdown,
+            status: showStatusDropdown,
+          }}
+          onDropdownToggle={(key, value) => {
+            if (key === "ownership") setShowOwnershipDropdown(value);
+            if (key === "property") setShowPropertyDropdown(value);
+            if (key === "status") setShowStatusDropdown(value);
+          }}
+          fields={[
+            {
+              label: "Issue Date",
+              key: "issue Date",
+              type: "date",
+              placeholder: "Select date",
+            },
+            {
+              label: "Expiry Date",
+              key: "Expiry Date",
+              type: "date",
+              placeholder: "Select date",
+            },
+          ]}
+        />
+      </>
+    );
+  }

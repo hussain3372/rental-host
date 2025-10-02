@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { allProperties } from "@/app/admin/data/Info";
-// import TicketDrawer from "../../Drawer";
+import TicketDrawer from "../../Drawer";
+import Checklist from "./Checklist";
 
 export default function ApplicationDetail() {
   const Credentials = [
@@ -37,14 +38,20 @@ export default function ApplicationDetail() {
   const { id } = useParams();
   const applicationId = Number(id);
   const thumbnailsContainerRef = useRef<HTMLDivElement>(null);
-  const [, setIsDrawerOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [thumbnailsHeight, setThumbnailsHeight] = useState(0);
+  const [notes, setNotes] = useState<string[]>([]); // Add state for notes
 
   const handleDrawer = () => {
     setIsDrawerOpen(prev => !prev);
   }
 
-  // Get property by ID (using the existing properties data)
+  // Handle note submission
+  const handleNoteSubmit = (note: string) => {
+    setNotes(prevNotes => [...prevNotes, note]);
+  }
+
+  // Get property by ID
   const application = allProperties.find((property) => property.id === applicationId);
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -58,14 +65,11 @@ export default function ApplicationDetail() {
       }
     };
 
-    // Initial measurement
     updateHeight();
-
-    // Update on window resize
     window.addEventListener('resize', updateHeight);
 
     return () => window.removeEventListener('resize', updateHeight);
-  }, [application]); // Re-run when application changes
+  }, [application]);
 
   // If application not found
   if (!application) {
@@ -95,9 +99,9 @@ export default function ApplicationDetail() {
 
   return (
     <div className="text-white relative">
-      {/* {isDrawerOpen && (
-        // <TicketDrawer onClose={() => setIsDrawerOpen(false)} />
-      )} */}
+      {isDrawerOpen && (
+        <TicketDrawer onNoteSubmit={handleNoteSubmit} onClose={() => setIsDrawerOpen(false)} />
+      )}
 
       {/* Breadcrumb */}
       <nav className="mb-4">
@@ -150,7 +154,6 @@ export default function ApplicationDetail() {
   `}
             style={{ height: thumbnailsHeight || "auto" }}
           >
-            {/* Desktop/Tablet → Height synced */}
             <Image
               src={images[currentStep] || "/images/placeholder.jpg"}
               alt={`Property view ${currentStep + 1}`}
@@ -168,11 +171,9 @@ export default function ApplicationDetail() {
               className="object-cover"
             />
           </div>
-
-          {/* Navigation Controls - Full width progress bar */}
         </div>
 
-        {/* Thumbnail Gallery - Reference for height measurement */}
+        {/* Thumbnail Gallery */}
         <div
           ref={thumbnailsContainerRef}
           className="  w-full  sm:w-[145px] max-h-full flex flex-nowrap  gap-3 sm:flex-col justify-center items-center"
@@ -201,13 +202,12 @@ export default function ApplicationDetail() {
           <Image src="/images/left.svg" alt="back" width={24} height={24} />
         </button>
 
-        {/* Progress Bar - Takes all remaining space */}
+        {/* Progress Bar */}
         <div className="flex items-center gap-3 sm:gap-10 flex-1 ">
           <span className=" text-white/60 leading-[20px] font-regular text-[16px]  flex-shrink-0">
             {String(currentStep + 1).padStart(2, "0")}
           </span>
 
-          {/* Progress Bar - Full available width */}
           <div className="w-full h-[1px] bg-white/20 relative ">
             <div
               className="absolute top-0 left-0 h-full bg-[#EFFC76] transition-all duration-300"
@@ -231,11 +231,14 @@ export default function ApplicationDetail() {
       </div>
       
       {/* Description */}
-      <div className="mt-[60px] max-w-[1134px]">
+      <div className="mt-[60px] ">
         <p className="text-white/80 font-normal text-[16px] sm:text-[18px] tracking-[0%] leading-[22px] text-justify">
           {application.title} at 1234 Maplewood Avenue, Austin, Texas is a fully verified and certified property. Featuring 4 bedrooms, 3 bathrooms, and a modern kitchen, this home combines comfort with trust. With a landscaped garden, private patio, and verified legal documentation, it offers both luxury and peace of mind. Each listing comes with a digital badge and QR code for instant authenticity checks.
         </p>
       </div>
+
+      {/* Render Checklist component and pass notes as prop */}
+      <Checklist notes={notes} />
     </div>
   );
 }
