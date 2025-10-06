@@ -7,8 +7,8 @@ interface ChecklistProps {
 
 export default function Checklist({ notes }: ChecklistProps) {
   const checklist = [
-    "Fire safety measures in place", "Fire safety measures in place", "Fire safety measures in place", 
-    "Fire safety measures in place", "Fire safety measures in place", "Fire safety measures in place"
+    "Fire safety measures in place", "Fire safety measures in place", "Building code compliance", 
+    "Fire safety measures in place", "Fire safety measures in place", "Building code compliance"
   ]
   
   const identity = [

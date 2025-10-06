@@ -40,7 +40,7 @@
       expiryDate: "", 
     });
 
-    const [submittedDate, setSubmittedDate] = useState<Date | null>(null);
+    // const [submittedDate, setSubmittedDate] = useState<Date | null>(null);
 
     const [allCertificationData, setAllCertificationData] = useState<CertificationData[]>([
       {
@@ -50,7 +50,7 @@
         "Host ID": "76890",
         "Issue Date": "Aug 12, 2024",
         "Expiry Date": "Aug 12, 2025",
-        "Status": "active"
+        "Status": "expired"
       },
       {
         id: 2,

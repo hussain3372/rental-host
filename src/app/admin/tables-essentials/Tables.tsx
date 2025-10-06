@@ -291,7 +291,7 @@ export function Table<T extends Record<string, unknown>>({
 
   return (
     <div style={{ marginBottom: 15 }}>
-      <div className="bg-[#121315] custom-height rounded-lg relative z-[10] overflow-hidden">
+      <div className="bg-[#121315] overflow-auto custom-height rounded-lg relative z-[10] scrollbar-hide">
         <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-5">
           <h2 className="text-white text-[16px] font-semibold leading-[20px]">{title}</h2>
           <div className="flex flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
@@ -351,6 +351,7 @@ export function Table<T extends Record<string, unknown>>({
                 className="p-5"
                 style={{
                   width: "100%",
+                  overflow:"auto",
                   minWidth: "max-content",
                   borderCollapse: "collapse",
                   backgroundColor: "transparent",

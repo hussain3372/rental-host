@@ -132,6 +132,18 @@ const NotificationPreferences: React.FC = () => {
 
   return (
     <div className=" space-y-5 py-5">
+
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-[20px] leading-[24px] font-semibold text-white">
+          Settings & Preferences
+        </h1>
+      </div>
+      <p className="text-4 leading-5 text-[#FFFFFF99] font-normal mb-[40px] max-w-[573px] w-full">
+        Manage your personal details, security, notifications, and billing all
+        in one place. Customize your experience and keep your account up to
+        date.
+      </p>
+      
       {/* Notification Preferences Card */}
       <div className="bg-[#121315] rounded-[12px] p-5">
         <h3 className="text-white text-[18px] leading-[22px] font-medium mb-5">

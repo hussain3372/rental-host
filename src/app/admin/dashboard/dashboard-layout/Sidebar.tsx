@@ -319,6 +319,48 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                 Certificates
               </p>
             </Link>
+            <Link onClick={() => { setIsMobileOpen(false) }}
+              href="/admin/dashboard/reports"
+              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive('/admin/dashboard/reports')
+                ? 'bg-[#4a5439]'
+                : 'hover:bg-[#4a5439]'
+                }`}
+            >
+              <div className="relative w-[20px] h-[20px] group">
+  <svg
+    width="20"
+    height="21"
+    viewBox="0 0 20 21"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={`${
+      isActive("/admin/dashboard/reports")
+        ? "stroke-[#EFFC76]"
+        : "stroke-white group-hover:stroke-[#EFFC76]"
+    }`}
+  >
+    <path
+      d="M1.66699 10.1488C1.66699 6.22043 1.66699 4.25626 2.88699 3.03543C4.10866 1.81543 6.07199 1.81543 10.0003 1.81543C13.9287 1.81543 15.8928 1.81543 17.1128 3.03543C18.3337 4.2571 18.3337 6.22043 18.3337 10.1488C18.3337 14.0771 18.3337 16.0413 17.1128 17.2613C15.8937 18.4821 13.9287 18.4821 10.0003 18.4821C6.07199 18.4821 4.10783 18.4821 2.88699 17.2613C1.66699 16.0421 1.66699 14.0771 1.66699 10.1488Z"
+      strokeWidth="1.25"
+    />
+    <path
+      d="M5.83398 11.8153L7.74482 9.90443C7.90109 9.74821 8.11301 9.66044 8.33398 9.66044C8.55495 9.66044 8.76688 9.74821 8.92315 9.90443L10.2448 11.2261C10.4011 11.3823 10.613 11.4701 10.834 11.4701C11.055 11.4701 11.2669 11.3823 11.4232 11.2261L14.1673 8.48193M14.1673 8.48193V10.5653M14.1673 8.48193H12.084"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+</div>
+
+              <p
+                className={`font-normal text-[16px] leading-[20px] ${isActive('/admin/dashboard/reports')
+                  ? 'text-[#eefb75]'
+                  : 'text-[#ffffff] group-hover:text-[#eefb75]'
+                  } ${isCollapsed ? 'hidden' : 'block'}`}
+              >
+                Report & Analytics
+              </p>
+            </Link>
           </div>
 
           {/* Bottom Section */}
@@ -329,7 +371,7 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                 setIsMobileOpen(false);
               }}
               href="/admin/dashboard/subscription-plan"
-              className={`flex gap-[8px] items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive("/admin/dashboard/subscription-plan")
+              className={`flex gap-[8px] items-center group px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] ${isActive("/admin/dashboard/subscription-plan")
                 ? "bg-[#4a5439]"
                 : "hover:bg-[#4a5439]"
                 }`}

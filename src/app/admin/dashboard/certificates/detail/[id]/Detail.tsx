@@ -175,6 +175,10 @@ useEffect(() => {
             </div>
 
       {/* Image Slider */}
+
+
+
+      
       <div className="mt-8 sm:mt-[38px] flex flex-col sm:flex-row gap-4">
         {/* Left Large Image */}
         <div className="flex-1 h-[500px] overflow-hidden bg-gray-800 rounded-xl">

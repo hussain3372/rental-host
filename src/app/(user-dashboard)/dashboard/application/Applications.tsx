@@ -478,7 +478,7 @@ export default function Applications() {
   // Transform data to exclude ID from display but keep it for navigation
   const displayData = useMemo(() => {
     return filteredCertificationData.map(({ id, ...rest }) => {
-      console.log(id); 
+      console.log(id);
       return rest;
     });
   }, [filteredCertificationData]);
@@ -622,10 +622,11 @@ export default function Applications() {
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`w-8 h-8 flex items-center justify-center rounded text-sm leading-[18px] p-[13px] transition-colors border cursor-pointer ${currentPage === i
-            ? "bg-[#EFFC76] text-black font-medium border-[#EFFC76]"
-            : "text-white opacity-60 border-gray-600"
-            }`}
+          className={`w-8 h-8 flex items-center justify-center rounded text-sm leading-[18px] p-[13px] transition-colors border cursor-pointer ${
+            currentPage === i
+              ? "bg-[#EFFC76] text-black font-medium border-[#EFFC76]"
+              : "text-white opacity-60 border-gray-600"
+          }`}
         >
           {i}
         </button>
@@ -670,7 +671,7 @@ export default function Applications() {
         />
       )}
 
-            <div className="flex flex-col justify-between mb-5 custom-height">
+      <div className="flex flex-col justify-between mb-5 custom-height">
         <div className="bg-[#121315] h-full rounded-lg relative z-[10] overflow-hidden flex flex-col">
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-5">
@@ -778,8 +779,9 @@ export default function Applications() {
 
       {/* Right Slide Panel Filter */}
       <div
-        className={`fixed top-0 right-0 h-full bg-[#0A0C0B] z-[2000000000] transform transition-transform duration-300 ease-in-out ${isFilterOpen ? "translate-x-0" : "translate-x-full"
-          } w-[250px] sm:w-1/2 lg:w-2/5 xl:w-1/3`}
+        className={`fixed top-0 right-0 h-full bg-[#0A0C0B] z-[2000000000] transform transition-transform duration-300 ease-in-out ${
+          isFilterOpen ? "translate-x-0" : "translate-x-full"
+        } w-[250px] sm:w-1/2 lg:w-2/5 xl:w-1/3`}
       >
         <div
           className="h-full justify-between flex flex-col bg-[#0A0C0B] overflow-y-auto"
@@ -818,9 +820,10 @@ export default function Applications() {
                         w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
                         bg-gradient-to-b from-[#202020] to-[#101010]
                         text-[14px] font-medium text-left
-                        ${certificationFilters.ownership === ""
-                          ? "text-white/40"
-                          : "text-white"
+                        ${
+                          certificationFilters.ownership === ""
+                            ? "text-white/40"
+                            : "text-white"
                         }
                         cursor-pointer transition duration-200 ease-in-out
                         hover:border-[#EFFC76]
@@ -868,9 +871,10 @@ export default function Applications() {
                         w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
                         bg-gradient-to-b from-[#202020] to-[#101010]
                         text-[14px] font-medium text-left
-                        ${certificationFilters.property === ""
-                          ? "text-white/40"
-                          : "text-white"
+                        ${
+                          certificationFilters.property === ""
+                            ? "text-white/40"
+                            : "text-white"
                         }
                         cursor-pointer transition duration-200 ease-in-out
                         hover:border-[#EFFC76]
@@ -918,9 +922,10 @@ export default function Applications() {
                         w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
                         bg-gradient-to-b from-[#202020] to-[#101010]
                         text-[14px] font-medium text-left
-                        ${certificationFilters.status === ""
-                          ? "text-white/40"
-                          : "text-white"
+                        ${
+                          certificationFilters.status === ""
+                            ? "text-white/40"
+                            : "text-white"
                         }
                         cursor-pointer transition duration-200 ease-in-out
                         hover:border-[#EFFC76]

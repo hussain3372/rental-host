@@ -22,9 +22,9 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
- <html lang="en"  >
-      <body className={`${manrope.className} !overflow-x-hidden`}>
-     <Toaster
+    <html lang="en">
+      <body className={` ${manrope.className} !overflow-x-hidden`}>
+        <Toaster
           position="top-right"
           toastOptions={{
             duration: 4000,

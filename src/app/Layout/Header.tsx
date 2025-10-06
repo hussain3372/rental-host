@@ -145,12 +145,20 @@ useEffect(() => {
             {/* CTA Buttons */}
             <div className="flex gap-3 lg:flex-1 lg:justify-end">
               <Link
+                href="/admin/dashboard"
+                className="text-[16px] font-medium leading-5 flex items-center transition-all duration-300
+                bg-[#fff] rounded-[8px] h-[30px] pt-[6px] pb-[6px] pl-[12px] pr-[12px] gap-[4px]
+                lg:h-[36px] lg:pt-[8px] lg:pb-[8px] lg:pl-[24px] lg:pr-[24px] lg:gap-[8px] text-black"
+              >
+                Admin
+              </Link>
+              <Link
                 href="/dashboard"
                 className="text-[16px] font-medium leading-5 flex items-center transition-all duration-300
                 bg-[#fff] rounded-[8px] h-[30px] pt-[6px] pb-[6px] pl-[12px] pr-[12px] gap-[4px]
                 lg:h-[36px] lg:pt-[8px] lg:pb-[8px] lg:pl-[24px] lg:pr-[24px] lg:gap-[8px] text-black"
               >
-                Dashboard
+                Host
               </Link>
               <Link
                 href="/auth/signup"
