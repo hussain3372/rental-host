@@ -237,8 +237,8 @@ export default function MultiStepForm() {
   return (
 <div className="min-h-screen bg-black text-white flex flex-col lg:flex-row px-4 md:pl-10 py-10 w-full h-auto">
       {/* Sidebar */}
-      <div className="w-full lg:w-1/3 bg-[#121315] p-6 md:p-10 lg:p-20 relative 
-                lg:sticky lg:top-0 lg:h-screen lg:max-h-[748px] self-start">
+      <div className="w-full lg:w-1/3 bg-[#121315] px-8 sm:px-10 sm:py-5 py-5 relative 
+                lg:sticky lg:top-0 lg:h-screen lg:max-h-[848px] self-start">
         <Image
           src="/images/shape1.png"
           alt="gradient"

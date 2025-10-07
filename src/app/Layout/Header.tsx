@@ -9,41 +9,41 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
-useEffect(() => {
-  if (typeof window === "undefined") return;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
-  const sections = ["home", "plans", "how-it-works", "hosts"];
+    const sections = ["home", "plans", "how-it-works", "hosts"];
 
-  const handleIntersect: IntersectionObserverCallback = (entries) => {
-    let maxRatio = 0;
-    let maxEntry: IntersectionObserverEntry | null = null;
+    const handleIntersect: IntersectionObserverCallback = (entries) => {
+      let maxRatio = 0;
+      let maxEntry: IntersectionObserverEntry | null = null;
 
-    for (let i = 0; i < entries.length; i++) {
-      const entry = entries[i];
-      if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
-        maxRatio = entry.intersectionRatio;
-        maxEntry = entry;
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+        if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
+          maxRatio = entry.intersectionRatio;
+          maxEntry = entry;
+        }
       }
-    }
-    if (maxEntry && maxEntry.target) {
-      const targetElement = maxEntry.target as HTMLElement;
-      const id = targetElement.id;
-      setActiveSection(id);
-    }
-  };
+      if (maxEntry && maxEntry.target) {
+        const targetElement = maxEntry.target as HTMLElement;
+        const id = targetElement.id;
+        setActiveSection(id);
+      }
+    };
 
-  const observer = new IntersectionObserver(handleIntersect, { 
-    rootMargin: "-20% 0px -20% 0px",
-    threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
-  });
+    const observer = new IntersectionObserver(handleIntersect, {
+      rootMargin: "-20% 0px -20% 0px",
+      threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+    });
 
-  sections.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) observer.observe(el);
-  });
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
 
-  return () => observer.disconnect();
-}, []);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -73,10 +73,11 @@ useEffect(() => {
     setTimeout(() => {
       const element = document.getElementById(section);
       if (element) {
-        const elementTop = element.getBoundingClientRect().top + window.pageYOffset - 100;
+        const elementTop =
+          element.getBoundingClientRect().top + window.pageYOffset - 100;
         window.scrollTo({
           top: elementTop,
-          behavior: 'smooth'
+          behavior: "smooth",
         });
       }
     }, 10);
@@ -96,7 +97,12 @@ useEffect(() => {
                 <Bars3Icon className="h-6 w-6" />
               </button>
               <Link href="/" className="-m-1.5 p-1.5 block sm:hidden">
-                <Image src="/images/auth-logo.png" width={37} height={13} alt="logo" />
+                <Image
+                  src="/images/auth-logo.png"
+                  width={37}
+                  height={13}
+                  alt="logo"
+                />
               </Link>
             </div>
             {/* Logo with text */}
@@ -145,12 +151,20 @@ useEffect(() => {
             {/* CTA Buttons */}
             <div className="flex gap-3 lg:flex-1 lg:justify-end">
               <Link
+                href="/super-admin/dashboard"
+                className="text-[16px] font-medium leading-5 flex items-center transition-all duration-300
+                bg-[#fff] rounded-[8px] h-[30px] pt-[6px] pb-[6px] pl-[12px] pr-[12px] gap-[4px]
+                lg:h-[36px] lg:pt-[8px] lg:pb-[8px] lg:pl-[24px] lg:pr-[24px] lg:gap-[8px] text-black"
+              >
+                SA
+              </Link>
+              <Link
                 href="/admin/dashboard"
                 className="text-[16px] font-medium leading-5 flex items-center transition-all duration-300
                 bg-[#fff] rounded-[8px] h-[30px] pt-[6px] pb-[6px] pl-[12px] pr-[12px] gap-[4px]
                 lg:h-[36px] lg:pt-[8px] lg:pb-[8px] lg:pl-[24px] lg:pr-[24px] lg:gap-[8px] text-black"
               >
-                Admin
+                AD
               </Link>
               <Link
                 href="/dashboard"
@@ -175,7 +189,12 @@ useEffect(() => {
             <div className="fixed inset-0 z-50 bg-black px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
               <div className="flex items-center justify-between">
                 <Link href="/" className="-m-1.5 p-1.5">
-                  <Image src="/images/logo.png" width={80} height={40} alt="logo" />
+                  <Image
+                    src="/images/logo.png"
+                    width={80}
+                    height={40}
+                    alt="logo"
+                  />
                 </Link>
                 <button
                   type="button"

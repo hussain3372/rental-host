@@ -11,6 +11,7 @@ interface CertificationData {
   "Report ID": string;
   "Report Type": string;
   "Date Range": string;
+
   "Generated Date": string;
   Format: string;
 }
@@ -45,8 +46,9 @@ export default function Reports() {
     {
       id: 1,
       "Report ID": "REP -8765",
-      "Date Range": "Aug 20, 2025  -  Sep 20, 2025",
       "Report Type": "Weekly",
+      "Date Range": "Aug 20, 2025  -  Sep 20, 2025",
+
       "Generated Date": "Aug 12, 2024",
       Format: "PDF",
     },
@@ -374,7 +376,7 @@ export default function Reports() {
               <Image src={item.img} alt={item.title} width={48} height={48} />
               <div>
                 <h2 className="font-medium text-[18px] leading-[22px] text-white">{item.val}</h2>
-                <p className="text-white/80 font-regular text-[14px] leading-[18px] pt-2">
+                <p className="text-white/80 font-normal text-[14px] leading-[18px] pt-2">
                   {item.title}
                 </p>
               </div>

@@ -2,6 +2,7 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Table } from "@/app/shared/tables/Tables";
+import FilterDrawer from "../../../shared/tables/Filter";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Modal } from "@/app/shared/Modal";
@@ -15,7 +16,6 @@ interface CustomDateInputProps {
 
 interface CertificationData {
   id: number;
-
   "Property Name": string;
   Address: string;
   Ownership: string;
@@ -332,16 +332,7 @@ export default function Applications() {
     return filtered;
   }, [searchTerm, certificationFilters, allCertificationData]);
 
-  // Get IDs of currently displayed items on the current page
-  // const getDisplayedIds = useMemo(() => {
-  //   const startIndex = (currentPage - 1) * itemsPerPage;
-  //   return filteredCertificationData
-  //     .slice(startIndex, startIndex + itemsPerPage)
-  //     .map(item => item.id);
-  // }, [filteredCertificationData, currentPage, itemsPerPage]);
-
-  // Handle select all for current page
-  // Handle select all for ALL filtered data (not just current page)
+  // Handle select all for ALL filtered data
   const handleSelectAll = (checked: boolean) => {
     const newSelected = new Set(selectedRows);
 
@@ -356,10 +347,9 @@ export default function Applications() {
     setSelectedRows(newSelected);
   };
 
-  // Change this function in your Applications.tsx:
   const handleSelectRow = (id: string, checked: boolean) => {
     const newSelected = new Set(selectedRows);
-    const numericId = parseInt(id); // Convert string back to number
+    const numericId = parseInt(id);
 
     if (checked) {
       newSelected.add(numericId);
@@ -369,7 +359,6 @@ export default function Applications() {
     setSelectedRows(newSelected);
   };
 
-  // Fix selection state calculations
   // Fix selection state calculations for ALL filtered data
   const isAllDisplayedSelected = useMemo(() => {
     return (
@@ -384,6 +373,7 @@ export default function Applications() {
       !isAllDisplayedSelected
     );
   }, [filteredCertificationData, selectedRows, isAllDisplayedSelected]);
+
   // Delete handlers
   const handleDeleteApplications = (selectedRowIds: Set<number>) => {
     const idsToDelete = Array.from(selectedRowIds);
@@ -443,7 +433,6 @@ export default function Applications() {
     }
   };
 
-  // Table control
   const tableControl = {
     hover: true,
     striped: false,
@@ -462,6 +451,7 @@ export default function Applications() {
     headerBorder: true,
     borderColor: "#374151",
     highlightRowOnHover: true,
+    
   };
 
   // Unique dropdown values
@@ -475,23 +465,12 @@ export default function Applications() {
     ...new Set(allCertificationData.map((item) => item["Ownership"])),
   ];
 
-  // Transform data to exclude ID from display but keep it for navigation
   const displayData = useMemo(() => {
     return filteredCertificationData.map(({ id, ...rest }) => {
-      console.log(id);
       return rest;
     });
   }, [filteredCertificationData]);
 
-  // Pagination logic
-  const totalPages = Math.ceil(displayData.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedData = displayData.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
-
-  // Reset pagination when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, certificationFilters]);
@@ -526,12 +505,11 @@ export default function Applications() {
     setCurrentPage(page);
   };
 
-  // Dropdown items for table actions
   const dropdownItems = [
     {
       label: "View Details",
       onClick: (row: Record<string, string>, index: number) => {
-        const globalIndex = startIndex + index;
+        const globalIndex = (currentPage - 1) * itemsPerPage + index;
         const originalRow = filteredCertificationData[globalIndex];
         window.location.href = `/dashboard/application/detail/${originalRow.id}`;
       },
@@ -539,7 +517,7 @@ export default function Applications() {
     {
       label: "Delete Application",
       onClick: (row: Record<string, string>, index: number) => {
-        const globalIndex = startIndex + index;
+        const globalIndex = (currentPage - 1) * itemsPerPage + index;
         const originalRow = filteredCertificationData[globalIndex];
         openDeleteSingleModal(row, originalRow.id);
       },
@@ -574,85 +552,6 @@ export default function Applications() {
 
   CustomDateInput.displayName = "CustomDateInput";
 
-  const renderPaginationButtons = () => {
-    const buttons = [];
-    const maxVisiblePages = 5;
-
-    buttons.push(
-      <button
-        key="prev"
-        onClick={() => handlePageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="w-8 h-8 flex items-center p-[13px] justify-center text-gray-400 hover:text-white transition-colors border border-gray-600 rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        <Image
-          src="/images/arrow-left.svg"
-          height={14}
-          width={14}
-          alt="Back"
-          className=""
-        />
-      </button>
-    );
-
-    let startPage, endPage;
-
-    if (totalPages <= maxVisiblePages) {
-      startPage = 1;
-      endPage = totalPages;
-    } else if (currentPage <= maxVisiblePages) {
-      startPage = 1;
-      endPage = maxVisiblePages;
-    } else {
-      startPage = currentPage - Math.floor(maxVisiblePages / 2);
-      endPage = currentPage + Math.floor(maxVisiblePages / 2);
-
-      if (startPage < 1) {
-        startPage = 1;
-        endPage = maxVisiblePages;
-      }
-      if (endPage > totalPages) {
-        endPage = totalPages;
-        startPage = totalPages - maxVisiblePages + 1;
-      }
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      buttons.push(
-        <button
-          key={i}
-          onClick={() => handlePageChange(i)}
-          className={`w-8 h-8 flex items-center justify-center rounded text-sm leading-[18px] p-[13px] transition-colors border cursor-pointer ${
-            currentPage === i
-              ? "bg-[#EFFC76] text-black font-medium border-[#EFFC76]"
-              : "text-white opacity-60 border-gray-600"
-          }`}
-        >
-          {i}
-        </button>
-      );
-    }
-
-    buttons.push(
-      <button
-        key="next"
-        onClick={() => handlePageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white transition-colors border border-gray-600 rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 p-[13px]"
-      >
-        <Image
-          src="/images/arrow-right.svg"
-          height={14}
-          width={14}
-          alt="Back"
-          className=""
-        />
-      </button>
-    );
-
-    return buttons;
-  };
-
   return (
     <>
       {isModalOpen && (
@@ -671,327 +570,98 @@ export default function Applications() {
         />
       )}
 
-      <div className="flex flex-col justify-between mb-5 custom-height">
-        <div className="bg-[#121315] h-full rounded-lg relative z-[10] overflow-hidden flex flex-col">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-5">
-            <h2 className="text-white text-[16px] font-semibold leading-[20px]">
-              Applications
-            </h2>
-            <div className="flex flex-wrap sm:flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
-              <div className="relative w-full sm:w-[204px]">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-white/12 border rounded-lg text-white/40 placeholder-white/60 w-full px-3 py-2 text-sm pl-8 border-none outline-none"
-                />
-                <div className="absolute left-2.5 top-2.5 w-4 h-4 text-gray-500">
-                  <Image
-                    src="/images/search.png"
-                    alt="search"
-                    width={16}
-                    height={16}
-                  />
-                </div>
-              </div>
+    
 
-              <button
-                onClick={() => setIsFilterOpen(true)}
-                className="h-[34px] cursor-pointer w-[86px] rounded-md bg-[#2e2f31] py-2 px-3 flex items-center gap-1"
-              >
-                <span className="text-sm leading-[18px] font-medium text-white opacity-60">
-                  Filter
-                </span>
-                <Image
-                  src="/images/filter1.png"
-                  alt="filter"
-                  height={9}
-                  width={13}
-                />
-              </button>
-              <button
-                onClick={handleDeleteSelected}
-                disabled={
-                  selectedRows.size < allCertificationData.length ||
-                  allCertificationData.length === 0
-                }
-                className="flex cursor-pointer items-center  gap-[6px] p-2 rounded-[8px] 
-                border border-[rgba(239,252,118,0.32)] text-[#EFFC76] text-[12px] font-normal leading-[16px]
-                 disabled:bg-[transparent] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <Image
-                  src="/images/delete-row.svg"
-                  alt="Delete selected"
-                  width={12}
-                  height={12}
-                />
-                Delete All
-              </button>
-            </div>
-          </div>
-
-          {/* Table */}
-          <div className="p-0 cursor-pointer overflow-auto scrollbar-hide">
-            <Table
-              data={paginatedData}
-              control={tableControl}
-              showDeleteButton={true}
-              onDeleteSingle={(row, index) => {
-                const globalIndex = startIndex + index;
-                const originalRow = filteredCertificationData[globalIndex];
-                openDeleteSingleModal(row, originalRow.id);
-              }}
-              showModal={true}
-              clickable={true}
-              modalTitle="Property Details"
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
-              onSelectAll={handleSelectAll}
-              onSelectRow={handleSelectRow}
-              isAllSelected={isAllDisplayedSelected}
-              isSomeSelected={isSomeDisplayedSelected}
-              // Pass ALL IDs from filtered data, not just current page
-              rowIds={filteredCertificationData.map((item) =>
-                item.id.toString()
-              )} // Convert to string
-              dropdownItems={dropdownItems}
-            />
-          </div>
-        </div>
-
-        {/* Pagination */}
-        <div className="flex justify-center mt-[20px]">
-          <div className="flex items-center gap-2">
-            {renderPaginationButtons()}
-          </div>
-        </div>
-      </div>
-
-      {/* Full Page Overlay */}
-      {isFilterOpen && (
-        <div
-          className="fixed inset-0 bg-black/70 z-[100000]"
-          onClick={() => setIsFilterOpen(false)}
+      <div className="flex flex-col justify-between">
+        <Table
+          data={displayData}
+          title="Applications"
+          control={tableControl}
+          showDeleteButton={true}
+          onDeleteSingle={(row, index) => {
+            const globalIndex = (currentPage - 1) * itemsPerPage + index;
+            const originalRow = filteredCertificationData[globalIndex];
+            openDeleteSingleModal(row, originalRow.id);
+          }}
+          showPagination={true}
+          clickable={true}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
+          onSelectAll={handleSelectAll}
+          onSelectRow={handleSelectRow}
+          isAllSelected={isAllDisplayedSelected}
+          isSomeSelected={isSomeDisplayedSelected}
+          rowIds={filteredCertificationData.map((item) => item.id.toString())}
+          dropdownItems={dropdownItems}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={filteredCertificationData.length}
+          showFilter={true}
+          onFilterToggle={setIsFilterOpen}
+          onDeleteAll={handleDeleteSelected}
+          isDeleteAllDisabled={selectedRows.size === 0 || selectedRows.size < displayData.length}
         />
-      )}
-
-      {/* Right Slide Panel Filter */}
-      <div
-        className={`fixed top-0 right-0 h-full bg-[#0A0C0B] z-[2000000000] transform transition-transform duration-300 ease-in-out ${
-          isFilterOpen ? "translate-x-0" : "translate-x-full"
-        } w-[250px] sm:w-1/2 lg:w-2/5 xl:w-1/3`}
-      >
-        <div
-          className="h-full justify-between flex flex-col bg-[#0A0C0B] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header */}
-          <div>
-            <div className="flex justify-between items-center px-6 pt-6 pb-3">
-              <h3 className="text-white text-[20px] leading-[24px] font-medium">
-                Apply Filter
-              </h3>
-              <button
-                onClick={handleResetFilter}
-                className="text-[#EFFC76] cursor-pointer text-[18px] leading-[22px] font-medium underline"
-              >
-                Reset
-              </button>
-            </div>
-
-            <div className="px-6">
-              <p className="text-white text-[16px] opacity-60 mb-10">
-                Refine listings to find the right property faster.
-              </p>
-
-              <div className="space-y-5">
-                {/* Ownership Dropdown */}
-                <div ref={ownershipDropdownRef}>
-                  <label className="text-white leading-[18px] text-sm font-medium mb-3 block">
-                    Ownership
-                  </label>
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onClick={() => setShowOwnershipDropdown((prev) => !prev)}
-                      className={`
-                        w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
-                        bg-gradient-to-b from-[#202020] to-[#101010]
-                        text-[14px] font-medium text-left
-                        ${
-                          certificationFilters.ownership === ""
-                            ? "text-white/40"
-                            : "text-white"
-                        }
-                        cursor-pointer transition duration-200 ease-in-out
-                        hover:border-[#EFFC76]
-                      `}
-                    >
-                      {certificationFilters.ownership || "Select ownership"}
-                      <Image
-                        src="/images/dropdown.svg"
-                        alt="dropdown"
-                        width={15}
-                        height={8}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                      />
-                    </button>
-
-                    {showOwnershipDropdown && (
-                      <div className="absolute z-10 mt-1 w-full">
-                        <Dropdown
-                          items={uniqueOwnerships.map((ownership) => ({
-                            label: ownership,
-                            onClick: () => {
-                              setCertificationFilters((prev) => ({
-                                ...prev,
-                                ownership: ownership,
-                              }));
-                              setShowOwnershipDropdown(false);
-                            },
-                          }))}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Property Dropdown */}
-                <div ref={propertyDropdownRef}>
-                  <label className="text-white leading-[18px] text-sm font-medium mb-3 block">
-                    Property
-                  </label>
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onClick={() => setShowPropertyDropdown((prev) => !prev)}
-                      className={`
-                        w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
-                        bg-gradient-to-b from-[#202020] to-[#101010]
-                        text-[14px] font-medium text-left
-                        ${
-                          certificationFilters.property === ""
-                            ? "text-white/40"
-                            : "text-white"
-                        }
-                        cursor-pointer transition duration-200 ease-in-out
-                        hover:border-[#EFFC76]
-                      `}
-                    >
-                      {certificationFilters.property || "Select property"}
-                      <Image
-                        src="/images/dropdown.svg"
-                        alt="dropdown"
-                        width={15}
-                        height={8}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                      />
-                    </button>
-
-                    {showPropertyDropdown && (
-                      <div className="absolute z-10 mt-1 w-full">
-                        <Dropdown
-                          items={uniqueProperties.map((property) => ({
-                            label: property,
-                            onClick: () => {
-                              setCertificationFilters((prev) => ({
-                                ...prev,
-                                property: property,
-                              }));
-                              setShowPropertyDropdown(false);
-                            },
-                          }))}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Status Dropdown */}
-                <div ref={statusDropdownRef}>
-                  <label className="text-white leading-[18px] text-sm font-medium mb-3 block">
-                    Status
-                  </label>
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onClick={() => setShowStatusDropdown((prev) => !prev)}
-                      className={`
-                        w-full px-4 py-3 pr-10 rounded-xl border border-[#404040]
-                        bg-gradient-to-b from-[#202020] to-[#101010]
-                        text-[14px] font-medium text-left
-                        ${
-                          certificationFilters.status === ""
-                            ? "text-white/40"
-                            : "text-white"
-                        }
-                        cursor-pointer transition duration-200 ease-in-out
-                        hover:border-[#EFFC76]
-                      `}
-                    >
-                      {certificationFilters.status || "Select status"}
-                      <Image
-                        src="/images/dropdown.svg"
-                        alt="dropdown"
-                        width={15}
-                        height={8}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                      />
-                    </button>
-
-                    {showStatusDropdown && (
-                      <div className="absolute z-10 mt-1 w-full">
-                        <Dropdown
-                          items={uniqueStatuses.map((status) => ({
-                            label: status,
-                            onClick: () => {
-                              setCertificationFilters((prev) => ({
-                                ...prev,
-                                status: status,
-                              }));
-                              setShowStatusDropdown(false);
-                            },
-                          }))}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Submitted Date */}
-                <div>
-                  <label className="text-white text-sm font-medium mb-3 block">
-                    Submitted date
-                  </label>
-                  <DatePicker
-                    selected={submittedDate}
-                    onChange={(date: Date | null) => setSubmittedDate(date)}
-                    customInput={<CustomDateInput />}
-                    dateFormat="MMM d, yyyy"
-                    placeholderText="Select date"
-                    showMonthDropdown
-                    showYearDropdown
-                    className="text-white"
-                    dropdownMode="select"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Apply Button */}
-          <div className="p-6">
-            <button
-              onClick={handleApplyFilter}
-              className="w-full yellow-btn cursor-pointer text-black font-semibold py-4 rounded-md transition-colors text-sm shadow-[inset_0_4px_6px_rgba(0,0,0,0.3)]"
-            >
-              Apply Filter
-            </button>
-          </div>
-        </div>
       </div>
+
+      <FilterDrawer
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        title="Apply Filter"
+        description="Refine listings to find the right property faster."
+        resetLabel="Reset"
+        onReset={handleResetFilter}
+        buttonLabel="Apply Filter"
+        onApply={handleApplyFilter}
+        filterValues={certificationFilters}
+        onFilterChange={(filters) => {
+          setCertificationFilters(prev => ({
+            ...prev,
+            ...filters
+          }));
+        }}
+        dropdownStates={{
+          ownership: showOwnershipDropdown,
+          property: showPropertyDropdown,
+          status: showStatusDropdown,
+        }}
+        onDropdownToggle={(key, value) => {
+          if (key === "ownership") setShowOwnershipDropdown(value);
+          if (key === "property") setShowPropertyDropdown(value);
+          if (key === "status") setShowStatusDropdown(value);
+        }}
+        fields={[
+          {
+            label: "Ownership",
+            key: "ownership",
+            type: "dropdown",
+            placeholder: "Select ownership",
+            options: uniqueOwnerships,
+          },
+          {
+            label: "Property",
+            key: "property",
+            type: "dropdown",
+            placeholder: "Select property",
+            options: uniqueProperties,
+          },
+          {
+            label: "Status",
+            key: "status",
+            type: "dropdown",
+            placeholder: "Select status",
+            options: uniqueStatuses,
+          },
+          {
+            label: "Submitted date",
+            key: "submittedDate",
+            type: "date",
+            placeholder: "Select date",
+          },
+        ]}
+      />
     </>
   );
 }

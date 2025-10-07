@@ -112,13 +112,13 @@
 //       if (stacked && type === "bar" && datasets.length > 1) {
 //         const meta0 = chart.getDatasetMeta(0);
 //         const meta1 = chart.getDatasetMeta(1);
-        
+
 //         meta0.data.forEach((bar: BarElementExtended) => {
 //           const barExtended = bar as BarElementExtended & { options?: { backgroundColor?: string } };
 //           barExtended.options = barExtended.options || {};
 //           barExtended.options.backgroundColor = 'rgba(0,0,0,0)';
 //         });
-        
+
 //         meta1.data.forEach((bar: BarElementExtended) => {
 //           const barExtended = bar as BarElementExtended & { options?: { backgroundColor?: string } };
 //           barExtended.options = barExtended.options || {};
@@ -131,10 +131,10 @@
 //         const ctx = chart.ctx;
 //         const meta0 = chart.getDatasetMeta(0);
 //         const meta1 = chart.getDatasetMeta(1);
-        
+
 //         meta0.data.forEach((bar: BarElementExtended, index: number) => {
 //           const topBar = meta1.data[index] as BarElementExtended;
-          
+
 //           if (bar && topBar && bar.y !== bar.base && topBar.y !== topBar.base) {
 //             const x = bar.x;
 //             const width = bar.width;
@@ -143,9 +143,9 @@
 //             const topBarY = topBar.y;
 //             const topBarBottom = topBar.base;
 //             const topBarHeight = topBarBottom - topBarY - GAP;
-            
+
 //             ctx.save();
-            
+
 //             ctx.fillStyle = datasets[0].backgroundColor as string;
 //             drawRoundedRect(
 //               ctx,
@@ -155,7 +155,7 @@
 //               bottomBarHeight,
 //               { tl: RADIUS, tr: RADIUS, br: RADIUS, bl: RADIUS }
 //             );
-            
+
 //             ctx.fillStyle = datasets[1].backgroundColor as string;
 //             drawRoundedRect(
 //               ctx,
@@ -165,7 +165,7 @@
 //               topBarHeight,
 //               { tl: RADIUS, tr: RADIUS, br: RADIUS, bl: RADIUS }
 //             );
-            
+
 //             ctx.restore();
 //           }
 //         });
@@ -183,19 +183,19 @@
 //         const centerY = (top + bottom) / 2;
 
 //         ctx.save();
-        
+
 //         // Calculate text dimensions for background
 //         ctx.font = "400 14px sans-serif";
 //         const titleWidth = ctx.measureText(centerText.label).width;
 //         ctx.font = "700 16px sans-serif";
 //         const valueWidth = ctx.measureText(centerText.value).width;
-        
+
 //         const backgroundWidth = 100;
 //         const backgroundHeight = 100;
-        
+
 //         // Calculate corner radius for full roundness (50% of height)
 //         const cornerRadius = backgroundHeight / 2;
-        
+
 //         // Draw background with #2D2D2D color and full roundness
 //         ctx.fillStyle = "#2D2D2D";
 //         ctx.beginPath();
@@ -207,19 +207,19 @@
 //           cornerRadius
 //         );
 //         ctx.fill();
-        
+
 //         // Draw title text
 //         ctx.textAlign = "center";
 //         ctx.textBaseline = "middle";
 //         ctx.fillStyle = "#ffffff";
 //         ctx.font = "400 14px sans-serif";
 //         ctx.fillText(centerText.label, centerX, centerY - 15);
-        
+
 //         // Draw value text
 //         ctx.fillStyle = "#ffffff";
 //         ctx.font = "700 16px sans-serif";
 //         ctx.fillText(centerText.value, centerX, centerY + 15);
-        
+
 //         ctx.restore();
 //       }
 //     },
@@ -230,61 +230,61 @@
 //     afterDraw: (chart) => {
 //       if (type === "doughnut") {
 //         const activeElements = chart.getActiveElements();
-        
+
 //         if (activeElements.length > 0) {
 //           const { ctx, chartArea } = chart;
 //           const { left, right, top, bottom } = chartArea;
 //           const centerX = (left + right) / 2;
 //           const centerY = (top + bottom) / 2;
-          
+
 //           activeElements.forEach((element) => {
 //             const datasetIndex = element.datasetIndex;
 //             const index = element.index;
 //             const dataset = chart.data.datasets[datasetIndex];
 //             const value = dataset.data[index] as number;
-            
+
 //             const total = (dataset.data as number[]).reduce((acc, val) => acc + val, 0);
 //             const percentage = Math.round((value / total) * 100);
-            
+
 //             const meta = chart.getDatasetMeta(datasetIndex);
 //             const arc = meta.data[index] as ArcElementExtended;
-            
+
 //             const startAngle = arc.startAngle;
 //             const endAngle = arc.endAngle;
 //             const midAngle = (startAngle + endAngle) / 2;
 //             const outerRadius = arc.outerRadius;
-            
+
 //             const arcX = centerX + Math.cos(midAngle) * outerRadius;
 //             const arcY = centerY + Math.sin(midAngle) * outerRadius;
-            
+
 //             const labelDistance = outerRadius + 45;
 //             const labelX = centerX + Math.cos(midAngle) * labelDistance;
 //             const labelY = centerY + Math.sin(midAngle) * labelDistance;
-            
+
 //             const colors = dataset.backgroundColor as string[];
 //             const segmentColor = Array.isArray(colors) ? colors[index] : colors;
-            
+
 //             ctx.save();
-            
+
 //             ctx.strokeStyle = segmentColor;
 //             ctx.lineWidth = 2;
 //             ctx.beginPath();
 //             ctx.moveTo(arcX, arcY);
 //             ctx.lineTo(labelX, labelY);
 //             ctx.stroke();
-            
+
 //             ctx.fillStyle = segmentColor;
 //             ctx.beginPath();
 //             ctx.arc(labelX, labelY, 6, 0, 2 * Math.PI);
 //             ctx.fill();
-            
+
 //             ctx.fillStyle = "#ffffff";
 //             ctx.font = "700 15px sans-serif";
 //             ctx.textAlign = midAngle > Math.PI / 2 && midAngle < (3 * Math.PI) / 2 ? "right" : "left";
 //             ctx.textBaseline = "middle";
 //             const textOffset = midAngle > Math.PI / 2 && midAngle < (3 * Math.PI) / 2 ? -14 : 14;
 //             ctx.fillText(`${percentage}%`, labelX + textOffset, labelY);
-            
+
 //             ctx.restore();
 //           });
 //         }
@@ -403,11 +403,9 @@
 //     </div>
 //   );
 // }
-
-
 "use client";
+import React, { useState, useEffect } from "react";
 
-import React from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -468,8 +466,25 @@ export default function GlobalGraph({
   stacked = false,
   centerText,
 }: GlobalGraphProps) {
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 640);
+    };
+
+    // Run once on mount
+    handleResize();
+
+    // Listen for window resize
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup on unmount
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const RADIUS = isSmallScreen ? 3 : 8;
   const GAP = 8;
-  const RADIUS = 8;
 
   const drawRoundedRect = (
     ctx: CanvasRenderingContext2D,
@@ -507,14 +522,14 @@ export default function GlobalGraph({
       if (stacked && type === "bar" && datasets.length > 1) {
         const meta0 = chart.getDatasetMeta(0);
         const meta1 = chart.getDatasetMeta(1);
-        
+
         meta0.data.forEach((bar) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const barAny = bar as any;
           barAny.options = barAny.options || {};
           barAny.options.backgroundColor = 'rgba(0,0,0,0)';
         });
-        
+
         meta1.data.forEach((bar) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const barAny = bar as any;
@@ -528,13 +543,13 @@ export default function GlobalGraph({
         const ctx = chart.ctx;
         const meta0 = chart.getDatasetMeta(0);
         const meta1 = chart.getDatasetMeta(1);
-        
+
         meta0.data.forEach((bar, index: number) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const barAny = bar as any;
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const topBar = meta1.data[index] as any;
-          
+
           if (barAny && topBar && barAny.y !== barAny.base && topBar.y !== topBar.base) {
             const x = barAny.x;
             const width = barAny.width;
@@ -543,9 +558,9 @@ export default function GlobalGraph({
             const topBarY = topBar.y;
             const topBarBottom = topBar.base;
             const topBarHeight = topBarBottom - topBarY - GAP;
-            
+
             ctx.save();
-            
+
             ctx.fillStyle = datasets[0].backgroundColor as string;
             drawRoundedRect(
               ctx,
@@ -555,7 +570,7 @@ export default function GlobalGraph({
               bottomBarHeight,
               { tl: RADIUS, tr: RADIUS, br: RADIUS, bl: RADIUS }
             );
-            
+
             ctx.fillStyle = datasets[1].backgroundColor as string;
             drawRoundedRect(
               ctx,
@@ -565,7 +580,7 @@ export default function GlobalGraph({
               topBarHeight,
               { tl: RADIUS, tr: RADIUS, br: RADIUS, bl: RADIUS }
             );
-            
+
             ctx.restore();
           }
         });
@@ -583,19 +598,19 @@ export default function GlobalGraph({
         const centerY = (top + bottom) / 2;
 
         ctx.save();
-        
+
         // Calculate text dimensions for background
         ctx.font = "400 14px sans-serif";
         ctx.measureText(centerText.label).width;
         ctx.font = "700 16px sans-serif";
         ctx.measureText(centerText.value).width;
-        
+
         const backgroundWidth = 100;
         const backgroundHeight = 100;
-        
+
         // Calculate corner radius for full roundness (50% of height)
         const cornerRadius = backgroundHeight / 2;
-        
+
         // Draw background with #2D2D2D color and full roundness
         ctx.fillStyle = "#2D2D2D";
         ctx.beginPath();
@@ -607,19 +622,19 @@ export default function GlobalGraph({
           cornerRadius
         );
         ctx.fill();
-        
+
         // Draw title text
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillStyle = "#ffffff";
         ctx.font = "400 14px sans-serif";
         ctx.fillText(centerText.label, centerX, centerY - 15);
-        
+
         // Draw value text
         ctx.fillStyle = "#ffffff";
         ctx.font = "700 16px sans-serif";
         ctx.fillText(centerText.value, centerX, centerY + 15);
-        
+
         ctx.restore();
       }
     },
@@ -630,62 +645,62 @@ export default function GlobalGraph({
     afterDraw: (chart) => {
       if (type === "doughnut") {
         const activeElements = chart.getActiveElements();
-        
+
         if (activeElements.length > 0) {
           const { ctx, chartArea } = chart;
           const { left, right, top, bottom } = chartArea;
           const centerX = (left + right) / 2;
           const centerY = (top + bottom) / 2;
-          
+
           activeElements.forEach((element) => {
             const datasetIndex = element.datasetIndex;
             const index = element.index;
             const dataset = chart.data.datasets[datasetIndex];
             const value = dataset.data[index] as number;
-            
+
             const total = (dataset.data as number[]).reduce((acc, val) => acc + val, 0);
             const percentage = Math.round((value / total) * 100);
-            
+
             const meta = chart.getDatasetMeta(datasetIndex);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const arc = meta.data[index] as any;
-            
+
             const startAngle = arc.startAngle;
             const endAngle = arc.endAngle;
             const midAngle = (startAngle + endAngle) / 2;
             const outerRadius = arc.outerRadius;
-            
+
             const arcX = centerX + Math.cos(midAngle) * outerRadius;
             const arcY = centerY + Math.sin(midAngle) * outerRadius;
-            
+
             const labelDistance = outerRadius + 45;
             const labelX = centerX + Math.cos(midAngle) * labelDistance;
             const labelY = centerY + Math.sin(midAngle) * labelDistance;
-            
+
             const colors = dataset.backgroundColor as string[];
             const segmentColor = Array.isArray(colors) ? colors[index] : colors;
-            
+
             ctx.save();
-            
+
             ctx.strokeStyle = segmentColor;
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(arcX, arcY);
             ctx.lineTo(labelX, labelY);
             ctx.stroke();
-            
+
             ctx.fillStyle = segmentColor;
             ctx.beginPath();
             ctx.arc(labelX, labelY, 6, 0, 2 * Math.PI);
             ctx.fill();
-            
+
             ctx.fillStyle = "#ffffff";
             ctx.font = "700 15px sans-serif";
             ctx.textAlign = midAngle > Math.PI / 2 && midAngle < (3 * Math.PI) / 2 ? "right" : "left";
             ctx.textBaseline = "middle";
             const textOffset = midAngle > Math.PI / 2 && midAngle < (3 * Math.PI) / 2 ? -14 : 14;
             ctx.fillText(`${percentage}%`, labelX + textOffset, labelY);
-            
+
             ctx.restore();
           });
         }
@@ -693,21 +708,22 @@ export default function GlobalGraph({
     },
   };
 
+  // ✅ Responsive chart data
   const chartData: ChartData<ChartType> = {
     labels,
     datasets: datasets.map((ds) => ({
       ...ds,
       borderWidth: 0,
       borderSkipped: false as const,
-      barThickness: type === "bar" ? 41 : undefined,
-      // For doughnut charts, set the weight to control thickness
+      // Responsive bar thickness
+      barThickness: type === "bar" ? (isSmallScreen ? 11 : 41) : undefined,
       weight: type === "doughnut" ? 500 : undefined,
     })),
   };
 
   const baseOptions: ChartOptions<ChartType> = {
     responsive: true,
-    maintainAspectRatio: false, 
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: false,
@@ -742,31 +758,33 @@ export default function GlobalGraph({
     (baseOptions as any).scales = {
       x: {
         stacked,
-        grid: { 
+        grid: {
           display: false,
         },
-        ticks: { 
+        ticks: {
           color: "#9ca3af",
           font: { size: 12 },
           padding: 8,
         },
-        border: { 
-          display: false
+        border: {
+          display: false,
         },
       },
       y: {
         stacked,
-        grid: { 
+        grid: {
           display: false,
         },
-        ticks: { 
+        ticks: {
           display: false,
         },
-        border: { 
-          display: false
+        border: {
+          display: false,
         },
       },
     };
+
+
   }
 
   if (type === "doughnut") {
@@ -785,9 +803,10 @@ export default function GlobalGraph({
       arc: {
         borderWidth: 0,
         borderAlign: 'center',
-        borderRadius: 8,
-      }
+        borderRadius: RADIUS, // ✅ dynamic radius
+      },
     };
+
   }
 
   const plugins = [];
@@ -802,13 +821,15 @@ export default function GlobalGraph({
   }
 
   return (
-    <div style={{ height: "300px", width: "100%" }}>
-      <ReactChart
-        type={type}
-        data={chartData}
-        options={baseOptions}
-        plugins={plugins}
-      />
-    </div>
-  );
+  <div style={{ height: "300px", width: "100%" }}>
+    <ReactChart
+      key={isSmallScreen ? "small" : "large"} // ✅ Force re-render on screen size change
+      type={type}
+      data={chartData}
+      options={baseOptions}
+      plugins={plugins}
+    />
+  </div>
+);
+
 }

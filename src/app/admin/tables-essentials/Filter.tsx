@@ -248,9 +248,8 @@ useEffect(() => {
                           alt="dropdown"
                           width={15}
                           height={8}
-                          className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-300 ease-out ${
-                            dropdownStates[field.key] ? "rotate-180" : ""
-                          }`}
+                          className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-300 ease-out 
+                          `}
                         />
                       </button>
 

@@ -111,7 +111,7 @@ export function Table<T extends Record<string, unknown>>({
       badgeClasses += "bg-[#2d2d2d] text-[#EFFC76] py-2 px-3";
     } else if (statusLower === "near expiry" || statusLower === "pending" || statusLower === "inactive") {
       badgeClasses += "bg-[#2d2d2d] text-[#FFB52B] py-2 px-3";
-    } else if (statusLower === "expired" || statusLower === "rejected") {
+    } else if (statusLower === "expired" || statusLower === "rejected"||statusLower === "suspended") {
       badgeClasses += "bg-[#2d2d2d] text-[#FF5050] py-2 px-3";
     } else {
       badgeClasses += "bg-[#2d2d2d] text-[#EFFC76] py-2 px-3";
@@ -294,7 +294,7 @@ export function Table<T extends Record<string, unknown>>({
       <div className="bg-[#121315] overflow-auto custom-height rounded-lg relative z-[10] scrollbar-hide">
         <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-5">
           <h2 className="text-white text-[16px] font-semibold leading-[20px]">{title}</h2>
-          <div className="flex flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
+          <div className="flex flex-wrap sm:flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
             <div className="relative w-full sm:w-[204px]">
               <input
                 type="text"
@@ -334,7 +334,8 @@ export function Table<T extends Record<string, unknown>>({
         </div>
 
         <div className="p-0 cursor-pointer">
-          <div
+          <div 
+          className="scrollbar-hide"
             style={{
               overflowX: "auto",
               width: "100%",
@@ -348,7 +349,7 @@ export function Table<T extends Record<string, unknown>>({
             <div className="p-5">
               <table
                 id={tableId}
-                className="p-5"
+                className="p-5 scrollbar-hide"
                 style={{
                   width: "100%",
                   overflow:"auto",
@@ -437,7 +438,7 @@ export function Table<T extends Record<string, unknown>>({
 
                     {showDeleteButton && (
                       <th
-                        className="flex gap-2"
+                        className="flex gap-2 !pt-[17px]"
                         style={{
                           padding: paddingSize,
                           fontWeight: 700,

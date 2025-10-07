@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import InputField from "../../shared/InputSystem";
+import InputField from "@/app/shared/InputSystem";
 
 interface FormData {
   email: string;
@@ -16,11 +16,11 @@ interface AuthFormProps {
   mode: "login" | "signup" | "forgot" | "otp" | "reset-password";
   alterText?: string;
   linktext?: string;
-  emptyOTP?: string;
+  emptyOTP?:string;
   link?: string;
-  emptyemailmessage?: string;
-  emptypasswordmessage?: string;
-  wronginputmessage?: string;
+  emptyemailmessage?:string;
+  emptypasswordmessage?:string;
+  wronginputmessage?:string;
   forgotlink?: string;
   title: string;
   subtitle: string;
@@ -38,10 +38,10 @@ const AuthForm: React.FC<AuthFormProps> = ({
   mode,
   alterText,
   linktext,
-  emptyemailmessage = "",
-  emptyOTP = "",
-  emptypasswordmessage = "",
-  wronginputmessage = "",
+  emptyemailmessage="",
+  emptyOTP="",
+  emptypasswordmessage="",
+  wronginputmessage="",
   link = "",
   forgotlink,
   title,
@@ -71,7 +71,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
       ...prev,
       [field]: value,
     }));
-
+    
     if (errors[field]) {
       setErrors((prev) => ({
         ...prev,
@@ -117,46 +117,37 @@ const AuthForm: React.FC<AuthFormProps> = ({
   };
 
   const validateForm = (): boolean => {
-    const newErrors: { [key: string]: string } = {};
+  const newErrors: { [key: string]: string } = {};
 
-    if (mode === "otp") {
-      const otpComplete = formData.otp?.every((digit) => digit.trim() !== "");
-      if (!otpComplete) {
-        newErrors.otp = emptyOTP || "Please enter all 6 digits";
-      }
+  if (mode === "otp") {
+    const otpComplete = formData.otp?.every((digit) => digit.trim() !== "");
+    if (!otpComplete) {
+      newErrors.otp = emptyOTP || "Please enter all 6 digits";
     }
+  }
 
-    if (
-      (mode === "login" || mode === "signup" || mode === "forgot") &&
-      !formData.email.trim()
-    ) {
-      newErrors.email = emptyemailmessage;
-    } else if (
-      (mode === "login" || mode === "signup" || mode === "forgot") &&
-      !/\S+@\S+\.\S+/.test(formData.email)
-    ) {
-      newErrors.email = wronginputmessage;
+  if ((mode === "login" || mode === "signup" || mode === "forgot")&& !formData.email.trim()) {
+    newErrors.email = emptyemailmessage;
+  } else if ((mode === "login" || mode === "signup" || mode === "forgot") && !/\S+@\S+\.\S+/.test(formData.email)) {
+    newErrors.email = wronginputmessage;
+  }
+
+  if ((mode === "login" || mode === "signup" || mode === "reset-password") && !formData.password.trim()) {
+    newErrors.password = emptypasswordmessage;
+  }
+
+  // ✅ Fixed confirm password validation
+  if (mode === "reset-password") {
+    if (!formData.confirmPassword?.trim()) {
+      newErrors.confirmPassword = "Please confirm your password";  // ✅ Correct field name
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";  // ✅ Correct field name
     }
+  }
 
-    if (
-      (mode === "login" || mode === "signup" || mode === "reset-password") &&
-      !formData.password.trim()
-    ) {
-      newErrors.password = emptypasswordmessage;
-    }
-
-    // ✅ Fixed confirm password validation
-    if (mode === "reset-password") {
-      if (!formData.confirmPassword?.trim()) {
-        newErrors.confirmPassword = "Please confirm your password"; // ✅ Correct field name
-      } else if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match"; // ✅ Correct field name
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -209,7 +200,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
               type="email"
               label="Email"
               value={formData.email}
-              onChange={(value: string) => handleInputChange("email", value)}
+              onChange={(value:string) => handleInputChange("email", value)}
               placeholder="Enter email"
               error={errors.email}
             />
@@ -217,7 +208,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
               type="password"
               label="Password"
               value={formData.password}
-              onChange={(value: string) => handleInputChange("password", value)}
+              onChange={(value:string) => handleInputChange("password", value)}
               placeholder="Enter password"
               error={errors.password}
               showPasswordToggle={true}
@@ -226,9 +217,9 @@ const AuthForm: React.FC<AuthFormProps> = ({
             />
             <Link
               href={forgotlink || "/auth/forgot-password"}
-              className="flex justify-end  2xl:w-full"
+              className="flex justify-end w-[103%] 2xl:w-full"
             >
-              <p className="text-white opacity-80 text-[14px] leading-[18px] font-medium pt-[10px]">
+              <p className="text-white opacity-80 text-[14px] leading-[18px] font-medium pt-[10px] pr-5">
                 Forgot Password?
               </p>
             </Link>
@@ -242,7 +233,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
               type="email"
               label="Email"
               value={formData.email}
-              onChange={(value: string) => handleInputChange("email", value)}
+              onChange={(value:string) => handleInputChange("email", value)}
               placeholder="Enter email"
               error={errors.email}
             />
@@ -250,7 +241,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
               type="password"
               label="Password"
               value={formData.password}
-              onChange={(value: string) => handleInputChange("password", value)}
+              onChange={(value:string) => handleInputChange("password", value)}
               placeholder="Enter password"
               error={errors.password}
               showPasswordToggle={true}
@@ -266,7 +257,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
             type="email"
             label="Email"
             value={formData.email}
-            onChange={(value: string) => handleInputChange("email", value)}
+            onChange={(value:string) => handleInputChange("email", value)}
             placeholder="Enter email"
             error={errors.email}
           />
@@ -282,7 +273,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
                   type="otp"
                   label=""
                   value={digit}
-                  onChange={(value: string) => handleOtpChange(index, value)}
+                  onChange={(value:string) => handleOtpChange(index, value)}
                   error={errors.otp}
                   otpIndex={index}
                   onOtpKeyDown={(e) => handleOtpKeyDown(index, e)}
@@ -301,9 +292,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
                 onClick={handleResend}
                 disabled={!showResend}
                 className={`text-center underline ${
-                  showResend
-                    ? "!cursor-pointer"
-                    : "cursor-not-allowed opacity-50"
+                  showResend ? "!cursor-pointer" : "cursor-not-allowed opacity-50"
                 }`}
               >
                 Resend Code
@@ -335,9 +324,7 @@ const AuthForm: React.FC<AuthFormProps> = ({
               error={errors.confirmPassword}
               showPasswordToggle={true}
               isPasswordVisible={showConfirmPassword}
-              onTogglePassword={() =>
-                setShowConfirmPassword(!showConfirmPassword)
-              }
+              onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
             />
           </>
         );
@@ -349,8 +336,9 @@ const AuthForm: React.FC<AuthFormProps> = ({
   return (
     <div className="min-h-screen bg-[#121315] xl:gap-[80px] flex flex-col xl:flex-row">
       {/* Left Panel */}
-      <div className="flex items-center px-[20px] md:pl-[80px] py-8 w-full xl:w-1/2">
-        <div className="w-full max-w-[640px] space-y-8">
+      <div className="flex px-[20px] md:px-[80px] py-8 w-full xl:w-1/2">
+        {/* Updated container classes for centering on medium screens */}
+        <div className="w-full max-w-[640px] mx-auto md:mx-0 md:ml-0 space-y-8">
           {/* Logo */}
           <div className="flex items-center space-x-2">
             <Image
@@ -379,7 +367,10 @@ const AuthForm: React.FC<AuthFormProps> = ({
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4 flex  flex-col">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-4 flex xl:block flex-col justify-center"
+          >
             {renderFields()}
 
             {/* Submit Button */}

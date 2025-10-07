@@ -32,7 +32,7 @@
 //   return (
 //     <div className="pt-5 text-white">
 //       <div className="flex gap-6 flex-col lg:flex-row">
-        
+
 //         {/* Applications Over Time - Stacked Bar Chart */}
 //         <div className="lg:flex-1 bg-[#121315] p-6 rounded-2xl shadow-lg overflow-visible">
 //           <div className="flex flex-col sm:flex-row justify-between sm:items-start mb-6 gap-4 sm:gap-0">
@@ -101,7 +101,7 @@
 //           <div className="flex-1 flex items-center w-full h-full justify-center relative overflow-visible">
 //             <GlobalGraph
 //               type="doughnut"
-              
+
 //               labels={["Active", "Pending", "Revoked", "Expired"]}
 //               datasets={[
 //                 {
@@ -201,10 +201,10 @@ export default function Graph() {
 
   return (
     <div className="pt-5 text-white">
-      <div className="flex gap-6 flex-col lg:flex-row">
-        
+      <div className="flex flex-col md:flex-col lg:flex-row gap-6 w-full">
+
         {/* Applications Over Time - Stacked Bar Chart */}
-        <div className="lg:flex-1 bg-[#121315] p-6 rounded-2xl shadow-lg overflow-visible">
+        <div className="w-full lg:flex-1 bg-[#121315] p-6 rounded-2xl shadow-lg overflow-visible">
           <div className="flex flex-col sm:flex-row justify-between sm:items-start mb-6 gap-4 sm:gap-0">
             <div>
               <h2 className="text-[16px] leading-5 font-semibold text-white">
@@ -226,11 +226,10 @@ export default function Graph() {
                 <button
                   key={r}
                   onClick={() => setRange(r)}
-                  className={`px-4 py-2 cursor-pointer font-regular text-[12px] leading-4 rounded-lg transition ${
-                    range === r
-                      ? "bg-[#EFFC76] text-black"
-                      : "border border-[#FFFFFF1F] text-[#FFFFFFCC] hover:bg-[#252525]"
-                  }`}
+                  className={`px-4 py-2 cursor-pointer font-regular text-[12px] leading-4 rounded-lg transition ${range === r
+                    ? "bg-[#EFFC76] text-black"
+                    : "border border-[#FFFFFF1F] text-[#FFFFFFCC] hover:bg-[#252525]"
+                    }`}
                 >
                   {r.charAt(0).toUpperCase() + r.slice(1)}
                 </button>
@@ -261,47 +260,47 @@ export default function Graph() {
         </div>
 
         {/* Certification Distribution - Doughnut Chart */}
-        <div className="lg:w-[40%] bg-[#121315] rounded-2xl shadow-lg p-5 flex flex-col overflow-visible">
-          <h2 className="text-[16px] leading-5 font-semibold text-white">
-            Certification Distribution
-          </h2>
+       <div className="w-full lg:w-[40%] bg-[#121315] rounded-2xl shadow-lg p-5 flex flex-col overflow-visible">
+  <h2 className="text-[16px] leading-5 font-semibold text-white">
+    Certification Distribution
+  </h2>
 
-          <div className="flex-1 flex items-center w-full h-full justify-center relative overflow-visible">
-            <div style={{ height: 220 }}>
-              <GlobalGraph
-                type="doughnut"
-                labels={["Active", "Pending", "Revoked", "Expired"]}
-                datasets={[
-                  {
-                    label: "Certifications",
-                    data: [400, 360, 190, 250],
-                    backgroundColor: ["#EFFC76", "#52525b", "#fb923c", "#22c55e"],
-                  },
-                ]}
-                centerText={{ label: "Total", value: "1,560" }}
-              />
-            </div>
-          </div>
+  <div className="flex-1 flex items-center w-full h-full justify-center relative overflow-visible">
+    <div style={{ height: 220, width: "100%", position: "relative", overflow: "visible" }}>
+      <GlobalGraph
+        type="doughnut"
+        labels={["Active", "Pending", "Revoked", "Expired"]}
+        datasets={[
+          {
+            label: "Certifications",
+            data: [400, 360, 190, 250],
+            backgroundColor: ["#EFFC76", "#52525b", "#fb923c", "#22c55e"],
+          },
+        ]}
+        centerText={{ label: "Total", value: "1,560" }}
+      />
+    </div>
+  </div>
 
-          <div className="grid grid-cols-2 gap-x-12 gap-y-4 text-[#FFFFFFCC] font-bold text-[12px] mt-8 place-items-center">
-            <div className="flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full bg-[#EFFC76] flex-shrink-0" />
-              <span>Active</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full bg-[#52525b] flex-shrink-0" />
-              <span>Pending</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full bg-[#22c55e] flex-shrink-0" />
-              <span>Expired</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full bg-[#fb923c] flex-shrink-0" />
-              <span>Revoked</span>
-            </div>
-          </div>
-        </div>
+  <div className="grid grid-cols-2 gap-x-12 gap-y-4 text-[#FFFFFFCC] font-bold text-[12px] mt-8 place-items-center">
+    <div className="flex items-center gap-3 mr-[6px]">
+      <span className="w-[8px] h-[8px]    rounded-full bg-[#EFFC76] flex-shrink-0"  />
+      <span>Active</span>
+    </div>
+    <div className="flex items-center gap-3  mr-1">
+      <span className="w-[8px] h-[8px]  rounded-full bg-[#52525b] flex-shrink-0" />
+      <span>Pending</span>
+    </div>
+    <div className="flex items-center gap-3 ">
+      <span className="w-[8px] h-[8px]  rounded-full bg-[#22c55e] flex-shrink-0" />
+      <span>Expired</span>
+    </div>
+    <div className="flex items-center gap-3">
+      <span className="w-[8px] h-[8px]  rounded-full bg-[#fb923c] flex-shrink-0" />
+      <span>Revoked</span>
+    </div>
+  </div>
+</div>
       </div>
     </div>
   );

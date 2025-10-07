@@ -12,6 +12,7 @@
     "@heroicons/react": "^2.2.0",
     "cache": "^3.0.0",
     "clear": "^0.1.0",
+    "clear-cache": "^1.1.0",
     "firebase": "^12.3.0",
     "framer-motion": "^12.23.18",
     "lucide-react": "^0.544.0",

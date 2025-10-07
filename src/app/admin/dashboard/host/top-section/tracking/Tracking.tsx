@@ -347,12 +347,10 @@ export default function Applications() {
         
         dropdownStates={{
           ownership: showOwnershipDropdown,
-          property: showPropertyDropdown,
           status: showStatusDropdown,
         }}
         onDropdownToggle={(key, value) => {
           if (key === "ownership") setShowOwnershipDropdown(value);
-          if (key === "property") setShowPropertyDropdown(value);
           if (key === "status") setShowStatusDropdown(value);
         }}
         fields={[
@@ -364,13 +362,6 @@ export default function Applications() {
             options: uniqueOwnerships,
           },
           {
-            label: "Property",
-            key: "property",
-            type: "dropdown",
-            placeholder: "Select property",
-            options: uniqueProperties,
-          },
-          {
             label: "Status",
             key: "status",
             type: "dropdown",
@@ -378,7 +369,7 @@ export default function Applications() {
             options: uniqueStatuses,
           },
           {
-            label: "Submitted date",
+            label: "Submitted On",
             key: "submittedDate",
             type: "date",
             placeholder: "Select date",

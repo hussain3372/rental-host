@@ -1,17 +1,8 @@
 "use client";
 import React, { useMemo, useState } from "react";
-import Image from "next/image";
 import { Table } from "@/app/shared/tables/Tables";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { Modal } from "@/app/shared/Modal";
-import Dropdown from "@/app/shared/InputDropDown";
-
-interface CustomDateInputProps {
-  value?: string;
-  onClick?: () => void;
-  onChange?: () => void;
-}
+import FilterDrawer from "@/app/shared/tables/Filter";
 
 interface CertificationData {
   id: number;
@@ -20,7 +11,6 @@ interface CertificationData {
   "Purchase Date": string;
   "End Date": string;
   Status: string;
-  [key: string]: unknown;
 }
 
 export default function BillingHistory() {
@@ -28,7 +18,10 @@ export default function BillingHistory() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
-  const [singleRowToDelete, setSingleRowToDelete] = useState<{ row: Record<string, string>, id: number } | null>(null);
+  const [singleRowToDelete, setSingleRowToDelete] = useState<{ 
+    row: Record<string, string>, 
+    id: number 
+  } | null>(null);
   const [modalType, setModalType] = useState<'single' | 'multiple'>('multiple');
 
   const [certificationFilters, setCertificationFilters] = useState({
@@ -41,6 +34,10 @@ export default function BillingHistory() {
   // State for date pickers
   const [purchaseDate, setPurchaseDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+
+  // Dropdown states
+  const [planDropdownOpen, setPlanDropdownOpen] = useState(false);
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
 
   const [certificationData, setCertificationData] = useState<CertificationData[]>([
     {
@@ -204,21 +201,17 @@ export default function BillingHistory() {
       !isAllDisplayedSelected;
   }, [filteredCertificationData, selectedRows, isAllDisplayedSelected]);
 
-  // Transform data to exclude ID from display
-  const displayData = useMemo(() => {
-    return filteredCertificationData.map(({ id, ...rest }) => rest); // eslint-disable-line @typescript-eslint/no-unused-vars
-  }, [filteredCertificationData]);
-
-  // Convert display data to string records
-  const paginatedData = useMemo(() => {
-    return displayData.map(row => {
+  // Transform data to exclude ID from display and ensure all values are strings
+  const displayData = useMemo((): Record<string, string>[] => {
+    return filteredCertificationData.map(({ id, ...rest }) => {
+      // Convert all values to strings to ensure type safety
       const stringRow: Record<string, string> = {};
-      Object.keys(row).forEach(key => {
-        stringRow[key] = String(row[key]);
+      Object.entries(rest).forEach(([key, value]) => {
+        stringRow[key] = String(value);
       });
       return stringRow;
     });
-  }, [displayData]);
+  }, [filteredCertificationData]);
 
   // Table control
   const tableControl = {
@@ -239,13 +232,6 @@ export default function BillingHistory() {
     headerBorder: true,
     borderColor: "#374151",
     highlightRowOnHover: true,
-    columns: [
-      "Plan Name",
-      "Amount",
-      "Purchase Date",
-      "End Date",
-      "Status",
-    ],
   };
 
   // Reset filters
@@ -288,44 +274,25 @@ export default function BillingHistory() {
     setIsFilterOpen(false);
   };
 
-  // Dropdown states
-  const [planDropdownOpen, setPlanDropdownOpen] = useState(false);
-  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
-
-  // Custom Date Input
-  const CustomDateInput = React.forwardRef<
-    HTMLInputElement,
-    CustomDateInputProps
-  >(({ value, onClick }, ref) => (
-    <div className="relative">
-      <input
-        type="text"
-        value={value}
-        onClick={onClick}
-        ref={ref}
-        readOnly
-        className={`
-          w-full p-3 pr-10 rounded-[10px]
-          border border-[#404040]         
-          hover:border-[#EFFC76]          
-          focus:border-[#EFFC76]          
-          bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)]
-          text-white placeholder:text-white/40
-          focus:outline-none
-          transition duration-200 ease-in-out
-        `}
-        placeholder="Select date"
-      />
-      <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-        <Image src="/images/calender.svg" alt="select date" width={20} height={20} />
-      </div>
-    </div>
-  ));
-  CustomDateInput.displayName = "CustomDateInput";
+  const dropdownItems = [
+    {
+      label: "View Details",
+      onClick: (row: Record<string, string>, index: number) => {
+        const originalRow = filteredCertificationData[index];
+        window.location.href = `/dashboard/application/detail/${originalRow.id}`;
+      },
+    },
+    {
+      label: "Delete History",
+      onClick: (row: Record<string, string>, index: number) => {
+        const originalRow = filteredCertificationData[index];
+        openDeleteSingleModal(row, originalRow.id);
+      },
+    },
+  ];
 
   return (
     <>
-      {/* Delete Confirmation Modal */}
       {isModalOpen && (
         <Modal
           isOpen={isModalOpen}
@@ -342,261 +309,88 @@ export default function BillingHistory() {
         />
       )}
 
-      <div className="bg-[#121315] rounded-lg relative z-[10] overflow-hidden">
-        {/* Header */}
-        <div className="flex flex-col h-full sm:flex-row justify-between lg:items-center pt-5 px-5">
-          <h2 className="text-white text-[16px] font-semibold leading-[20px]">
-            Billing History
-          </h2>
-          <div className="flex flex-wrap sm:flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
-            <div className="relative w-full sm:w-[204px]">
-              <input
-                type="text"
-                placeholder="Search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-white/12 border rounded-lg text-white/40 placeholder-white/60 w-full px-3 py-2 text-sm pl-8 border-none outline-none"
-              />
-              <div className="absolute left-2.5 top-2.5 w-4 h-4 text-gray-500">
-                <Image
-                  src="/images/search.png"
-                  alt="search"
-                  width={16}
-                  height={16}
-                />
-              </div>
-            </div>
-
-            <button
-              onClick={() => setIsFilterOpen(true)}
-              className="h-[34px] cursor-pointer w-[86px] rounded-md bg-[#2e2f31] py-2 px-3 flex items-center gap-1"
-            >
-              <span className="text-sm leading-[18px] font-medium text-white opacity-60">
-                Filter
-              </span>
-              <Image
-                src="/images/filter1.png"
-                alt="filter"
-                height={9}
-                width={13}
-              />
-            </button>
-
-            {/* Delete All Button - Only shows when ALL filtered rows are selected */}
-            <button
-              onClick={handleDeleteSelected}
-              disabled={selectedRows.size === 0 || selectedRows.size < filteredCertificationData.length}
-              className="flex cursor-pointer items-center disabled:opacity-50 gap-[6px] p-2 rounded-[8px] 
-                border border-[rgba(239,252,118,0.32)] text-[#EFFC76] text-[12px] font-normal leading-[16px]
-                disabled:bg-[transparent] disabled:cursor-not-allowed "
-            >
-              <Image src="/images/delete-row.svg" alt='Delete selected' width={12} height={12} />
-              Delete All
-            </button>
-          </div>
-        </div>
-
-        <div className="p-0 max-w-none">
-          <div className="h-[400px] overflow-auto scrollbar-hide">
-            <Table
-              data={paginatedData}
-              control={tableControl}
-              showDeleteButton={true}
-              onDeleteSingle={(row, index) => {
-                const originalRow = filteredCertificationData[index];
-                openDeleteSingleModal(row, originalRow.id);
-              }}
-              showModal={false}
-              modalTitle="Billing Details"
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
-              onSelectAll={handleSelectAll}
-              onSelectRow={handleSelectRow}
-              isAllSelected={isAllDisplayedSelected}
-              isSomeSelected={isSomeDisplayedSelected}
-              rowIds={filteredCertificationData.map(item => item.id.toString())}
-              dropdownItems={[
-                {
-                  label: "View Details",
-                  onClick: (row: Record<string, string>, index: number) => {
-                    const originalRow = filteredCertificationData[index];
-                    window.location.href = `/dashboard/application/detail/${originalRow.id}`;
-                  },
-                },
-                {
-                  label: "Delete History",
-                  onClick: (row, index) => {
-                    const originalRow = filteredCertificationData[index];
-                    openDeleteSingleModal(row, originalRow.id);
-                  },
-                },
-              ]}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Overlay */}
-      {isFilterOpen && (
-        <div
-          className="fixed inset-0 bg-black/70 z-[100000]"
-          onClick={() => setIsFilterOpen(false)}
+      <div className="flex flex-col justify-between">
+        <Table
+          data={displayData}
+          title="Billing History"
+          control={tableControl}
+          showDeleteButton={true}
+          onDeleteSingle={(row, index) => {
+            const originalRow = filteredCertificationData[index];
+            openDeleteSingleModal(row, originalRow.id);
+          }}
+          showPagination={false} // No pagination for billing history
+          clickable={true}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
+          onSelectAll={handleSelectAll}
+          onSelectRow={handleSelectRow}
+          isAllSelected={isAllDisplayedSelected}
+          isSomeSelected={isSomeDisplayedSelected}
+          rowIds={filteredCertificationData.map(item => item.id.toString())}
+          dropdownItems={dropdownItems}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          showFilter={true}
+          onFilterToggle={setIsFilterOpen}
+          onDeleteAll={handleDeleteSelected}
+          isDeleteAllDisabled={selectedRows.size === 0 || selectedRows.size < displayData.length}
         />
-      )}
-
-      {/* Right Slide Panel Filter */}
-      <div
-        className={`fixed top-0 right-0 h-full bg-[#0A0C0B] z-[2000000000] transform transition-transform duration-300 ease-in-out ${isFilterOpen ? "translate-x-0" : "translate-x-full"
-          } w-[250px] sm:w-1/2 lg:w-2/5 xl:w-1/3`}
-      >
-        <div
-          className="h-full justify-between flex flex-col bg-[#0A0C0B] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header */}
-          <div>
-            <div className="flex justify-between items-center px-6 pt-6 pb-3">
-              <h3 className="text-white text-[20px] font-medium">Apply Filter</h3>
-              <button
-                onClick={handleResetFilter}
-                className="text-[#EFFC76] cursor-pointer text-[18px] font-medium underline"
-              >
-                Reset
-              </button>
-            </div>
-
-            <div className="px-6 space-y-[20px]">
-              {/* Plan Name */}
-              <div className="relative">
-                <label className="text-white text-sm font-medium mb-3 block">
-                  Plan Name
-                </label>
-                <div
-                  className={`
-                    w-full p-3 pr-10 rounded-[10px]
-                    border border-[#404040]         
-                    hover:border-[#EFFC76]          
-                    focus:border-[#EFFC76]          
-                    bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)]
-                    text-white placeholder:text-white/40
-                    focus:outline-none
-                    transition duration-200 ease-in-out
-                  `}
-                  onClick={() => setPlanDropdownOpen(!planDropdownOpen)}
-                >
-                  {certificationFilters.planName || "Select plan"}
-                  <Image
-                    src="/images/dropdown.svg"
-                    alt="dropdown"
-                    width={16}
-                    height={16}
-                    className="absolute right-3 top-1/2 transform translate-y-3 cursor-pointer"
-                  />
-                </div>
-
-                {planDropdownOpen && (
-                  <div className="absolute z-50 w-full mt-1">
-                    <Dropdown
-                      items={uniquePlanNames.map((plan) => ({
-                        label: plan,
-                        onClick: () => {
-                          setCertificationFilters((prev) => ({
-                            ...prev,
-                            planName: plan,
-                          }));
-                          setPlanDropdownOpen(false);
-                        },
-                      }))}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Status */}
-              <div className="relative">
-                <label className="text-white text-sm font-medium mb-3 block">
-                  Status
-                </label>
-                <div
-                  className={`
-                    w-full p-3 pr-10 rounded-[10px]
-                    border border-[#404040]         
-                    hover:border-[#EFFC76]          
-                    focus:border-[#EFFC76]          
-                    bg-[radial-gradient(75%_81%_at_50%_18.4%,_#202020_0%,_#101010_100%)]
-                    text-white placeholder:text-white/40
-                    focus:outline-none
-                    transition duration-200 ease-in-out
-                  `}
-                  onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
-                >
-                  {certificationFilters.status || "Select status"}
-                  <Image
-                    src="/images/dropdown.svg"
-                    alt="dropdown"
-                    width={16}
-                    height={16}
-                    className="absolute right-3 top-1/2 transform translate-y-3 cursor-pointer"
-                  />
-                </div>
-
-                {statusDropdownOpen && (
-                  <div className="absolute z-50 w-full mt-1">
-                    <Dropdown
-                      items={uniqueStatuses.map((status) => ({
-                        label: status,
-                        onClick: () => {
-                          setCertificationFilters((prev) => ({
-                            ...prev,
-                            status: status,
-                          }));
-                          setStatusDropdownOpen(false);
-                        },
-                      }))}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Purchase Date */}
-              <div>
-                <label className="text-white text-sm font-medium mb-3 block">
-                  Purchase Date
-                </label>
-                <DatePicker
-                  selected={purchaseDate}
-                  onChange={(date: Date | null) => setPurchaseDate(date)}
-                  customInput={<CustomDateInput />}
-                  dateFormat="MMM d, yyyy"
-                />
-              </div>
-
-              {/* End Date */}
-              <div>
-                <label className="text-white text-sm font-medium mb-3 block">
-                  End Date
-                </label>
-                <DatePicker
-                  selected={endDate}
-                  onChange={(date: Date | null) => setEndDate(date)}
-                  customInput={<CustomDateInput />}
-                  dateFormat="MMM d, yyyy"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Apply Button */}
-          <div className="p-6">
-            <button
-              onClick={handleApplyFilter}
-              className="yellow-btn cursor-pointer w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
-            >
-              Apply Filter
-            </button>
-          </div>
-        </div>
       </div>
+
+      <FilterDrawer
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        title="Apply Filter"
+        description="Refine listings to find the right billing history faster."
+        resetLabel="Reset"
+        onReset={handleResetFilter}
+        buttonLabel="Apply Filter"
+        onApply={handleApplyFilter}
+        filterValues={certificationFilters}
+        onFilterChange={(filters) => {
+          setCertificationFilters(prev => ({
+            ...prev,
+            ...filters
+          }));
+        }}
+        dropdownStates={{
+          planName: planDropdownOpen,
+          status: statusDropdownOpen,
+        }}
+        onDropdownToggle={(key, value) => {
+          if (key === "planName") setPlanDropdownOpen(value);
+          if (key === "status") setStatusDropdownOpen(value);
+        }}
+        fields={[
+          {
+            label: "Plan Name",
+            key: "planName",
+            type: "dropdown",
+            placeholder: "Select plan",
+            options: uniquePlanNames,
+          },
+          {
+            label: "Status",
+            key: "status",
+            type: "dropdown",
+            placeholder: "Select status",
+            options: uniqueStatuses,
+          },
+          {
+            label: "Purchase date",
+            key: "purchaseDate",
+            type: "date",
+            placeholder: "Select date",
+          },
+          {
+            label: "End date",
+            key: "endDate",
+            type: "date",
+            placeholder: "Select date",
+          },
+        ]}
+      />
     </>
   );
 }

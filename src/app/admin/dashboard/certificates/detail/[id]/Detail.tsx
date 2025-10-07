@@ -160,7 +160,7 @@ useEffect(() => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-4 gap-3 pt-5  flex-wrap lg:flex-nowrap justify-between">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-5 flex-wrap lg:flex-nowrap justify-between">
               { Credentials.map((item)=>(
                 <div key={item.id} className="gap-3">
                   <div className="flex items-center bg-[#121315] rounded-xl gap-4 p-5">
@@ -175,10 +175,6 @@ useEffect(() => {
             </div>
 
       {/* Image Slider */}
-
-
-
-      
       <div className="mt-8 sm:mt-[38px] flex flex-col sm:flex-row gap-4">
         {/* Left Large Image */}
         <div className="flex-1 h-[500px] overflow-hidden bg-gray-800 rounded-xl">
@@ -191,13 +187,15 @@ useEffect(() => {
           />
         </div>
 
-        {/* Right Thumbnails */}
-        <div className="sm:w-[175px] flex sm:flex-col gap-2">
-          {images.map((img, index) => (
+        {/* Right Thumbnails - Show only 3 images */}
+        <div className="sm:w-[175px] flex sm:flex-col gap-2 h-[500px]">
+          {images.slice(0, 3).map((img, index) => (
             <button
               key={index}
               onClick={() => setCurrentStep(index)}
-              className="relative flex-1 rounded-lg overflow-hidden transition-all"
+              className={`relative flex-1 rounded-lg overflow-hidden transition-all ${
+                currentStep === index ? 'ring-2 ring-[#EFFC76]' : ''
+              }`}
             >
               <Image
                 src={img}
