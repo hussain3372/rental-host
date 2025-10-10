@@ -3,26 +3,56 @@ import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import Dropdown from "@/app/shared/InputDropDown";
 
+// Define property type interface
+interface PropertyType {
+  id: string;
+  name: string;
+  description: string;
+  isActive: boolean;
+  checklists: Array<{
+    id: string;
+    name: string;
+    description: string | null;
+  }>;
+}
+
 interface Step1aProps {
   formData: {
     propertyName: string;
     propertyAddress: string;
-    propertyType: string;
+    propertyType: string; // This will store the ID
+    propertyTypeName: string; // Add this to store the display name
     ownership: string;
   };
   errors: { [key: string]: string };
   onFieldChange: (field: string, value: string) => void;
+  propertyTypes: PropertyType[]; // Change to PropertyType array
+  loadingPropertyTypes: boolean;
 }
 
-export default function Step1a({ formData, errors, onFieldChange }: Step1aProps) {
+export default function Step1a({ 
+  formData, 
+  errors, 
+  onFieldChange, 
+  propertyTypes, 
+  loadingPropertyTypes 
+}: Step1aProps) {
   const [showPropertyType, setShowPropertyType] = useState(false);
   const [showOwnership, setShowOwnership] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   const propertyTypeRef = useRef<HTMLDivElement>(null);
   const ownershipRef = useRef<HTMLDivElement>(null);
 
+  // Fix hydration issues
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Close dropdowns on outside click
   useEffect(() => {
+    if (!isClient) return;
+
     const handleClickOutside = (event: MouseEvent) => {
       if (
         propertyTypeRef.current &&
@@ -37,11 +67,42 @@ export default function Step1a({ formData, errors, onFieldChange }: Step1aProps)
         setShowOwnership(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isClient]);
+
+  // Transform property types for dropdown
+  const propertyTypeItems = (propertyTypes || []).map((type) => ({
+    label: type.name,
+    onClick: () => {
+      // Store both ID and name
+      onFieldChange("propertyType", type.id); // Store ID for API
+      onFieldChange("propertyTypeName", type.name); // Store name for display
+      setShowPropertyType(false);
+    },
+  }));
+
+  // Handle property type selection
+  const handlePropertyTypeToggle = () => {
+    if (loadingPropertyTypes) return;
+    if (!propertyTypes || propertyTypes.length === 0) return;
+    setShowPropertyType((prev) => !prev);
+  };
+
+  // Handle ownership selection
+  const handleOwnershipToggle = () => {
+    setShowOwnership((prev) => !prev);
+  };
+
+  // Display text for property type
+  const getPropertyTypeDisplayText = () => {
+    if (loadingPropertyTypes) return "Loading types...";
+    if (!formData.propertyTypeName) return "Select type";
+    return formData.propertyTypeName;
+  };
 
   return (
     <div className="flex flex-col !justify-center">
@@ -65,7 +126,9 @@ export default function Step1a({ formData, errors, onFieldChange }: Step1aProps)
               value={formData.propertyName}
               onChange={(e) => onFieldChange("propertyName", e.target.value)}
               placeholder="Enter name"
-              className="w-full mt-2 px-4 py-3 bg-gradient-to-b from-[#202020] to-[#101010] border border-[#464646] rounded-lg text-white placeholder:text-white/40 text-[14px] focus:outline-none"
+              className={`w-full mt-2 px-4 py-3 bg-gradient-to-b from-[#202020] to-[#101010] border rounded-lg text-white placeholder:text-white/40 text-[14px] focus:outline-none ${
+                errors.propertyName ? "border-red-500" : "border-[#464646]"
+              }`}
             />
             {errors.propertyName && (
               <p className="text-red-500 text-sm mt-1">{errors.propertyName}</p>
@@ -82,7 +145,9 @@ export default function Step1a({ formData, errors, onFieldChange }: Step1aProps)
               value={formData.propertyAddress}
               onChange={(e) => onFieldChange("propertyAddress", e.target.value)}
               placeholder="Enter address"
-              className="w-full mt-2 px-4 py-3 bg-gradient-to-b from-[#202020] to-[#101010] border border-[#464646] rounded-lg text-white placeholder:text-white/40 focus:outline-none"
+              className={`w-full mt-2 px-4 py-3 bg-gradient-to-b from-[#202020] to-[#101010] border rounded-lg text-white placeholder:text-white/40 focus:outline-none ${
+                errors.propertyAddress ? "border-red-500" : "border-[#464646]"
+              }`}
             />
             <Image
               src="/images/location-icon.svg"
@@ -104,47 +169,39 @@ export default function Step1a({ formData, errors, onFieldChange }: Step1aProps)
             <div className="relative mt-4">
               <button
                 type="button"
-                onClick={() => setShowPropertyType((prev) => !prev)}
+                onClick={handlePropertyTypeToggle}
+                disabled={loadingPropertyTypes || propertyTypes.length === 0}
                 className={`
-                  w-full px-4 py-3 pr-10 rounded-lg border border-[#464646]
+                  w-full px-4 py-3 pr-10 rounded-lg border
                   bg-gradient-to-b from-[#202020] to-[#101010]
                   text-[14px] font-medium text-left
                   ${
-                    formData.propertyType === "" ? "text-white/40" : "text-white"
+                    !formData.propertyTypeName ? "text-white/40" : "text-white"
                   }
-                  cursor-pointer transition duration-200 ease-in-out
+                  ${(loadingPropertyTypes || propertyTypes.length === 0) ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+                  ${
+                    errors.propertyType ? "border-red-500" : "border-[#464646]"
+                  }
+                  transition duration-200 ease-in-out
                 `}
               >
-                {formData.propertyType || "Select type"}
-                <Image
-                  src="/images/dropdown.svg"
-                  alt="dropdown"
-                  width={15}
-                  height={8}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                />
+                {propertyTypes.length === 0 && !loadingPropertyTypes 
+                  ? "No types available" 
+                  : getPropertyTypeDisplayText()}
+                {(propertyTypes.length > 0 && !loadingPropertyTypes) && (
+                  <Image
+                    src="/images/dropdown.svg"
+                    alt="dropdown"
+                    width={15}
+                    height={8}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  />
+                )}
               </button>
 
-              {showPropertyType && (
+              {isClient && showPropertyType && propertyTypeItems.length > 0 && (
                 <div className="absolute z-10 mt-1 w-full">
-                  <Dropdown
-                    items={[
-                      {
-                        label: "Residential",
-                        onClick: () => {
-                          onFieldChange("propertyType", "Residential");
-                          setShowPropertyType(false);
-                        },
-                      },
-                      {
-                        label: "Commercial",
-                        onClick: () => {
-                          onFieldChange("propertyType", "Commercial");
-                          setShowPropertyType(false);
-                        },
-                      },
-                    ]}
-                  />
+                  <Dropdown items={propertyTypeItems} />
                 </div>
               )}
             </div>
@@ -161,12 +218,15 @@ export default function Step1a({ formData, errors, onFieldChange }: Step1aProps)
             <div className="relative mt-4">
               <button
                 type="button"
-                onClick={() => setShowOwnership((prev) => !prev)}
+                onClick={handleOwnershipToggle}
                 className={`
-                  w-full px-4 py-3 pr-10 rounded-lg border border-[#464646]
+                  w-full px-4 py-3 pr-10 rounded-lg border
                   bg-gradient-to-b from-[#202020] to-[#101010]
                   text-[14px] font-regular text-left
                   ${formData.ownership === "" ? "text-white/40" : "text-white"}
+                  ${
+                    errors.ownership ? "border-red-500" : "border-[#464646]"
+                  }
                   cursor-pointer transition duration-200 ease-in-out
                 `}
               >
@@ -180,7 +240,7 @@ export default function Step1a({ formData, errors, onFieldChange }: Step1aProps)
                 />
               </button>
 
-              {showOwnership && (
+              {isClient && showOwnership && (
                 <div className="absolute z-10 mt-1 w-full">
                   <Dropdown
                     items={[

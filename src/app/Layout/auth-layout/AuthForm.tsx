@@ -464,7 +464,7 @@ interface AuthFormProps<T = FormData> {
                   <p className="text-white/60 font-regular text-[16px] leading-[20px]">
                     {alterText}
                     <Link className="text-[#EFFC76] font-bold" href={link}>
-                      {linktext}
+                    {""}  {linktext}
                     </Link>
                   </p>
                 </div>
@@ -482,7 +482,7 @@ interface AuthFormProps<T = FormData> {
             muted
             loop
             playsInline
-            className="absolute inset-0 w-full h-full object-cover z-0 opacity-50"
+            className="absolute inset-0 w-full h-full object-cover z-0 opacity-100"
           />
 
           {/* Gradient array background */}

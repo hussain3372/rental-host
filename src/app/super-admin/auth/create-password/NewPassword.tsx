@@ -8,7 +8,7 @@ export default function NewPassword() {
   return (
     <div>
       <AuthForm
-        emptypasswordmessage="Please enter your password"
+        emptypasswordmessage="Password is required"
         title="Create New Password"
         subtitle="Set a strong new password to secure your account and continue."
         submitText="Reset Password"

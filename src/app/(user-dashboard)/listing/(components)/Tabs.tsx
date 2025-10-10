@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Step1a from "./Step1a";
 import Step1b from "./Step1b";
@@ -10,17 +10,32 @@ import Step4b from "./Step4b";
 import Step5 from "./Step5";
 import toast from "react-hot-toast";
 import { SubmitApplication } from "@/app/api/listing/ListingAPI";
+import { GetProperty } from "@/app/api/listing/GetTypeAPI";
 
+// Define interfaces
 interface ChecklistItem {
   id: number;
   title: string;
   checked: boolean;
 }
 
+interface PropertyType {
+  id: string;
+  name: string;
+  description: string;
+  isActive: boolean;
+  checklists: Array<{
+    id: string;
+    name: string;
+    description: string | null;
+  }>;
+}
+
 interface FormData {
   propertyName: string;
   propertyAddress: string;
-  propertyType: string;
+  propertyType: string; // Store ID
+  propertyTypeName: string; // Store display name
   ownership: string;
   description: string;
   images: File[];
@@ -30,11 +45,13 @@ interface FormData {
 
 export default function MultiStepForm() {
   const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [subStep, setSubStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     propertyName: "",
     propertyAddress: "",
-    propertyType: "",
+    propertyType: "", // ID
+    propertyTypeName: "", // Display name
     ownership: "",
     description: "",
     images: [],
@@ -47,8 +64,38 @@ export default function MultiStepForm() {
     ],
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  
+  // Update property types state to use PropertyType interface
+  const [propertyTypes, setPropertyTypes] = useState<PropertyType[]>([]);
+  const [loadingPropertyTypes, setLoadingPropertyTypes] = useState(true);
 
-  // ✅ Handle form field changes
+  // Fetch property types on component mount
+  useEffect(() => {
+    const fetchPropertyTypes = async () => {
+      try {
+        setLoadingPropertyTypes(true);
+        const response = await GetProperty();
+        console.log("Property Types API Response:", response);
+        
+        if (response.data && Array.isArray(response.data)) {
+          // Store the full property type objects
+          setPropertyTypes(response.data);
+        } else {
+          console.warn("Unexpected API response format:", response);
+          setPropertyTypes([]);
+        }
+      } catch (error) {
+        console.error("Error fetching property types:", error);
+        setPropertyTypes([]);
+      } finally {
+        setLoadingPropertyTypes(false);
+      }
+    };
+
+    fetchPropertyTypes();
+  }, []);
+
+  // Handle form field changes
   const handleFieldChange = (
     field: string,
     value: string | File | File[] | ChecklistItem[]
@@ -66,7 +113,7 @@ export default function MultiStepForm() {
     }
   };
 
-  // ✅ Validate each step before continuing
+  // Validate each step before continuing
   const validateCurrentStep = (): boolean => {
     const newErrors: { [key: string]: string } = {};
 
@@ -112,34 +159,40 @@ export default function MultiStepForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ Final submit (step 5)
+  // Final submit (step 5)
   const handleSubmitApplication = async () => {
     try {
+      setIsLoading(true);
       setErrors({});
       const isValid = validateCurrentStep();
-      if (!isValid) return;
+      if (!isValid) {
+        setIsLoading(false);
+        return;
+      }
 
-
+      // Create payload with propertyType ID (not name)
       const payload = {
         propertyDetails: {
-          rent: 18500, // Example static — replace with dynamic later
+          rent: 18500,
           propertyName: formData.propertyName,
           address: formData.propertyAddress,
-          bedrooms: 3, // Example
-          bathrooms: 2, // Example
+          bedrooms: 3,
+          bathrooms: 2,
           currency: "AED",
           description: formData.description,
-          propertyType: formData.propertyType,
-          maxGuests: 6, 
+          propertyType: formData.propertyType, // This is the ID
+          maxGuests: 6,
         },
       };
+
+      console.log("Submitting application with payload:", payload);
 
       const response = await SubmitApplication(payload);
       toast.dismiss();
 
       if (response.success) {
         toast.success(response.message || "Application submitted successfully");
-        window.location.href = "/dashboard/application";
+        // window.location.href = "/dashboard/application";
       } else {
         toast.error(response.message || "Failed to submit application");
       }
@@ -147,23 +200,26 @@ export default function MultiStepForm() {
       toast.dismiss();
       toast.error("Unexpected error. Please try again.");
       console.error("Application submission error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // ✅ Handle next click (moves or submits)
+  // Handle next click (moves or submits)
   const handleNextClick = () => {
-    if (!validateCurrentStep()) {
-      return;
-    }
-
-    if (step === 1) {
+    // Only set loading state for actual form submission (step 5)
+    if (step === 5) {
       handleSubmitApplication();
     } else {
+      // For navigation between steps, don't use loading state
+      if (!validateCurrentStep()) {
+        return;
+      }
       handleNext();
     }
   };
 
-  // ✅ Step data for sidebar
+  // Step data for sidebar
   const steps = [
     {
       id: 1,
@@ -202,7 +258,7 @@ export default function MultiStepForm() {
     },
   ];
 
-  // ✅ Render dynamic step content
+  // Render dynamic step content
   const renderStepContent = () => {
     if (step === 1) {
       if (subStep === 1)
@@ -211,6 +267,8 @@ export default function MultiStepForm() {
             formData={formData}
             errors={errors}
             onFieldChange={handleFieldChange}
+            propertyTypes={propertyTypes}
+            loadingPropertyTypes={loadingPropertyTypes}
           />
         );
       if (subStep === 2)
@@ -252,7 +310,7 @@ export default function MultiStepForm() {
     }
   };
 
-  // ✅ Navigation handlers
+  // Navigation handlers
   const handlePrev = () => {
     if (step === 2 && subStep === 1) {
       setStep(1);
@@ -278,7 +336,7 @@ export default function MultiStepForm() {
     }
   };
 
-  // ✅ Render UI
+  // Render UI
   return (
     <div className="min-h-screen bg-black text-white flex flex-col lg:flex-row px-4 md:pl-10 py-10 w-full h-auto">
       {/* Sidebar */}
@@ -382,9 +440,10 @@ export default function MultiStepForm() {
             </button>
             <button
               onClick={handleNextClick}
-              className="w-full sm:w-auto px-8 py-3 text-[16px] bg-gradient-to-b yellow-btn text-black font-semibold rounded-md shadow-lg hover:opacity-90"
+              disabled = {step === 5 && isLoading}
+              className="w-full sm:w-auto px-8 py-3 text-[16px] bg-gradient-to-b yellow-btn text-black font-semibold rounded-md shadow-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {step === 5 ? "Submit" : "Continue"}
+              {step === 5 && isLoading ? "Please wait ..." : step === 5 ? "Submit" : "Continue"}
             </button>
           </div>
 

@@ -44,7 +44,7 @@ export default function LoginPage() {
       <AuthForm
         emptyemailmessage="Email address is required"
         wronginputmessage="Please enter a valid email address"
-        emptypasswordmessage="Please enter your password"
+        emptypasswordmessage="Password is required"
         title="Welcome Back!"
         subtitle="Sign in to explore your personalized dashboard."
         submitText="Login"

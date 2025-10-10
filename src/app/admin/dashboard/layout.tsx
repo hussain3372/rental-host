@@ -29,7 +29,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   };
 
   return (
-    <div className={`${manrope.className}  relative min-h-[100vh] bg-[#0A0C0B]  text-white  overflow-hidden`}>
+    <div className={` ${manrope.className} relative min-h-[100vh] bg-[#0A0C0B]  text-white  overflow-hidden`}>
       {/* Sidebar */}
       <Sidebar onCollapseChange={handleSidebarCollapseChange} />
 

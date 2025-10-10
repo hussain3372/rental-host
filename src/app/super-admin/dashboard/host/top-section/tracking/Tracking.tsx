@@ -25,14 +25,15 @@ export default function Applications() {
   } | null>(null);
   const [modalType, setModalType] = useState<"single" | "multiple">("multiple");
 
-  const [showOwnershipDropdown, setShowOwnershipDropdown] = useState(false);
-  const [showPropertyDropdown, setShowPropertyDropdown] = useState(false);
+  const [showPropertiesVerifiedDropdown, setShowPropertiesVerifiedDropdown] = useState(false);
+  const [showPendingApplicationsDropdown, setShowPendingApplicationsDropdown] = useState(false);
+  const [showRejectedApplicationsDropdown, setShowRejectedApplicationsDropdown] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
 
   const [certificationFilters, setCertificationFilters] = useState({
-    adminName: "",
-    email: "",
     propertiesVerified: "",
+    pendingApplications: "",
+    rejectedApplications: "",
     status: "",
   });
 
@@ -98,27 +99,27 @@ export default function Applications() {
       );
     }
 
-    if (certificationFilters.adminName) {
+    if (certificationFilters.propertiesVerified) {
       filtered = filtered.filter(
-        (item) => item["Admin Name"] === certificationFilters.adminName
+        (item) => item["Properties Verified"] === certificationFilters.propertiesVerified
       );
     }
 
-    if (certificationFilters.email) {
+    if (certificationFilters.pendingApplications) {
       filtered = filtered.filter(
-        (item) => item["Email"] === certificationFilters.email
+        (item) => item["Pending Applications"] === certificationFilters.pendingApplications
+      );
+    }
+
+    if (certificationFilters.rejectedApplications) {
+      filtered = filtered.filter(
+        (item) => item["Rejected Applications"] === certificationFilters.rejectedApplications
       );
     }
 
     if (certificationFilters.status) {
       filtered = filtered.filter(
         (item) => item["Status"] === certificationFilters.status
-      );
-    }
-
-    if (certificationFilters.propertiesVerified) {
-      filtered = filtered.filter(
-        (item) => item["Properties Verified"] === certificationFilters.propertiesVerified
       );
     }
 
@@ -228,17 +229,14 @@ export default function Applications() {
     highlightRowOnHover: true,
   };
 
-  const uniqueAdminNames = [
-    ...new Set(allCertificationData.map((item) => item["Admin Name"])),
+  const uniquePendingApplications = [
+    ...new Set(allCertificationData.map((item) => item["Pending Applications"])),
   ];
-  const uniqueEmails = [
-    ...new Set(allCertificationData.map((item) => item["Email"])),
+  const uniqueRejectedApplications = [
+    ...new Set(allCertificationData.map((item) => item["Rejected Applications"])),
   ];
   const uniqueStatuses = [
     ...new Set(allCertificationData.map((item) => item["Status"])),
-  ];
-  const uniquePropertiesVerified = [
-    ...new Set(allCertificationData.map((item) => item["Properties Verified"])),
   ];
 
   const displayData = useMemo(() => {
@@ -247,9 +245,9 @@ export default function Applications() {
 
   const handleResetFilter = () => {
     setCertificationFilters({
-      adminName: "",
-      email: "",
       propertiesVerified: "",
+      pendingApplications: "",
+      rejectedApplications: "",
       status: "",
     });
     setSearchTerm("");
@@ -264,7 +262,7 @@ export default function Applications() {
       label: "View Details",
       onClick: (row: Record<string, string>, index: number) => {
         const originalRow = filteredCertificationData[index];
-        window.location.href = `/admin/dashboard/application/detail/${originalRow.id}`;
+        window.location.href = `/super-admin/dashboard/applications/detail/${originalRow.id}`;
       },
     },
     {
@@ -329,7 +327,7 @@ export default function Applications() {
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
         title="Apply Filter"
-        description="Refine admin listings to find the right administrator faster."
+        description="Referring to find the right property faster."
         resetLabel="Reset"
         onReset={handleResetFilter}
         buttonLabel="Apply Filter"
@@ -343,43 +341,45 @@ export default function Applications() {
         }}
         
         dropdownStates={{
-          adminName: showOwnershipDropdown,
-          email: showPropertyDropdown,
+          propertiesVerified: showPropertiesVerifiedDropdown,
+          pendingApplications: showPendingApplicationsDropdown,
+          rejectedApplications: showRejectedApplicationsDropdown,
           status: showStatusDropdown,
         }}
         onDropdownToggle={(key, value) => {
-          if (key === "adminName") setShowOwnershipDropdown(value);
-          if (key === "email") setShowPropertyDropdown(value);
+          if (key === "propertiesVerified") setShowPropertiesVerifiedDropdown(value);
+          if (key === "pendingApplications") setShowPendingApplicationsDropdown(value);
+          if (key === "rejectedApplications") setShowRejectedApplicationsDropdown(value);
           if (key === "status") setShowStatusDropdown(value);
         }}
         fields={[
           {
-            label: "Admin Name",
-            key: "adminName",
-            type: "dropdown",
-            placeholder: "Select admin name",
-            options: uniqueAdminNames,
-          },
-          {
-            label: "Email",
-            key: "email",
-            type: "dropdown",
-            placeholder: "Select email",
-            options: uniqueEmails,
-          },
-          {
-            label: "Properties Verified",
+            label: "Properties verified",
             key: "propertiesVerified",
             type: "dropdown",
-            placeholder: "Select properties verified",
-            options: uniquePropertiesVerified,
+            placeholder: "Select Properties",
+            options: ["0 - 50", "50 - 100", "100 - 200"]
+          },
+          {
+            label: "Pending applications",
+            key: "pendingApplications",
+            type: "dropdown",
+            placeholder: "Select applications",
+            options: uniquePendingApplications
+          },
+          {
+            label: "Rejected applications",
+            key: "rejectedApplications",
+            type: "dropdown",
+            placeholder: "Select applications",
+            options: uniqueRejectedApplications
           },
           {
             label: "Status",
             key: "status",
             type: "dropdown",
             placeholder: "Select status",
-            options: uniqueStatuses,
+            options: uniqueStatuses
           },
         ]}
       />

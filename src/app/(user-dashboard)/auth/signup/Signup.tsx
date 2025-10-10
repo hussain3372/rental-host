@@ -37,7 +37,7 @@ export default function Signup() {
       // ✅ Simple type-safe approach
       if (response.success) {
         toast.success(response.message || "Account created successfully!");
-        // window.location.href = "/auth/login";
+        window.location.href = "/auth/login";
       } else {
         toast.error(response.message || "Signup failed");
       }
@@ -57,7 +57,7 @@ export default function Signup() {
         emptyfirstNamemessage="First name is required"
         emptylastNamemessage="Last name is required"
         wronginputmessage="Please enter a valid email address"
-        emptypasswordmessage="Please enter your password"
+        emptypasswordmessage="Password is required"
         title="Create Your Account"
         subtitle="Join us today and unlock your personalized experience."
         submitText="Create Account"

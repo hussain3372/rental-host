@@ -95,16 +95,18 @@ export default function Step1b({ formData, errors, onFieldChange }: Step1bProps)
       )}
 
       {/* Image Count Status */}
+          { images.length < 3 &&
       <div className="mt-4">
         <div className="flex items-center gap-2">
           <Image src="/images/warning.svg"
             alt="Status" height={20} width={20} />
+
           <p className={`text-[14px] text-[#FFB52B] font-regular leading-[18px]`}>
             Upload at least 3 images for faster approval.
-
           </p>
         </div>
       </div>
+          }
 
       {/* Images Preview */}
       {images.length > 0 && (

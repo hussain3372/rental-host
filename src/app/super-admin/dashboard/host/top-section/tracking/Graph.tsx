@@ -86,6 +86,7 @@ export default function Graph() {
             type="bar"
             stacked
             showStripedBars
+            
             barThickness={range1 === "yearly" ? 30 : range1 === "monthly" ? 40 : 35}
             barGap={20}
             roundedBars

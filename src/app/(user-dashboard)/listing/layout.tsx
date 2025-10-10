@@ -9,8 +9,6 @@ const manrope = Manrope({
   display: "swap",
 });
 
-
-
 // Define props type
 type RootLayoutProps = {
   children: ReactNode;
@@ -19,7 +17,9 @@ type RootLayoutProps = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body className={` ${manrope.className} !overflow-x-hidden bg-[#0A0C0B]`}>
+      <body
+        className={` ${manrope.className} !overflow-x-hidden bg-[#0A0C0B]`}
+      >
         <Toaster
           position="top-right"
           toastOptions={{

@@ -272,14 +272,14 @@ export default function Applications() {
   };
 
   const dropdownItems = [
-    {
-      label: "View Details",
-      onClick: (row: Record<string, string>, index: number) => {
-        const globalIndex = (currentPage - 1) * itemsPerPage + index;
-        const originalRow = filteredCertificationData[globalIndex];
-        window.location.href = `/admin/dashboard/certificates/detail/${originalRow.id}`;
-      },
-    },
+    // {
+    //   label: "View Details",
+    //   onClick: (row: Record<string, string>, index: number) => {
+    //     const globalIndex = (currentPage - 1) * itemsPerPage + index;
+    //     const originalRow = filteredCertificationData[globalIndex];
+    //     window.location.href = `/super-admin/dashboard/certificates/detail/${originalRow.id}`;
+    //   },
+    // },
     {
       label: "Delete Application",
       onClick: (row: Record<string, string>, index: number) => {

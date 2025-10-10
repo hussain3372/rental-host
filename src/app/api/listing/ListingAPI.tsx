@@ -1,8 +1,9 @@
 import axios from "axios";
-// import Cookies from "js-cookie";
+import Cookies from "js-cookie";
 
 const BASE_URL = process.env.NEXT_PUBLIC_AUTH_URL;
 
+// In your API file or types file
 interface PropertyDetails {
   rent: number;
   propertyName: string;
@@ -11,10 +12,9 @@ interface PropertyDetails {
   bathrooms: number;
   currency: string;
   description: string;
-  propertyType: string;
+  propertyType: string; // This should be the ID
   maxGuests: number;
 }
-
 interface ApplicationRequest {
   propertyDetails: PropertyDetails;
 }
@@ -24,17 +24,16 @@ interface ApplicationResponse {
   message: string;
   data?: unknown;
 }
-
 export const SubmitApplication = async (
   payload: ApplicationRequest
 ): Promise<ApplicationResponse> => {
+  const token = Cookies.get('accessToken')
   try {
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjksImVtYWlsIjoieGloaWhvZDg5N0BhbnlzaWxvLmNvbSIsInJvbGUiOiJIT1NUIiwiaWF0IjoxNzU5ODIxNDUyLCJleHAiOjE3NjA2ODU0NTJ9.VdkQ3ta2HQ5GjPZvi-iNpeTJ26rwemispNxWMpZwP5U"
     const response = await axios.post(
       `${BASE_URL}/applications`,
       payload,
       {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        headers:  { Authorization: `Bearer ${token}` },
       }
     );
 

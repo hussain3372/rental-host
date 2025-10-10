@@ -1,8 +1,28 @@
+'use client'
 import Image from 'next/image'
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
+import AddCertificateDrawer from '../../CertificateDrawer'
+
 
 export default function CertificationSetup() {
+    const [showCertificateDrawer, setShowCertificateDrawer] = useState(false);
+
+    const handleOpenCertificateDrawer = (event?: React.MouseEvent) => {
+      if (event) {
+        event.stopPropagation();
+      }
+      setShowCertificateDrawer(true);
+    };
+
+    
+  const handleCloseCertificateDrawer = () => {
+    setShowCertificateDrawer(false);
+  };
+
+    // Handle edit certificate
+ 
+
     const Credentials = [
     {
       id:1,
@@ -31,7 +51,7 @@ export default function CertificationSetup() {
   ]
 
   return (
-    <div className='mb-10'>
+    <>    <div className='mb-10'>
         <nav
         className="flex py-3 mb-5   rounded-lg bg-transparent"
       >
@@ -39,7 +59,7 @@ export default function CertificationSetup() {
           <li className="inline-flex items-center">
             <Link
               href="/super-admin/dashboard/certificates"
-              className=" text-[12px] sm:text-[16px] font-regular leading-5 text-white/60 hover:text-[#EFFC76] md:ms-2"
+              className=" text-[12px] sm:text-[16px] font-regular leading-5 text-white/60 hover:text-[#EFFC76] "
             >
               Certification Setup
             </Link>
@@ -53,7 +73,17 @@ export default function CertificationSetup() {
           </li>
         </ol>
       </nav>
-      <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-4 gap-3 pt-5  flex-wrap lg:flex-nowrap justify-between">
+        <div className="flex  gap-3 sm:gap-0 justify-between items-start">
+          <div>
+
+        <h2 className=' text-[16px] sm:text-[24px] font-medium leading-[28px] '>Hotel Safety Compliances</h2>
+        <p className='pt-2 text-[12px] sm:text-[16px] font-regular leading-5 text-[#FFFFFFCC]'>Property Type: Hotel</p>
+          </div>
+            <button onClick={ handleOpenCertificateDrawer } className='text-[#EFFC76] cursor-pointer underline font-regular text-[16px] leading-5'>Edit</button>
+        </div>
+
+
+      <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-4 gap-3 pt-[38px]  flex-wrap lg:flex-nowrap justify-between">
                     { Credentials.map((item)=>(
                       <div key={item.id} className="gap-3">
                         <div className="flex items-center bg-[#121315] rounded-xl gap-4 p-5">
@@ -67,5 +97,21 @@ export default function CertificationSetup() {
                     )) }
                   </div>
     </div>
+      {showCertificateDrawer && (
+        <div className="fixed inset-0 z-[9000] flex">
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={handleCloseCertificateDrawer}
+          ></div>
+          <div className="relative ml-auto h-full">
+            <AddCertificateDrawer
+              onClose={handleCloseCertificateDrawer}
+              isOpen={showCertificateDrawer}
+            />
+          </div>
+        </div>
+      )}
+    </>
+
   )
 }
