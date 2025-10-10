@@ -3,6 +3,9 @@
 import AuthForm from "../../../Layout/auth-layout/AuthForm";
 
 export default function Login() {
+  const handleSubmit = ()=>{
+    window.location.href = "/super-admin/dashboard"
+  }
   return (
     <div>
       <AuthForm
@@ -15,7 +18,7 @@ export default function Login() {
         forgotlink="/super-admin/auth/forgot-password"
         mode="login"
         showAlter={false}
-        onSubmit={() => (window.location.href = "/super-admin/dashboard")}
+        onSubmit={handleSubmit}
       />
     </div>
   );

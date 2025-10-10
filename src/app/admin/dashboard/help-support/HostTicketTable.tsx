@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState, useRef, useEffect } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Table } from "@/app/shared/tables/Tables";
 import { Modal } from "@/app/shared/Modal";
 import FilterDrawer from "../../../shared/tables/Filter";
@@ -198,7 +198,10 @@ export default function HostTicketTable({
     // Transform data to exclude ID from display but keep it for navigation
     const displayData = useMemo(() => {
         return filteredCertificationData.map(({ id, ...rest }) => {
+            console.log(id);
+
             return rest;
+
         });
     }, [filteredCertificationData]);
 
@@ -296,7 +299,8 @@ export default function HostTicketTable({
     // Reset pagination when filters change
     useEffect(() => {
         onPageChange(1);
-    }, [searchTerm, certificationFilters]);
+    }, [searchTerm, certificationFilters, onPageChange]);
+
 
     const handleResetFilter = () => {
         setCertificationFilters({

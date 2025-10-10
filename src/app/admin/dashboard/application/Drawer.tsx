@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 // import Image from "next/image";
 
 type HelpSupportDrawerProps = {
@@ -8,50 +8,38 @@ type HelpSupportDrawerProps = {
 };
 
 export default function TicketDrawer({ onClose, onNoteSubmit }: HelpSupportDrawerProps) {
-  // const [issueType, setIssueType] = useState("");
   const [subject, setSubject] = useState("");
-  // const [description, setDescription] = useState("");
-  // const [, setImage] = useState<File | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
 
+  const handleClose = useCallback(() => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  }, [onClose]);
+
   useEffect(() => {
-    // Trigger animation after component mounts
     setIsVisible(true);
-    
+
     const handleClickOutside = (event: MouseEvent) => {
       if (drawerRef.current && !drawerRef.current.contains(event.target as Node)) {
         handleClose();
       }
     };
 
-    // Prevent body scroll when drawer is open
-    // document.body.style.overflow = 'hidden';
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.body.style.overflow = 'unset';
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
-
-  const handleClose = () => {
-    setIsVisible(false);
-    setTimeout(() => {
-      onClose();
-    }, 300); // Match this with the transition duration
-  };
+  }, [handleClose]); // ✅ now safely added
 
   const handleSubmit = () => {
     if (subject.trim()) {
-      onNoteSubmit(subject.trim()); // Pass the note content to parent
-      handleClose(); // Close the drawer after submission
+      onNoteSubmit(subject.trim());
+      handleClose();
     }
   };
-
- 
-
   return (
     <div className={`fixed inset-0 z-[9000] bg-black/80  transition-opacity duration-300 ${
       isVisible ? 'opacity-100' : 'opacity-0'

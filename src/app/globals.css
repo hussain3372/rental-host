@@ -5,12 +5,34 @@
   --foreground: #171717;
 }
 
-/* @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-} */
+::-webkit-scrollbar {
+  width: 4px;              
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f0f0;    
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #5b5707;  
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #f2e71b;
+}
+
+* {
+  scrollbar-width: thin;             
+  scrollbar-color: #5b5707 #f0f0f0;  
+}
+::-webkit-scrollbar-track {
+  background: #5b5707;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #5b5707;
+}
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -145,3 +167,8 @@ html {
   height: 440px;
 }
 
+.react-tabs__tab--selected{
+  background-color: #EFFC761F !important;
+  color: #EFFC76 !important;
+  border-radius: 8px !important;
+}

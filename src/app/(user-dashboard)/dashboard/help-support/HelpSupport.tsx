@@ -1,6 +1,5 @@
 "use client";
-import React, { useMemo, useState, useRef, useEffect } from "react";
-import Image from "next/image";
+import React, { useMemo, useState,  useEffect } from "react";
 import { Table } from "@/app/shared/tables/Tables";
 import { Modal } from "@/app/shared/Modal";
 import TicketDetailDrawer from "./TicketDetailDrawer";
@@ -201,6 +200,8 @@ export default function HelpSupport() {
     // Transform data to exclude ID from display but keep it for navigation
     const displayData = useMemo(() => {
         return filteredCertificationData.map(({ id, ...rest }) => {
+                  console.log(id);
+
             return rest;
         });
     }, [filteredCertificationData]);

@@ -133,7 +133,7 @@ export default function ApplicationDetail() {
         { Credentials.map((item)=>(
           <div key={item.id} className="gap-3">
             <div className="flex items-center bg-[#121315] rounded-xl gap-4 p-5">
-            <Image src={item.img} alt={item.title} width={48} height={48} />
+            <Image src={item.img} alt={item.title} width={48} height={48}  />
             <div>
             <h2 className="font-medium text-[18px] leading-[22px] text-white">{item.val}</h2>
             <p className="text-white/80 font-regular text-[14px] leading-[18px] pt-2">{item.title}</p>

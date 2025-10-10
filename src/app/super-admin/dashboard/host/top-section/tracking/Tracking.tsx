@@ -6,11 +6,11 @@ import FilterDrawer from "@/app/admin/tables-essentials/Filter";
 
 interface CertificationData {
   id: number;
-  "Application ID": string;
-  "Property Name": string;
-  Address: string;
-  Ownership: string;
-  "Submitted Date": string;
+  "Admin Name": string;
+  "Email": string;
+  "Properties Verified": string;
+  "Pending Applications": string;
+  "Rejected Applications": string;
   Status: string;
 }
 
@@ -30,53 +30,60 @@ export default function Applications() {
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
 
   const [certificationFilters, setCertificationFilters] = useState({
-    ownership: "",
-    property: "",
+    adminName: "",
+    email: "",
+    propertiesVerified: "",
     status: "",
-    submittedDate: "",
   });
 
-  const [submittedDate, setSubmittedDate] = useState<Date | null>(null);
-
-  const [allCertificationData, setAllCertificationData] =
-    useState<CertificationData[]>([
-      {
-        id: 1,
-        "Application ID": "TAQ - 65432",
-        "Property Name": "Coastal Hillside Estate",
-        Address: "762 Evergreen Terrace",
-        Ownership: "Owner",
-        "Submitted Date": "Aug 12, 2025",
-        Status: "Approved",
-      },
-      {
-        id: 2,
-        "Application ID": "TAQ - 65432",
-        "Property Name": "Coastal Hillside Estate",
-        Address: "762 Evergreen Terrace",
-        Ownership: "Manager",
-        "Submitted Date": "Aug 12, 2025",
-        Status: "Pending",
-      },
-      {
-        id: 7,
-        "Application ID": "TAQ - 65432",
-        "Property Name": "Mountain View Complex",
-        Address: "123 Highland Road",
-        Ownership: "Owner",
-        "Submitted Date": "Sep 15, 2025",
-        Status: "Pending",
-      },
-      {
-        id: 8,
-        "Application ID": "TAQ - 65432",
-        "Property Name": "Skyline Residences",
-        Address: "456 Tower Street",
-        Ownership: "Manager",
-        "Submitted Date": "Oct 1, 2025",
-        Status: "Approved",
-      },
-    ]);
+  const [allCertificationData, setAllCertificationData] = useState<CertificationData[]>([
+    {
+      id: 1,
+      "Admin Name": "Sarah Kim",
+      "Email": "jsarah@gmail.com",
+      "Properties Verified": "45",
+      "Pending Applications": "12",
+      "Rejected Applications": "3",
+      Status: "Active",
+    },
+    {
+      id: 2,
+      "Admin Name": "Sarah Kim",
+      "Email": "sarah@gmail.com",
+      "Properties Verified": "28",
+      "Pending Applications": "8",
+      "Rejected Applications": "5",
+      Status: "Suspended",
+    },
+    {
+      id: 3,
+      "Admin Name": "Sarah Kim",
+      "Email": "sarah@gmail.com",
+      "Properties Verified": "67",
+      "Pending Applications": "15",
+      "Rejected Applications": "2",
+      Status: "Active",
+    },
+    {
+      id: 4,
+      "Admin Name": "Sarah Kim",
+      "Email": "sarah@gmail.com",
+      "Properties Verified": "32",
+      "Pending Applications": "6",
+      "Rejected Applications": "7",
+      Status: "Active",
+    },
+    {
+      id: 5,
+      "Admin Name": "Sarah Kim",
+      "Email": "sarah@gmail.com",
+      "Properties Verified": "32",
+      "Pending Applications": "6",
+      "Rejected Applications": "7",
+      Status: "Active",
+    },
+    
+  ]);
 
   // ✅ Filtering logic
   const filteredCertificationData = useMemo(() => {
@@ -85,17 +92,21 @@ export default function Applications() {
     if (searchTerm) {
       filtered = filtered.filter(
         (item) =>
-          item["Property Name"]
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          item["Address"].toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item["Ownership"].toLowerCase().includes(searchTerm.toLowerCase())
+          item["Admin Name"].toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item["Email"].toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item["Properties Verified"].toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    if (certificationFilters.property) {
+    if (certificationFilters.adminName) {
       filtered = filtered.filter(
-        (item) => item["Property Name"] === certificationFilters.property
+        (item) => item["Admin Name"] === certificationFilters.adminName
+      );
+    }
+
+    if (certificationFilters.email) {
+      filtered = filtered.filter(
+        (item) => item["Email"] === certificationFilters.email
       );
     }
 
@@ -105,15 +116,9 @@ export default function Applications() {
       );
     }
 
-    if (certificationFilters.ownership) {
+    if (certificationFilters.propertiesVerified) {
       filtered = filtered.filter(
-        (item) => item["Ownership"] === certificationFilters.ownership
-      );
-    }
-
-    if (certificationFilters.submittedDate) {
-      filtered = filtered.filter(
-        (item) => item["Submitted Date"] === certificationFilters.submittedDate
+        (item) => item["Properties Verified"] === certificationFilters.propertiesVerified
       );
     }
 
@@ -223,46 +228,34 @@ export default function Applications() {
     highlightRowOnHover: true,
   };
 
-  const uniqueProperties = [
-    ...new Set(allCertificationData.map((item) => item["Property Name"])),
+  const uniqueAdminNames = [
+    ...new Set(allCertificationData.map((item) => item["Admin Name"])),
+  ];
+  const uniqueEmails = [
+    ...new Set(allCertificationData.map((item) => item["Email"])),
   ];
   const uniqueStatuses = [
     ...new Set(allCertificationData.map((item) => item["Status"])),
   ];
-  const uniqueOwnerships = [
-    ...new Set(allCertificationData.map((item) => item["Ownership"])),
+  const uniquePropertiesVerified = [
+    ...new Set(allCertificationData.map((item) => item["Properties Verified"])),
   ];
 
-  // const displayData = useMemo(() => {
-  //   return filteredCertificationData.map(({ id, ...rest }) => rest);
-  // }, [filteredCertificationData]);
-
   const displayData = useMemo(() => {
-  return filteredCertificationData.map(({ id: _id, ...rest }) => rest); // eslint-disable-line @typescript-eslint/no-unused-vars
-}, [filteredCertificationData]);
+    return filteredCertificationData.map(({ id: _id, ...rest }) => rest); // eslint-disable-line @typescript-eslint/no-unused-vars
+  }, [filteredCertificationData]);
 
   const handleResetFilter = () => {
     setCertificationFilters({
-      ownership: "",
-      property: "",
+      adminName: "",
+      email: "",
+      propertiesVerified: "",
       status: "",
-      submittedDate: "",
     });
     setSearchTerm("");
-    setSubmittedDate(null);
   };
 
   const handleApplyFilter = () => {
-    if (submittedDate) {
-      setCertificationFilters((prev) => ({
-        ...prev,
-        submittedDate: submittedDate.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
-      }));
-    }
     setIsFilterOpen(false);
   };
 
@@ -294,8 +287,8 @@ export default function Applications() {
             setSingleRowToDelete(null);
           }}
           onConfirm={handleModalConfirm}
-          title="Confirm Application Deletion"
-          description="Deleting this application means it will no longer appear in your requests."
+          title="Confirm Admin Deletion"
+          description="Deleting this admin means they will no longer have access to the system."
           image="/images/delete-modal.png"
           confirmText="Delete"
         />
@@ -304,7 +297,7 @@ export default function Applications() {
       <div className="flex flex-col justify-between pt-5">
         <Table
           data={displayData}
-          title="Applications"
+          title="Registered Admins"
           control={tableControl}
           showDeleteButton={true}
           onDeleteSingle={(row, index) => {
@@ -336,7 +329,7 @@ export default function Applications() {
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
         title="Apply Filter"
-        description="Refine listings to find the right property faster."
+        description="Refine admin listings to find the right administrator faster."
         resetLabel="Reset"
         onReset={handleResetFilter}
         buttonLabel="Apply Filter"
@@ -350,29 +343,36 @@ export default function Applications() {
         }}
         
         dropdownStates={{
-          ownership: showOwnershipDropdown,
-          property: showPropertyDropdown,
+          adminName: showOwnershipDropdown,
+          email: showPropertyDropdown,
           status: showStatusDropdown,
         }}
         onDropdownToggle={(key, value) => {
-          if (key === "ownership") setShowOwnershipDropdown(value);
-          if (key === "property") setShowPropertyDropdown(value);
+          if (key === "adminName") setShowOwnershipDropdown(value);
+          if (key === "email") setShowPropertyDropdown(value);
           if (key === "status") setShowStatusDropdown(value);
         }}
         fields={[
           {
-            label: "Ownership",
-            key: "ownership",
+            label: "Admin Name",
+            key: "adminName",
             type: "dropdown",
-            placeholder: "Select ownership",
-            options: uniqueOwnerships,
+            placeholder: "Select admin name",
+            options: uniqueAdminNames,
           },
           {
-            label: "Property",
-            key: "property",
+            label: "Email",
+            key: "email",
             type: "dropdown",
-            placeholder: "Select property",
-            options: uniqueProperties,
+            placeholder: "Select email",
+            options: uniqueEmails,
+          },
+          {
+            label: "Properties Verified",
+            key: "propertiesVerified",
+            type: "dropdown",
+            placeholder: "Select properties verified",
+            options: uniquePropertiesVerified,
           },
           {
             label: "Status",
@@ -380,12 +380,6 @@ export default function Applications() {
             type: "dropdown",
             placeholder: "Select status",
             options: uniqueStatuses,
-          },
-          {
-            label: "Submitted date",
-            key: "submittedDate",
-            type: "date",
-            placeholder: "Select date",
           },
         ]}
       />

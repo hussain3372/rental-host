@@ -1,6 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import AuthForm from "@/app/Layout/auth-layout/AuthForm";
+import { ForgotPassword } from "@/app/api/auth/ForgetPasswordAPI";
+import toast from "react-hot-toast";
+
+interface FormData {
+  firstName?: string;
+  lastName?: string;
+  email: string;
+  password: string;
+  confirmPassword?: string;
+  otp?: string[];
+}
+
 export default function Password() {
+  const [loading, setLoading] = useState(false);
+  
+  const handleForgot = async (formData: FormData) => {
+    try {
+      setLoading(true);
+      
+      const response = await ForgotPassword({
+        email: formData.email,
+      });
+      
+      if (response.success) {
+        toast.success(response.message || "Reset link sent successfully!");
+        window.location.href = "/auth/email-verification";
+      } else {
+        toast.error(response.message || "Failed to send reset link");
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message || "Network error. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <AuthForm
@@ -14,9 +51,8 @@ export default function Password() {
         linktext=" Login"
         link="/auth/login"
         mode="forgot"
-        onSubmit={() => {
-          window.location.href = "/auth/email-verification";
-        }}
+        loading={loading}
+        onSubmit={handleForgot}
       />
     </div>
   );

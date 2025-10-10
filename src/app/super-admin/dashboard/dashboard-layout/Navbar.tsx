@@ -29,7 +29,7 @@ export function Navbar({ isCollapsed }: NavbarProps) {
 
 
           {/* Right side */}
-          <Link href="/admin/dashboard/profile" className="flex items-center gap-3 cursor-pointer">
+          <Link href="/super-admin/dashboard/profile" className="flex items-center gap-3 cursor-pointer">
             <div className="h-10 w-10">
               <Image
                 src="/images/person.png"
@@ -57,7 +57,7 @@ export function Navbar({ isCollapsed }: NavbarProps) {
           <div className=""></div>
 
           {/* Right side */}
-          <Link href="/admin/dashboard/profile">
+          <Link href="/super-admin/dashboard/profile">
 
             <div className="flex items-center gap-2">
               <Image

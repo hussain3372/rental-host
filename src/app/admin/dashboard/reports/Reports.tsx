@@ -99,25 +99,25 @@ export default function Reports() {
       id: 1,
       img: "/images/manager.svg",
       val: "3200",
-      title: "Total Reports",
+      title: "Total Issued Certificates",
     },
     {
       id: 2,
       img: "/images/pending.svg",
       val: "1200",
-      title: "Monthly Reports",
+      title: "Active Certificates",
     },
     {
       id: 3,
       img: "/images/certificate.svg",
       val: "2000",
-      title: "Weekly Reports",
+      title: "Expired Certificates",
     },
     {
       id: 4,
       img: "/images/revoke.svg",
       val: "1300",
-      title: "Yearly Reports",
+      title: "Revoked Certificates",
     },
   ];
 
@@ -248,9 +248,12 @@ export default function Reports() {
     }
   };
 
-  const displayData = useMemo(() => {
-    return filteredCertificationData.map(({ id, ...rest }) => rest);
-  }, [filteredCertificationData]);
+const displayData = useMemo(() => {
+  return filteredCertificationData.map(({ id, ...rest }) => {
+    console.log("ID:", id); 
+    return rest; 
+  });
+}, [filteredCertificationData]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -334,21 +337,18 @@ export default function Reports() {
       )}
 
       {/* Enhanced Export Drawer with Smooth Animation */}
-      <div className={`fixed inset-0 z-[2000] transition-all duration-300 ease-in-out ${
-        isExportDrawerOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-      }`}>
+      <div className={`fixed inset-0 z-[2000] transition-all duration-300 ease-in-out ${isExportDrawerOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+        }`}>
         {/* Backdrop */}
-        <div 
-          className={`absolute inset-0 bg-black transition-opacity duration-300 ease-in-out ${
-            isExportDrawerOpen ? 'opacity-50' : 'opacity-0'
-          }`}
+        <div
+          className={`absolute inset-0 bg-black transition-opacity duration-300 ease-in-out ${isExportDrawerOpen ? 'opacity-50' : 'opacity-0'
+            }`}
           onClick={() => setIsExportDrawerOpen(false)}
         />
-        
+
         {/* Drawer */}
-        <div className={`absolute right-0 top-0 h-full transform transition-transform duration-300 ease-in-out ${
-          isExportDrawerOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}>
+        <div className={`absolute right-0 top-0 h-full transform transition-transform duration-300 ease-in-out ${isExportDrawerOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}>
           <Drawer onClose={() => setIsExportDrawerOpen(false)} />
         </div>
       </div>
@@ -361,7 +361,7 @@ export default function Reports() {
           </p>
         </div>
 
-        <button 
+        <button
           className="py-3 px-5 yellow-btn text-[#121315] font-semibold text-[16px] leading-5 transition-all duration-200 hover:scale-105"
           onClick={() => setIsExportDrawerOpen(true)}
         >
@@ -376,9 +376,11 @@ export default function Reports() {
               <Image src={item.img} alt={item.title} width={48} height={48} />
               <div>
                 <h2 className="font-medium text-[18px] leading-[22px] text-white">{item.val}</h2>
-                <p className="text-white/80 font-normal text-[14px] leading-[18px] pt-2">
+                <p className="text-white/80 font-normal text-[14px] leading-[18px] pt-2 min-h-[44px]">
                   {item.title}
                 </p>
+
+
               </div>
             </div>
           </div>

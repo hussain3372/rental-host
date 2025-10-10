@@ -65,7 +65,7 @@ export default function ProfilePage() {
                 </div>
 
                 <button
-                    className="w-full md:w-auto text-[16px] leading-[20px] font-semibold flex justify-center items-center px-5 py-3 rounded-[8px] text-[#EFFC76] border border-[#EFFC76] hover:bg-[#EFFC76] hover:text-black transition"
+                    className="w-full cursor-pointer md:w-auto text-[16px] leading-[20px] font-semibold flex justify-center items-center px-5 py-3 rounded-[8px] text-[#EFFC76] border border-[#EFFC76] hover:bg-[#EFFC76] hover:text-black transition"
                     onClick={handleChangePhotoClick}
                 >
                     Change Photo

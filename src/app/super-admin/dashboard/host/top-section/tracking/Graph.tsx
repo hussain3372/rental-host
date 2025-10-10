@@ -1,236 +1,80 @@
-// "use client";
-
-// import React, { useState } from "react";
-// import GlobalGraph from "@/app/shared/Graphs";
-
-// export default function Graph() {
-//   const [range, setRange] = useState<"weekly" | "monthly" | "yearly">("yearly");
-
-//   const dataSets = {
-//     weekly: {
-//       labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-//       reviewed: [4, 6, 3, 7, 5, 6, 8],
-//       pending: [2, 3, 4, 2, 3, 4, 3],
-//     },
-//     monthly: {
-//       labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-//       reviewed: [20, 30, 25, 35],
-//       pending: [10, 12, 15, 11],
-//     },
-//     yearly: {
-//       labels: [
-//         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-//         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-//       ],
-//       reviewed: [12, 19, 8, 14, 20, 10, 24, 18, 16, 9, 11, 15],
-//       pending: [8, 15, 10, 12, 14, 18, 13, 10, 9, 11, 14, 12],
-//     },
-//   };
-
-//   const activeData = dataSets[range];
-
-//   return (
-//     <div className="pt-5 text-white">
-//       <div className="flex gap-6 flex-col lg:flex-row">
-        
-//         {/* Applications Over Time - Stacked Bar Chart */}
-//         <div className="lg:flex-1 bg-[#121315] p-6 rounded-2xl shadow-lg overflow-visible">
-//           <div className="flex flex-col sm:flex-row justify-between sm:items-start mb-6 gap-4 sm:gap-0">
-//             <div>
-//               <h2 className="text-[16px] leading-5 font-semibold text-white">
-//                 Applications Over Time
-//               </h2>
-//               <div className="flex gap-8 items-center mt-4 text-sm">
-//                 <div className="flex items-center gap-2">
-//                   <span className="w-[1.5px] h-5 bg-[#EFFC76] rounded-full" />
-//                   <span className="text-[#FFFFFFCC]">Reviewed</span>
-//                 </div>
-//                 <div className="flex items-center gap-2">
-//                   <span className="w-[1.5px] h-5 bg-[#52525b] rounded-full" />
-//                   <span className="text-[#FFFFFFCC]">Pending</span>
-//                 </div>
-//               </div>
-//             </div>
-//             <div className="flex gap-2">
-//               {(["weekly", "monthly", "yearly"] as const).map((r) => (
-//                 <button
-//                   key={r}
-//                   onClick={() => setRange(r)}
-//                   className={`px-4 py-2 cursor-pointer font-regular text-[12px] leading-4 rounded-lg transition ${
-//                     range === r
-//                       ? "bg-[#EFFC76] text-black"
-//                       : "border border-[#FFFFFF1F] text-[#FFFFFFCC] hover:bg-[#252525]"
-//                   }`}
-//                 >
-//                   {r.charAt(0).toUpperCase() + r.slice(1)}
-//                 </button>
-//               ))}
-//             </div>
-//           </div>
-
-//           <GlobalGraph
-//             type="bar"
-//             stacked
-//             labels={activeData.labels}
-//             datasets={[
-//               {
-//                 label: "Reviewed",
-//                 data: activeData.reviewed,
-//                 backgroundColor: "#EFFC76",
-//               },
-//               {
-//                 label: "Pending",
-//                 data: activeData.pending,
-//                 backgroundColor: "#52525b",
-//               },
-//             ]}
-//             height={280}
-//             options={{
-//               maintainAspectRatio: false,
-//               layout: { padding: { top: 30, bottom: 20 } },
-//             }}
-//           />
-//         </div>
-
-//         {/* Certification Distribution - Doughnut Chart */}
-//         <div className="lg:w-[40%] bg-[#121315] rounded-2xl shadow-lg p-5 flex flex-col overflow-visible">
-//           <h2 className="text-[16px] leading-5 font-semibold text-white">
-//             Certification Distribution
-//           </h2>
-
-//           <div className="flex-1 flex items-center w-full h-full justify-center relative overflow-visible">
-//             <GlobalGraph
-//               type="doughnut"
-              
-//               labels={["Active", "Pending", "Revoked", "Expired"]}
-//               datasets={[
-//                 {
-//                   label: "Certifications",
-//                   data: [400, 360, 190, 250],
-//                   backgroundColor: ["#EFFC76", "#52525b", "#fb923c", "#22c55e"],
-//                 },
-//               ]}
-//               centerText={{ label: "Total", value: "1,560" }}
-//               height={220}
-//               options={{
-//                 maintainAspectRatio: false,
-//                 layout: {
-//                   padding: { top: 40, bottom: 40, left: 20, right: 20 },
-//                 },
-//                 plugins: {
-//                   tooltip: {
-//                     enabled: true,
-//                     backgroundColor: "#2D2D2D",
-//                     bodyColor: "#f9fafb",
-//                     titleColor: "#f9fafb",
-//                     padding: 12,
-//                     displayColors: false,
-//                     callbacks: {
-//                       label: function (ctx) {
-//                        const total = ctx.dataset.data
-//   .filter((v): v is number => typeof v === "number")
-//   .reduce((a, b) => a + b, 0);
-
-//                         const value = ctx.raw as number;
-//                         const percentage = ((value / total) * 100).toFixed(0);
-//                         return percentage + "%";
-//                       },
-//                     },
-//                   },
-//                 },
-//               }}
-//             />
-//           </div>
-
-//           <div className="grid grid-cols-2 gap-x-12 gap-y-4 text-[#FFFFFFCC] font-bold text-[12px] mt-8 place-items-center">
-//             <div className="flex items-center gap-3">
-//               <span className="w-3 h-3 rounded-full bg-[#EFFC76] flex-shrink-0" />
-//               <span>Active</span>
-//             </div>
-//             <div className="flex items-center gap-3">
-//               <span className="w-3 h-3 rounded-full bg-[#52525b] flex-shrink-0" />
-//               <span>Pending</span>
-//             </div>
-//             <div className="flex items-center gap-3">
-//               <span className="w-3 h-3 rounded-full bg-[#22c55e] flex-shrink-0" />
-//               <span>Expired</span>
-//             </div>
-//             <div className="flex items-center gap-3">
-//               <span className="w-3 h-3 rounded-full bg-[#fb923c] flex-shrink-0" />
-//               <span>Revoked</span>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
 "use client";
 
 import React, { useState } from "react";
 import GlobalGraph from "@/app/shared/Graphs";
 
 export default function Graph() {
-  const [range, setRange] = useState<"weekly" | "monthly" | "yearly">("yearly");
+  const [range1, setRange1] = useState<"weekly" | "monthly" | "yearly">("yearly");
+  const [range2, setRange2] = useState<"weekly" | "monthly" | "yearly">("yearly");
 
-  const dataSets = {
+  const propertyListingData = {
     weekly: {
       labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      reviewed: [4, 6, 3, 7, 5, 6, 8],
-      pending: [2, 3, 4, 2, 3, 4, 3],
+      certified: [450, 520, 380, 610, 550, 480, 670],
+      listed: [280, 350, 420, 310, 390, 450, 380],
     },
     monthly: {
       labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-      reviewed: [20, 30, 25, 35],
-      pending: [10, 12, 15, 11],
+      certified: [1800, 2200, 1950, 2400],
+      listed: [1200, 1500, 1350, 1600],
     },
     yearly: {
-      labels: [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-      ],
-      reviewed: [12, 19, 8, 14, 20, 10, 24, 18, 16, 9, 11, 15],
-      pending: [8, 15, 10, 12, 14, 18, 13, 10, 9, 11, 14, 12],
+      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      certified: [2500, 1800, 2800, 2600, 1400, 1600, 1900, 2300, 3000, 1500, 2600, 2400],
+      listed: [1400, 1100, 1900, 1600, 1000, 1300, 800, 1200, 1800, 700, 1600, 1400],
+    },
+  };
+  const revenueData = {
+    weekly: {
+      labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      revenue: [8000, 9500, 7200, 11000, 10500, 8800, 12500],
+    },
+    monthly: {
+      labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+      revenue: [35000, 42000, 38000, 45000],
+    },
+    yearly: {
+      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      revenue: [20000, 25000, 32000, 30000, 35000, 28000, 42000, 45000, 47000, 44000, 43000, 39000],
     },
   };
 
-  const activeData = dataSets[range];
+  const activePropertyData = propertyListingData[range1];
+  const activeRevenueData = revenueData[range2];
 
   return (
     <div className="pt-5 text-white">
-      <div className="flex gap-6 flex-col lg:flex-row">
-        
-        {/* Applications Over Time - Stacked Bar Chart */}
-        <div className="lg:flex-1 bg-[#121315] p-6 rounded-2xl shadow-lg overflow-visible">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 w-full">
+
+        <div className="w-full bg-[#121315] p-5 rounded-2xl shadow-lg overflow-visible">
           <div className="flex flex-col sm:flex-row justify-between sm:items-start mb-6 gap-4 sm:gap-0">
             <div>
               <h2 className="text-[16px] leading-5 font-semibold text-white">
-                Applications Over Time
+                Property Listing over Time
               </h2>
               <div className="flex gap-8 items-center mt-4 text-sm">
                 <div className="flex items-center gap-2">
                   <span className="w-[1.5px] h-5 bg-[#EFFC76] rounded-full" />
-                  <span className="text-[#FFFFFFCC]">Reviewed</span>
+                  <span className="text-[#FFFFFFCC] text-[14px] leading-[18px] font-medium">
+                    Certified
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-[1.5px] h-5 bg-[#52525b] rounded-full" />
-                  <span className="text-[#FFFFFFCC]">Pending</span>
+                  <span className="text-[#FFFFFFCC]">Property Listed</span>
                 </div>
               </div>
             </div>
+
             <div className="flex gap-2">
               {(["weekly", "monthly", "yearly"] as const).map((r) => (
                 <button
                   key={r}
-                  onClick={() => setRange(r)}
-                  className={`px-4 py-2 cursor-pointer font-regular text-[12px] leading-4 rounded-lg transition ${
-                    range === r
-                      ? "bg-[#EFFC76] text-black"
-                      : "border border-[#FFFFFF1F] text-[#FFFFFFCC] hover:bg-[#252525]"
-                  }`}
+                  onClick={() => setRange1(r)}
+                  className={`px-4 py-2 cursor-pointer font-regular text-[12px] leading-4 rounded-lg transition ${range1 === r
+                    ? "bg-[#EFFC76] text-black"
+                    : "border border-[#FFFFFF1F] text-[#FFFFFFCC] hover:bg-[#252525]"
+                    }`}
                 >
                   {r.charAt(0).toUpperCase() + r.slice(1)}
                 </button>
@@ -238,67 +82,77 @@ export default function Graph() {
             </div>
           </div>
 
-          {/* Remove height and options props */}
-          <div style={{ height: 280 }}>
-            <GlobalGraph
-              type="bar"
-              stacked
-              labels={activeData.labels}
-              datasets={[
-                {
-                  label: "Reviewed",
-                  data: activeData.reviewed,
-                  backgroundColor: "#EFFC76",
-                },
-                {
-                  label: "Pending",
-                  data: activeData.pending,
-                  backgroundColor: "#52525b",
-                },
-              ]}
-            />
-          </div>
+          <GlobalGraph
+            type="bar"
+            stacked
+            showStripedBars
+            barThickness={range1 === "yearly" ? 30 : range1 === "monthly" ? 40 : 35}
+            barGap={20}
+            roundedBars
+            showYAxis={true}
+            tooltipVariant="percentage"
+            labels={activePropertyData.labels}
+            datasets={[
+              {
+                label: "Certified",
+                data: activePropertyData.certified,
+                backgroundColor: "#EFFC76",
+              },
+              {
+                label: "Property Listed",
+                data: activePropertyData.listed,
+                backgroundColor: "#52525b",
+              },
+            ]}
+          />
         </div>
 
-        {/* Certification Distribution - Doughnut Chart */}
-        <div className="lg:w-[40%] bg-[#121315] rounded-2xl shadow-lg p-5 flex flex-col overflow-visible">
-          <h2 className="text-[16px] leading-5 font-semibold text-white">
-            Certification Distribution
-          </h2>
+        <div className="w-full bg-[#121315] rounded-2xl shadow-lg p-5 flex flex-col relative overflow-visible">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-start mb-6 gap-4 sm:gap-0">
+            <h2 className="text-[16px] leading-5 font-semibold text-white">
+              Revenue Insights
+            </h2>
 
-          <div className="flex-1 flex items-center w-full h-full justify-center relative overflow-visible">
-            <div style={{ height: 220 }}>
-              <GlobalGraph
-                type="doughnut"
-                labels={["Active", "Pending", "Revoked", "Expired"]}
-                datasets={[
-                  {
-                    label: "Certifications",
-                    data: [400, 360, 190, 250],
-                    backgroundColor: ["#EFFC76", "#52525b", "#fb923c", "#22c55e"],
-                  },
-                ]}
-                centerText={{ label: "Total", value: "1,560" }}
-              />
+            <div className="flex gap-2">
+              {(["weekly", "monthly", "yearly"] as const).map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRange2(r)}
+                  className={`px-4 py-2 cursor-pointer font-regular text-[12px] leading-4 rounded-lg transition ${range2 === r
+                    ? "bg-[#EFFC76] text-black"
+                    : "border border-[#FFFFFF1F] text-[#FFFFFFCC] hover:bg-[#252525]"
+                    }`}
+                >
+                  {r.charAt(0).toUpperCase() + r.slice(1)}
+                </button>
+              ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-12 gap-y-4 text-[#FFFFFFCC] font-bold text-[12px] mt-8 place-items-center">
-            <div className="flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full bg-[#EFFC76] flex-shrink-0" />
-              <span>Active</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full bg-[#52525b] flex-shrink-0" />
-              <span>Pending</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full bg-[#22c55e] flex-shrink-0" />
-              <span>Expired</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full bg-[#fb923c] flex-shrink-0" />
-              <span>Revoked</span>
+          <div className="flex-1 flex items-center w-full h-full justify-center relative overflow-visible">
+            <div
+              style={{
+                height: 257,
+                width: "100%",
+                position: "relative",
+                overflow: "visible",
+              }}
+            >
+              <GlobalGraph
+                type="line"
+                labels={activeRevenueData.labels}
+                datasets={[
+                  {
+                    label: "Revenue",
+                    data: activeRevenueData.revenue,
+                    borderColor: "#D4FB64",
+                    backgroundColor: "rgba(212, 251, 100, 0.3)",
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                  },
+                ]}
+              />
             </div>
           </div>
         </div>

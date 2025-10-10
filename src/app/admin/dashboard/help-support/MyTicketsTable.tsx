@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState, useRef, useEffect } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Table } from "@/app/shared/tables/Tables";
 import { Modal } from "@/app/shared/Modal";
 import FilterDrawer from "../../../shared/tables/Filter";
@@ -186,6 +186,7 @@ export default function MyTicketsTable({
     // Transform data to exclude ID from display but keep it for navigation
     const displayData = useMemo(() => {
         return filteredCertificationData.map(({ id, ...rest }) => {
+              console.log(id);
             return rest;
         });
     }, [filteredCertificationData]);
@@ -239,9 +240,9 @@ export default function MyTicketsTable({
     };
 
     // Handle individual row selection
-    const handleSelectRow = (id: string, checked: boolean) => {
+    const handleSelectRow = (_id: string, checked: boolean) => {
         const newSelected = new Set(selectedRows);
-        const numericId = parseInt(id);
+        const numericId = parseInt(_id);
 
         if (checked) {
             newSelected.add(numericId);
@@ -282,9 +283,10 @@ export default function MyTicketsTable({
     };
 
     // Reset pagination when filters change
-    useEffect(() => {
-        onPageChange(1);
-    }, [searchTerm, certificationFilters]);
+  useEffect(() => {
+  onPageChange(1);
+}, [searchTerm, certificationFilters, onPageChange]);
+
 
     const handleResetFilter = () => {
         setCertificationFilters({
@@ -350,7 +352,7 @@ export default function MyTicketsTable({
             <div className="flex flex-col justify-between">
                 <Table
                     data={displayData}
-                    title="My Tickets" 
+                    title="My Tickets"
                     control={tableControl}
                     showDeleteButton={true}
                     onDeleteSingle={(row, index) => {

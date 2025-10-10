@@ -1,6 +1,9 @@
 import React from "react";
 import AuthForm from "@/app/Layout/auth-layout/AuthForm";
 export default function Email() {
+  const handleSubmit = ()=>{
+    window.location.href = "/super-admin/dashboard"
+  }
   return (
     <div>
       <AuthForm
@@ -10,7 +13,7 @@ export default function Email() {
         submitText="Verify"
         showAlter={false}
         mode="otp"
-        onSubmit={() => (window.location.href = "/super-admin/auth/create-password")}
+        onSubmit={handleSubmit}
       />
     </div>
   );

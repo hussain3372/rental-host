@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { TwoFAModal } from "./TwoFAModal";
-import EmailVerifyDrawer from "./VerifyEmailDrawer";
+import TimeOutDrawer from "./TimeOut";
 import { AuthenticationEnable } from "./AuthenticationEnable";
 import ChangePasswordDrawer from "./ChangePasswordDrawer";
 import ToggleSwitch from "@/app/shared/Toggles";
@@ -103,7 +103,6 @@ const PreferenceItem: React.FC<PreferenceItemProps> = ({
 const NotificationPreferences: React.FC = () => {
   const [emailNotifications, setEmailNotifications] = useState(false);
   const [pushNotifications, setPushNotifications] = useState(false);
-  const [twoFactorAuth, setTwoFactorAuth] = useState(false);
 
   const [is2FAModalOpen, setIs2FAModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -113,16 +112,10 @@ const NotificationPreferences: React.FC = () => {
 
   // const [isOn, setIsOn] = useState(false);
 
-  const [email] = useState("johndeo@gmail.com");
 
-  const handleVerifyOtp = (otp: string) => {
-    console.log("Entered OTP:", otp);
-
-    // close drawer first
-    setIsDrawerOpen(false);
-
-    // open success modal
-    setIsAuthModalOpen(true);
+  const handleSaveChange = () => {
+    console.log("Changes saved");
+    setIsDrawerOpen(false)
   };
 
   // const handleContinueFromModal = () => {
@@ -139,9 +132,7 @@ const NotificationPreferences: React.FC = () => {
         </h1>
       </div>
       <p className="text-4 leading-5 text-[#FFFFFF99] font-normal mb-[40px] max-w-[573px] w-full">
-        Manage your personal details, security, notifications, and billing all
-        in one place. Customize your experience and keep your account up to
-        date.
+       Manage your personal details, security, notifications, and billing all in one place. Customize your experience and keep your account up to date.
       </p>
       
       {/* Notification Preferences Card */}
@@ -194,28 +185,12 @@ const NotificationPreferences: React.FC = () => {
             hasArrow
             onArrowClick={() => setIsPasswordDrawerOpen(true)}
           />
-
-         <PreferenceItem
-  title="2 - Factor Authentication"
-  description="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
-  hasToggle
-  toggleState={twoFactorAuth}
-  onToggleChange={() => {
-    if (!twoFactorAuth) {
-      // ✅ Turning ON
-      setIs2FAModalOpen(true);
-    } else {
-      // ✅ Turning OFF → open modal instead of toast
-      setIsDisableAuthModalOpen(true);
-    }
-  }}
-  trackWidth="w-[32px]"
-  trackHeight="h-[19px]"
-  thumbSize="w-4 h-4"
-  iconSize="w-3 h-3"
-  thumbTranslate="translate-x-2.5"
-/>
-
+          <PreferenceItem
+            title="Session Timeout"
+            description="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium,"
+            hasArrow
+            onArrowClick={() => setIsDrawerOpen(true)}
+          />
 
         </div>
       </div>
@@ -225,8 +200,6 @@ const NotificationPreferences: React.FC = () => {
           setIs2FAModalOpen(false);
         }}
         onConfirm={() => {
-          setIs2FAModalOpen(false);
-          setTwoFactorAuth(true);
           setIsDrawerOpen(true);
         }}
       />
@@ -242,10 +215,9 @@ const NotificationPreferences: React.FC = () => {
             className="w-full  lg:max-w-[608px] md:max-w-[500px]  max-w-[280px] p-5 sm:p-7 h-full bg-[#0A0C0B] overflow-auto border border-[#FFFFFF1F] rounded-l-[12px] shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
             onClick={(e) => e.stopPropagation()}
           >
-            <EmailVerifyDrawer
-              initialEmail={email}
+            <TimeOutDrawer
               onClose={() => setIsDrawerOpen(false)}
-              onVerify={handleVerifyOtp}
+              onVerify={handleSaveChange}
             />
           </div>
         </div>
@@ -284,7 +256,6 @@ const NotificationPreferences: React.FC = () => {
     isOpen={isDisableAuthModalOpen}
     onClose={() => setIsDisableAuthModalOpen(false)}
     onConfirm={() => {
-      setTwoFactorAuth(false); // disable 2FA
       setIsDisableAuthModalOpen(false);
     }}
     title="Two-Factor Authentication Disabled"

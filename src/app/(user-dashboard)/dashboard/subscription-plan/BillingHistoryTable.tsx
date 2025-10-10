@@ -204,10 +204,11 @@ export default function BillingHistory() {
   // Transform data to exclude ID from display and ensure all values are strings
   const displayData = useMemo((): Record<string, string>[] => {
     return filteredCertificationData.map(({ id, ...rest }) => {
-      // Convert all values to strings to ensure type safety
       const stringRow: Record<string, string> = {};
       Object.entries(rest).forEach(([key, value]) => {
         stringRow[key] = String(value);
+              console.log(id);
+
       });
       return stringRow;
     });

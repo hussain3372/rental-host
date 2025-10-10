@@ -148,9 +148,9 @@ export default function TicketDrawer({
         <div className="mt-6">
           <button
             onClick={handleSubmit}
-            className="w-full py-3 bg-[#EFFC76] text-[#121315] rounded-lg font-semibold cursor-pointer hover:bg-[#e0ed65] transition-colors"
+            className="w-full py-3 yellow-btn text-[#121315] rounded-lg font-semibold cursor-pointer hover:bg-[#e0ed65] transition-colors"
           >
-            Add Admin
+           Send Code For Verification
           </button>
         </div>
       </div>

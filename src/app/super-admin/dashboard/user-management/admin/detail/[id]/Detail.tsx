@@ -381,22 +381,26 @@ useEffect(() => {
           </div>
         </div>
         
-        {/* Status Dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="bg-[#2D2D2D] py-3 px-4 w-[121px] rounded-full font-regular text-[18px] cursor-pointer focus:outline-0 flex justify-between items-center"
-          >
-            {selectedStatus}
-            <Image src="/images/dropdown.svg" alt="Dropdown" height={16} width={16}/>
-          </button>
 
-          {isDropdownOpen && (
-            <div className="absolute top-full mt-2 right-10 sm:-right-21 z-10 w-[121px]">
-              <Dropdown items={statusOptions} />
-            </div>
-          )}
-        </div>
+        {/* Status Dropdown */}
+<div className="relative" ref={dropdownRef}> {/* Add ref here */}
+  <button
+    onClick={(e) => {
+      e.stopPropagation(); // Add this to prevent immediate closing
+      setIsDropdownOpen(!isDropdownOpen);
+    }}
+    className="bg-[#2D2D2D] py-3 px-4 w-[121px] rounded-full font-regular text-[18px] cursor-pointer focus:outline-0 flex justify-between items-center"
+  >
+    {selectedStatus}
+    <Image src="/images/dropdown.svg" alt="Dropdown" height={16} width={16}/>
+  </button>
+
+  {isDropdownOpen && (
+    <div className="absolute top-full mt-2 right-10 sm:-right-21 z-10 w-[121px]">
+      <Dropdown items={statusOptions} />
+    </div>
+  )}
+</div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-4 gap-3 pt-5  flex-wrap lg:flex-nowrap justify-between">

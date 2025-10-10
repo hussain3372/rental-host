@@ -13,7 +13,7 @@ interface PricingCardProps {
   onBuyNow?: () => void;
   isSelected?: boolean;
   showBorder?: boolean;
-  
+
   // === CARD CONTAINER STYLING ===
   /** Card background color */
   bgColor?: string;
@@ -29,7 +29,7 @@ interface PricingCardProps {
   cardShadow?: string;
   /** Card border styling */
   borderStyle?: string;
-  
+
   // === BORDER COLORS ===
   /** Default border color */
   defaultBorderColor?: string;
@@ -37,7 +37,7 @@ interface PricingCardProps {
   hoverBorderColor?: string;
   /** Professional plan border color (optional) */
   professionalBorderColor?: string;
-  
+
   // === HEADER SECTION ===
   /** Title font size (e.g., 'text-[20px]' or 'text-xl') */
   titleClass?: string;
@@ -57,7 +57,7 @@ interface PricingCardProps {
   descriptionClasses?: string;
   /** Space between title and description */
   headerSpacing?: string;
-  
+
   // === PRICE SECTION ===
   /** Price font size */
   priceSize?: string;
@@ -79,7 +79,7 @@ interface PricingCardProps {
   priceSpacing?: string;
   /** Space between price and period */
   pricePeriodSpacing?: string;
-  
+
   // === BUTTON SECTION ===
   /** Show/hide button */
   showButton?: boolean;
@@ -105,7 +105,7 @@ interface PricingCardProps {
   hoverButtonBg?: string;
   /** Button hover text color */
   hoverButtonText?: string;
-  
+
   // === FEATURES SECTION ===
   /** Feature list font size */
   featureSize?: string;
@@ -129,7 +129,7 @@ interface PricingCardProps {
   featureHoverEffect?: boolean;
   /** Space between icon and text */
   featureIconSpacing?: string;
-  
+
   // === DIVIDER SECTION ===
   /** Show/hide divider */
   showDivider?: boolean;
@@ -141,7 +141,7 @@ interface PricingCardProps {
   dividerWidth?: string;
   /** Divider height */
   dividerHeight?: string;
-  
+
   // === HOVER EFFECTS ===
   /** Enable all hover effects */
   enableHoverEffects?: boolean;
@@ -153,7 +153,7 @@ interface PricingCardProps {
   hoverOverlay?: boolean;
   /** Hover overlay gradient */
   overlayGradient?: string;
-  
+
   // === SPECIAL EFFECTS ===
   /** Mark as professional plan */
   isProfessionalPlan?: boolean;
@@ -171,7 +171,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
   onBuyNow,
   buttonText,
   features,
-  
+
   // Card container defaults
   bgColor = "bg-black",
   textColor = "text-white",
@@ -180,12 +180,12 @@ const PricingCard: React.FC<PricingCardProps> = ({
   cardRadius = "rounded-2xl",
   cardShadow = "shadow-lg",
   borderStyle = "border-l-[1px] border-r-[1px] border-t-[2px] border-white",
-  
+
   // Border color defaults
   defaultBorderColor = "#2f3030",
   hoverBorderColor = "#EFFC76",
   professionalBorderColor = "#737852",
-  
+
   // Header defaults
   titleClass = "text-[24px] leading-[28px]",
   titleWeight = "font-semibold",
@@ -196,7 +196,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
   descriptionColor = "text-[#FFFFFFCC]",
   descriptionClasses = "",
   headerSpacing = "pt-1",
-  
+
   // Price defaults
   priceSize = "text-[60px] leading-[68px]",
   priceWeight = "font-semibold",
@@ -208,7 +208,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
   periodClasses = "",
   priceSpacing = "mt-[32px]",
   pricePeriodSpacing = "pt-1",
-  
+
   // Button defaults
   showButton = true,
   buttonBg = "bg-gray-700",
@@ -222,7 +222,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
   buttonClasses = "",
   hoverButtonBg = "bg-[#EFFC76]",
   hoverButtonText = "text-black",
-  
+
   // Features defaults
   featureSize = "text-[16px] leading-[20px]",
   featureWeight = "font-medium",
@@ -235,21 +235,21 @@ const PricingCard: React.FC<PricingCardProps> = ({
   featureIconHeight = 13,
   featureHoverEffect = true,
   featureIconSpacing = "space-x-[8px]",
-  
+
   // Divider defaults
   showDivider = true,
   dividerStyle = "bg-gradient-to-r from-transparent via-white to-transparent",
   dividerSpacing = "my-[32px]",
   dividerWidth = "w-[250px] sm:w-[304px]",
   dividerHeight = "h-[1px]",
-  
+
   // Hover defaults
   enableHoverEffects = true,
   hoverTransform = "translateY(-8px)",
   hoverTransition = "all 0.3s ease",
   hoverOverlay = true,
   overlayGradient = "bg-gradient-to-b from-[#EFFC76]/10 to-transparent opacity-30",
-  
+
   // Special effects defaults
   isProfessionalPlan = false,
   professionalGlow = true,
@@ -259,11 +259,11 @@ const PricingCard: React.FC<PricingCardProps> = ({
   // Determine border color based on props
   const getBorderColor = () => {
     if (!enableHoverEffects) return defaultBorderColor;
-    
+
     if (isHovered) {
       return hoverBorderColor;
     }
-    
+
     return isProfessionalPlan ? professionalBorderColor : defaultBorderColor;
   };
 
@@ -283,9 +283,11 @@ const PricingCard: React.FC<PricingCardProps> = ({
   return (
     <div
       style={cardStyle}
-      className={`${cardRadius} ${cardMaxWidth} ${isHovered ? "hover:bg-gradient-to-b from-[#2a2e1a] via-[#2a2e1a] to-[#121315]" : ""} ${
-        showBorder ? borderStyle : ``
-      }  ${cardShadow} ${borderStyle} ${
+      className={`${cardRadius} ${cardMaxWidth} ${
+        isHovered
+          ? "hover:bg-gradient-to-b from-[#2a2e1a] via-[#2a2e1a] to-[#121315]"
+          : ""
+      } ${showBorder ? borderStyle : ``}  ${cardShadow} ${borderStyle} ${
         bgColor?.startsWith("#") ? "" : bgColor
       } ${textColor} flex flex-col justify-between relative overflow-hidden ${padding}`}
       onMouseEnter={enableHoverEffects ? () => setIsHovered(true) : undefined}
@@ -303,20 +305,28 @@ const PricingCard: React.FC<PricingCardProps> = ({
 
       {/* Header */}
       <div className="relative z-10">
-        <h3 className={`${titleClass} ${titleWeight} ${titleColor} ${titleClasses}`}>
+        <h3
+          className={`${titleClass} ${titleWeight} ${titleColor} ${titleClasses}`}
+        >
           {title}
         </h3>
-        <p className={`${descriptionClass} ${descriptionWeight} ${descriptionColor} ${descriptionClasses} ${headerSpacing}`}>
+        <p
+          className={`${descriptionClass} ${descriptionWeight} ${descriptionColor} ${descriptionClasses} ${headerSpacing}`}
+        >
           {description}
         </p>
       </div>
 
       {/* Price */}
       <div className={`${priceSpacing} relative z-10`}>
-        <p className={`${priceSize} ${priceWeight} ${priceColor} ${priceClasses}`}>
+        <p
+          className={`${priceSize} ${priceWeight} ${priceColor} ${priceClasses}`}
+        >
           {price}
         </p>
-        <span className={`${periodSize} ${periodWeight} ${periodColor} ${periodClasses} ${pricePeriodSpacing}`}>
+        <span
+          className={`${periodSize} ${periodWeight} ${periodColor} ${periodClasses} ${pricePeriodSpacing}`}
+        >
           {period}
         </span>
       </div>
@@ -335,16 +345,13 @@ const PricingCard: React.FC<PricingCardProps> = ({
         </button>
       )}
 
-  
-{showDivider && (
-  <div
-    className={`${dividerStyle} ${dividerSpacing} ${dividerHeight} ${dividerWidth} -ml-3 mx-auto relative z-10 ${
-      isHovered ? "opacity-80" : "opacity-100"
-    }`}
-  ></div>
-)}
-
-
+      {showDivider && (
+        <div
+          className={`${dividerStyle} ${dividerSpacing} ${dividerHeight} ${dividerWidth} -ml-3 mx-auto relative z-10 ${
+            isHovered ? "opacity-80" : "opacity-100"
+          }`}
+        ></div>
+      )}
 
       {/* Features */}
       <ul className={`${featureSpacing} text-sm relative z-10 max-w-[312px]`}>
@@ -352,19 +359,23 @@ const PricingCard: React.FC<PricingCardProps> = ({
           <li
             key={idx}
             className={`flex items-center ${featureSize} ${featureWeight} ${featureColor} ${featureClasses} ${featureIconSpacing} ${
-              featureHoverEffect ? "transition-transform duration-300 hover:translate-x-1" : ""
+              featureHoverEffect
+                ? "transition-transform duration-300 hover:translate-x-1"
+                : ""
             }`}
           >
             {showFeatureIcons && (
-              <Image 
-                width={featureIconWidth} 
-                height={featureIconHeight} 
-                src={checkIconSrc} 
-                alt="check" 
-                className="mt-1" 
+              <Image
+                width={featureIconWidth}
+                height={featureIconHeight}
+                src={checkIconSrc}
+                alt="check"
+                className="mt-1"
               />
             )}
-            <span className="flex-1 whitespace-normal lg:whitespace-nowrap">{feature}</span>
+            <span className="flex-1 whitespace-normal lg:whitespace-nowrap">
+              {feature}
+            </span>
           </li>
         ))}
       </ul>

@@ -63,7 +63,7 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
         <div
           ref={sidebarRef}
           className={` pt-[24px] z-[100] bg-[#121315] mt-0  sm:mt-0 px-[20px] ${isCollapsed ? 'flex items-center w-[100px]' : 'w-[266px]'
-            } border-r h-[100vh] overflow-y-auto overflow-x-hidden border-r-[#222325] fixed flex flex-col
+            } border-r h-[100vh] overflow-y-auto scrollbar-hide  overflow-x-hidden border-r-[#222325] fixed flex flex-col
           transition-all duration-300 ease-in-out z-30
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} 
           lg:translate-x-0`}

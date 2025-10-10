@@ -344,7 +344,7 @@ export function Table<T extends Record<string, unknown>>({
                 : "none",
             }}
           >
-            <div className="p-5 h-full max-h-[334px] prevent-scroller">
+            <div className="p-5 h-full  prevent-scroller">
               <table
                 id={tableId}
                 className="p-5"

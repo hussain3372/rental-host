@@ -1,84 +1,18 @@
 "use client";
 import Image from "next/image";
 import React, { useState, useRef, useEffect } from "react";
+import Dropdown from "@/app/shared/InputDropDown";
 
 interface DrawerProps {
   onClose: () => void;
   isOpen: boolean;
 }
 
-interface DropdownProps {
-  items: { label: string; onClick: () => void; disabled?: boolean }[];
-  isOpen?: boolean;
-  onClose?: () => void;
-}
-
-const Dropdown: React.FC<DropdownProps> = ({
-  items,
-  isOpen = true,
-  onClose,
-}) => {
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        onClose?.();
-      }
-    }
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen, onClose]);
-
-  const handleItemClick = (item: { onClick: () => void; disabled?: boolean }) => {
-    if (!item.disabled) {
-      item.onClick();
-      onClose?.();
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div
-      ref={dropdownRef}
-      className="absolute right-0 top-full mt-1 flex flex-col items-start w-full rounded-[10px] 
-                 bg-[radial-gradient(75%_81%_at_50%_18.4%,#202020_0%,#101010_100%)] 
-                 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)] p-2 border border-gray-700 z-50
-                 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] animate-in fade-in-0 zoom-in-95"
-    >
-      {items.map((item, index) => (
-        <button
-          key={index}
-          disabled={item.disabled}
-          onClick={() => handleItemClick(item)}
-          className={`w-full text-left px-3 py-2 rounded-md text-sm transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]
-            ${item.disabled
-              ? "text-white/40 opacity-50 cursor-not-allowed"
-              : "text-white/90 hover:text-white hover:bg-white/10 cursor-pointer active:scale-[0.98]"
-            }`}
-        >
-          {item.label}
-        </button>
-      ))}
-    </div>
-  );
-};
-
-Dropdown.displayName = "Dropdown";
-
 const AddCertificateDrawer: React.FC<DrawerProps> = ({ onClose, isOpen }) => {
   const [certificateName, setCertificateName] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [validity, setValidity] = useState("");
-  const [images, setImages] = useState<File[]>([]);
+  const [, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -146,19 +80,24 @@ const AddCertificateDrawer: React.FC<DrawerProps> = ({ onClose, isOpen }) => {
   // Remove image
  
 
+  // Reupload image function
+  const reuploadImage = () => {
+    // Clear all existing images
+      fileInputRef.current?.click();
+    setTimeout(() => {
+      setImages([]);
+      setImagePreviews([]);
+      
+    }, 400);
+    
+    // Trigger file input for new upload
+  };
+
   // Handle form submission
   const handleAddCertificate = () => {
-    const certificateData = {
-      certificateName,
-      propertyType,
-      validity,
-      images: images.map(file => file.name),
-    };
     
-    console.log("Adding certificate:", certificateData);
-    alert("Certificate Added Successfully!");
     
-    // Reset form
+    onClose()
     setCertificateName("");
     setPropertyType("");
     setValidity("");
@@ -247,6 +186,8 @@ const AddCertificateDrawer: React.FC<DrawerProps> = ({ onClose, isOpen }) => {
         }`}
         onClick={handleOverlayClick}
       />
+
+      
       
       {/* Drawer */}
       <div
@@ -273,7 +214,7 @@ const AddCertificateDrawer: React.FC<DrawerProps> = ({ onClose, isOpen }) => {
               onChange={(e) => setCertificateName(e.target.value)}
               placeholder="Enter name"
               className="w-full h-[46px] bg-[#1a1a1a] text-white text-sm rounded-md px-3 border border-[#2b2b2b] 
-                        focus:outline-none transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-gray-500
+                        focus:outline-none transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] 
                         focus:border-[#f8f94d] focus:shadow-[0_0_0_2px_rgba(248,249,77,0.1)] placeholder:text-white/40"
             />
           </div>
@@ -291,7 +232,7 @@ const AddCertificateDrawer: React.FC<DrawerProps> = ({ onClose, isOpen }) => {
                 }}
                 className={`w-full h-[46px] bg-[#1a1a1a] text-sm rounded-md pl-3 pr-10 border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] text-left ${
                   propertyType ? "text-white border-[#2b2b2b]" : "text-white/40 border-[#2b2b2b]"
-                } ${propertyTypeDropdownOpen ? "border-gray-500" : "hover:border-gray-500"}`}
+                } `}
               >
                 {propertyType || "Select type"}
               </button>
@@ -325,7 +266,7 @@ const AddCertificateDrawer: React.FC<DrawerProps> = ({ onClose, isOpen }) => {
                 }}
                 className={`w-full h-[46px] bg-[#1a1a1a] text-sm rounded-md pl-3 pr-10 border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] text-left ${
                   validity ? "text-white border-[#2b2b2b]" : "text-white/40 border-[#2b2b2b]"
-                } ${validityDropdownOpen ? "border-gray-500" : "hover:border-gray-500"}`}
+                } ${validityDropdownOpen ? "" : ""}`}
               >
                 {validity || "Select validity"}
               </button>
@@ -350,8 +291,8 @@ const AddCertificateDrawer: React.FC<DrawerProps> = ({ onClose, isOpen }) => {
           <div className="mb-[50px] mt-10 transition-all duration-300 ease-out">
             {/* File Upload Area */}
             <div 
-              onClick={triggerFileInput}
-              className="border-2 border-dashed border-[#EFFC76] rounded-md p-6 text-center transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] cursor-pointer min-h-[200px] flex items-center justify-center hover:bg-[#EFFC76]/5 active:scale-[0.99]"
+              onClick={imagePreviews.length === 0 ? triggerFileInput : undefined}
+              className={`${imagePreviews.length === 0 ? "border-2 border-dashed border-[#EFFC76] p-6 cursor-pointer" : ""} rounded-md text-center transition-all duration-300 border-0 ease-[cubic-bezier(0.4,0,0.2,1)] min-h-[200px] flex items-center justify-center`}
             >
               <input
                 ref={fileInputRef}
@@ -383,26 +324,39 @@ const AddCertificateDrawer: React.FC<DrawerProps> = ({ onClose, isOpen }) => {
               ) : (
                 // Image previews grid
                 <div className="w-full transition-all duration-300 ease-out">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  <div className="gap-4">
                     {imagePreviews.map((preview, index) => (
                       <div
                         key={index}
-                        className="relative group aspect-square rounded-md  border border-[#2b2b2b] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-gray-500 hover:scale-[1.02]"
+                        className="relative group aspect-square object-contain rounded-md h-[200px] w-full transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:scale-[1.02]"
                       >
                         <Image
                           src={preview}
                           alt={`Preview ${index + 1}`}
                           fill
-                          className="object-cover transition-all duration-300 ease-out"
+                          className="object-cover transition-all rounded-xl duration-300 ease-out"
                         />
+                        {/* Remove image button */}
+                        
                       </div>
                     ))}
                   </div>
                 </div>
               )}
             </div>
+            
+            {/* Reupload button - only show when images exist */}
+            {imagePreviews.length > 0 && (
+              <p 
+                className="text-[12px] cursor-pointer font-regular leading-4 mt-5 text-[#EFFC76] underline"
+                onClick={reuploadImage}
+              >
+                Reupload Image
+              </p>
+            )}
           </div>
         </div>
+        
 
         {/* Add Certificate Button */}
         <div className="transition-all duration-300 ease-out">

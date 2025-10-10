@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
-import { Manrope } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-  display: "swap",
-});
+// const manrope = Manrope({
+//   subsets: ["latin"],
+//   variable: "--font-manrope",
+//   display: "swap",
+// });
 
 export const metadata: Metadata = {
   title: "Rental Host",
@@ -23,7 +22,7 @@ type RootLayoutProps = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body className={` ${manrope.className} !overflow-x-hidden`}>
+      <body className={`  !overflow-x-hidden`}>
         <Toaster
           position="top-right"
           toastOptions={{

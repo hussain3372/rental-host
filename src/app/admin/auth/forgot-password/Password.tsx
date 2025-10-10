@@ -1,6 +1,9 @@
 import AuthForm from "@/app/Layout/auth-layout/AuthForm";
 import React from "react";
 export default function Password() {
+  const handleSubmit = ()=>{
+    window.location.href = "/admin/dashboard"
+  }
   return (
     <div>
       <AuthForm
@@ -14,9 +17,7 @@ export default function Password() {
         linktext=" Login"
         link="/admin/auth/login"
         mode="forgot"
-        onSubmit={() => {
-          window.location.href = "/admin/auth/email-verification";
-        }}
+        onSubmit={handleSubmit}
       />
     </div>
   );

@@ -11,7 +11,7 @@ interface CertificationData {
   "Report ID": string;
   "Report Type": string;
   "Date Range": string;
-  "Generated Date": string;
+  "Generated On": string;
   Format: string;
 }
 
@@ -45,9 +45,9 @@ export default function Reports() {
     {
       id: 1,
       "Report ID": "REP -8765",
-      "Date Range": "Aug 20, 2025  -  Sep 20, 2025",
       "Report Type": "Weekly",
-      "Generated Date": "Aug 12, 2024",
+      "Date Range": "Aug 20, 2025  -  Sep 20, 2025",
+      "Generated On": "Aug 12, 2024",
       Format: "PDF",
     },
     {
@@ -55,7 +55,7 @@ export default function Reports() {
       "Report ID": "REP -8766",
       "Report Type": "Monthly",
       "Date Range": "Aug 20, 2025  -  Sep 20, 2025",
-      "Generated Date": "Jul 15, 2024",
+      "Generated On": "Jul 15, 2024",
       Format: "CSV",
     },
     {
@@ -63,7 +63,7 @@ export default function Reports() {
       "Report ID": "REP -8767",
       "Report Type": "Yearly",
       "Date Range": "Aug 20, 2025  -  Sep 20, 2025",
-      "Generated Date": "Jun 20, 2024",
+      "Generated On": "Jun 20, 2024",
       Format: "PDF",
     },
     {
@@ -71,15 +71,15 @@ export default function Reports() {
       "Report ID": "REP -8768",
       "Report Type": "Weekly",
       "Date Range": "Aug 20, 2025  -  Sep 20, 2025",
-      "Generated Date": "May 10, 2024",
-      Format: "Excel",
+      "Generated On": "May 10, 2024",
+      Format: "PDF",
     },
     {
       id: 5,
       "Report ID": "REP -8769",
       "Report Type": "Weekly",
       "Date Range": "Aug 20, 2025  -  Sep 20, 2025",
-      "Generated Date": "Apr 05, 2024",
+      "Generated On": "Apr 05, 2024",
       Format: "PDF",
     },
     {
@@ -87,7 +87,7 @@ export default function Reports() {
       "Report ID": "REP -8770",
       "Report Type": "Weekly",
       "Date Range": "Aug 20, 2025  -  Sep 20, 2025",
-      "Generated Date": "Mar 18, 2024",
+      "Generated On": "Mar 18, 2024",
       Format: "CSV",
     },
   ]);
@@ -95,27 +95,27 @@ export default function Reports() {
   const Credentials = [
     {
       id: 1,
-      img: "/images/manager.svg",
-      val: "3200",
-      title: "Total Reports",
+      img: "/images/ravanue.svg",
+      val: "$125,430",
+      title: "Total Revenue",
     },
     {
       id: 2,
-      img: "/images/pending.svg",
-      val: "1200",
-      title: "Monthly Reports",
+      img: "/images/manager.svg",
+      val: "3268",
+      title: "Total Applications",
     },
     {
       id: 3,
       img: "/images/certificate.svg",
-      val: "2000",
-      title: "Weekly Reports",
+      val: "2870",
+      title: "Certificates Issued",
     },
     {
       id: 4,
-      img: "/images/revoke.svg",
-      val: "1300",
-      title: "Yearly Reports",
+      img: "/images/p-app.svg",
+      val: "420",
+      title: "Pending Approvals",
     },
   ];
 
@@ -132,7 +132,7 @@ export default function Reports() {
           item["Date Range"].toLowerCase().includes(searchTerm.toLowerCase()) ||
           item["Report ID"].toLowerCase().includes(searchTerm.toLowerCase()) ||
           item["Report Type"].toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item["Generated Date"].toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item["Generated On"].toLowerCase().includes(searchTerm.toLowerCase()) ||
           item["Format"].toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -147,7 +147,7 @@ export default function Reports() {
 
     if (certificationFilters.generatedDate) {
       filtered = filtered.filter((item) => {
-        const itemDate = new Date(item["Generated Date"]);
+        const itemDate = new Date(item["Generated On"]);
         const filterDate = new Date(certificationFilters.generatedDate);
         return (
           itemDate.getDate() === filterDate.getDate() &&
@@ -353,9 +353,9 @@ export default function Reports() {
 
       <div className="flex flex-col gap-3 sm:flex-row sm:gap-0 justify-between items-center">
         <div>
-          <h2 className="font-semibold text-[20px] leading-[20px]">Report & Analytics</h2>
+          <h2 className="font-semibold text-[20px] leading-[20px]">Reports & Analytics</h2>
           <p className="font-regular text-[16px] leading-5 mb-[22px] pt-2 text-[#FFFFFF99]">
-            Generate insights and export certification data for compliance and record-keeping.
+            Track revenue, certifications, and compliance activity with detailed insights and exportable reports.
           </p>
         </div>
 

@@ -33,6 +33,7 @@ export type TableControl = {
 
 interface TableProps<T> {
   title?: string;
+  setHeight?:boolean
   onSelectAll: (checked: boolean) => void;
   onSelectRow: (rowId: string, checked: boolean) => void;
   isAllSelected: boolean;
@@ -62,6 +63,7 @@ interface TableProps<T> {
 
 export function Table<T extends Record<string, unknown>>({
   title,
+  setHeight=true,
   data,
   control = {},
   onRowClick,
@@ -111,9 +113,13 @@ export function Table<T extends Record<string, unknown>>({
       badgeClasses += "bg-[#2d2d2d] text-[#EFFC76] py-2 px-3";
     } else if (statusLower === "near expiry" || statusLower === "pending" || statusLower === "inactive") {
       badgeClasses += "bg-[#2d2d2d] text-[#FFB52B] py-2 px-3";
-    } else if (statusLower === "expired" || statusLower === "rejected"||statusLower === "suspended") {
+    } else if (statusLower === "expired" || statusLower === "rejected"||statusLower === "suspended" ||statusLower === "failed" ) {
       badgeClasses += "bg-[#2d2d2d] text-[#FF5050] py-2 px-3";
-    } else {
+    }
+    else if (statusLower === "refunded" ) {
+      badgeClasses += "bg-[#2d2d2d] text-[#28EB1D] py-2 px-3";
+    }
+     else {
       badgeClasses += "bg-[#2d2d2d] text-[#EFFC76] py-2 px-3";
     }
 
@@ -291,7 +297,7 @@ export function Table<T extends Record<string, unknown>>({
 
   return (
     <div style={{ marginBottom: 15 }}>
-      <div className="bg-[#121315] overflow-auto custom-height rounded-lg relative z-[10] scrollbar-hide">
+      <div className={`bg-[#121315] overflow-auto ${setHeight?"custom-height":""}  rounded-lg relative z-[10] scrollbar-hide`}>
         <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-5">
           <h2 className="text-white text-[16px] font-semibold leading-[20px]">{title}</h2>
           <div className="flex flex-wrap sm:flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">

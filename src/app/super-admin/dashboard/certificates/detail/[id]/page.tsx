@@ -1,15 +1,13 @@
 import React from 'react'
 import Detail from './Detail'
-import Verification from './Verification'
-import CheckList from './CheckList'
+import CertificationSetup from './CertificationSetup'
 
 
 export default function page() {
   return (
     <div>
+      <CertificationSetup/>
       <Detail/>
-      <CheckList/>
-      <Verification/>
     </div>
   )
 }

@@ -3,10 +3,8 @@ import React, { useMemo, useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { Table } from "@/app/shared/tables/Tables";
 import FilterDrawer from "../../../shared/tables/Filter";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Modal } from "@/app/shared/Modal";
-import Dropdown from "@/app/shared/InputDropDown";
 
 interface CustomDateInputProps {
   value?: string;
@@ -467,6 +465,7 @@ export default function Applications() {
 
   const displayData = useMemo(() => {
     return filteredCertificationData.map(({ id, ...rest }) => {
+            console.log(id);
       return rest;
     });
   }, [filteredCertificationData]);

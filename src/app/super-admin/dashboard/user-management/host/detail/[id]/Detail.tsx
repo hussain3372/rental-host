@@ -235,6 +235,23 @@ useEffect(() => {
     setIsDropdownOpen(false);
   };
 
+// Remove this problematic line completely
+// window.addEventListener("click", () => setIsDropdownOpen(false));
+
+// Your useEffect is sufficient
+useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setIsDropdownOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
+
   const statusOptions = [
     { label: "Active", onClick: () => handleStatusSelect("Active") },
     { label: "Inactive", onClick: () => handleStatusSelect("Inactive") },
@@ -568,10 +585,9 @@ useEffect(() => {
       )}
 
       <nav
-        className="flex py-3 mb-5 text-gray-200 rounded-lg bg-transparent"
-        aria-label="Breadcrumb"
+        className="flex py-3 mb-5 text-gray-200  rounded-lg bg-transparent"
       >
-        <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+        <ol className="inline-flex  items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
           <li className="inline-flex items-center">
             <Link
               href="/super-admin/dashboard/user-management"
@@ -581,27 +597,11 @@ useEffect(() => {
             </Link>
           </li>
 
+              <Image src="/images/greater.svg" alt='Greater' height={16} width={16} />
           <li aria-current="page">
-            <div className="flex items-center">
-              <svg
-                className="rtl:rotate-180 w-3 h-3 mx-1 text-gray-400"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 6 10"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m1 9 4-4-4-4"
-                />
-              </svg>
               <p className="text-[16px] leading-5 font-regular text-white">
-                Sarah Kim
+               Sarah Kim
               </p>
-            </div>
           </li>
         </ol>
       </nav>
@@ -617,21 +617,25 @@ useEffect(() => {
         </div>
         
         {/* Status Dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="bg-[#2D2D2D] py-3 px-4 w-[121px] rounded-full font-regular text-[18px] cursor-pointer focus:outline-0 flex justify-between items-center"
-          >
-            {selectedStatus}
-            <Image src="/images/dropdown.svg" alt="Dropdown" height={16} width={16}/>
-          </button>
+        {/* Status Dropdown */}
+<div className="relative" ref={dropdownRef}> {/* Add ref here */}
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      setIsDropdownOpen(!isDropdownOpen);
+    }}
+    className="bg-[#2D2D2D] py-3 px-4 w-[121px] rounded-full font-regular text-[18px] cursor-pointer focus:outline-0 flex justify-between items-center"
+  >
+    {selectedStatus}
+    <Image src="/images/dropdown.svg" alt="Dropdown" height={16} width={16}/>
+  </button>
 
-          {isDropdownOpen && (
-            <div className="absolute top-full mt-2 right-10 sm:-right-21 z-10 w-[121px]">
-              <Dropdown items={statusOptions} />
-            </div>
-          )}
-        </div>
+  {isDropdownOpen && (
+    <div className="absolute top-full mt-2 right-10 sm:-right-21 z-10 w-[121px]">
+      <Dropdown items={statusOptions} />
+    </div>
+  )}
+</div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-4 gap-3 pt-5  flex-wrap lg:flex-nowrap justify-between">

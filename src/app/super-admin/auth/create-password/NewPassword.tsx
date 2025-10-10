@@ -2,6 +2,9 @@
 import AuthForm from "@/app/Layout/auth-layout/AuthForm";
 // import toast from 'react-hot-toast'
 export default function NewPassword() {
+  const handleSubmit = ()=>{
+    window.location.href = "/super-admin/dashboard"
+  }
   return (
     <div>
       <AuthForm
@@ -11,7 +14,7 @@ export default function NewPassword() {
         submitText="Reset Password"
         showAlter={false}
         mode="reset-password"
-        onSubmit={() => (window.location.href = "/super-admin/dashboard")}
+        onSubmit={handleSubmit}
         
       />
     </div>

@@ -6,72 +6,12 @@ interface DrawerProps {
   isOpen: boolean;
 }
 
-interface DropdownProps {
-  items: { label: string; onClick: () => void; disabled?: boolean }[];
-  isOpen?: boolean;
-  onClose?: () => void;
+interface Rule {
+  id: string;
+  text: string;
+  isEditing: boolean;
+  isNew?: boolean;
 }
-
-const Dropdown: React.FC<DropdownProps> = ({
-  items,
-  isOpen = true,
-  onClose,
-}) => {
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        onClose?.();
-      }
-    }
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen, onClose]);
-
-  const handleItemClick = (item: { onClick: () => void; disabled?: boolean }) => {
-    if (!item.disabled) {
-      item.onClick();
-      onClose?.();
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div
-      ref={dropdownRef}
-      className="absolute right-0 top-full mt-1 flex flex-col items-start w-full rounded-[10px] 
-                 bg-[radial-gradient(75%_81%_at_50%_18.4%,#202020_0%,#101010_100%)] 
-                 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)] p-2 border border-gray-700 z-50
-                 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] animate-in fade-in-0 zoom-in-95"
-    >
-      {items.map((item, index) => (
-        <button
-          key={index}
-          disabled={item.disabled}
-          onClick={() => handleItemClick(item)}
-          className={`w-full text-left px-3 py-2 rounded-md text-sm transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]
-            ${item.disabled
-              ? "text-white/40 opacity-50 cursor-not-allowed"
-              : "text-white/90 hover:text-white hover:bg-white/10 cursor-pointer active:scale-[0.98]"
-            }`}
-        >
-          {item.label}
-        </button>
-      ))}
-    </div>
-  );
-};
-
-Dropdown.displayName = "Dropdown";
 
 const AddPropertyDrawer: React.FC<DrawerProps> = ({ onClose, isOpen }) => {
   const [certificateName, setCertificateName] = useState("");
@@ -79,6 +19,28 @@ const AddPropertyDrawer: React.FC<DrawerProps> = ({ onClose, isOpen }) => {
   const [validity, setValidity] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [rules, setRules] = useState<Rule[]>([
+    {
+      id: "1",
+      text: "Fire safety equipment (extinguishers, alarms, exit plan)",
+      isEditing: false,
+    },
+    {
+      id: "2",
+      text: "Waste disposal system compliance",
+      isEditing: false,
+    },
+    {
+      id: "3",
+      text: "Maintenance/inspection report",
+      isEditing: false,
+    },
+    {
+      id: "4",
+      text: "Utility bills (electricity/water matching address)",
+      isEditing: false,
+    },
+  ]);
 
   const drawerRef = useRef<HTMLDivElement>(null);
 
@@ -106,6 +68,7 @@ const AddPropertyDrawer: React.FC<DrawerProps> = ({ onClose, isOpen }) => {
       certificateName,
       propertyType,
       validity,
+      rules: rules.map(rule => rule.text),
     };
     
     console.log("Adding certificate:", certificateData);
@@ -115,8 +78,69 @@ const AddPropertyDrawer: React.FC<DrawerProps> = ({ onClose, isOpen }) => {
     setCertificateName("");
     setPropertyType("");
     setValidity("");
+    setRules([
+      {
+        id: "1",
+        text: "Fire safety equipment (extinguishers, alarms, exit plan)",
+        isEditing: false,
+      },
+      {
+        id: "2",
+        text: "Waste disposal system compliance",
+        isEditing: false,
+      },
+      {
+        id: "3",
+        text: "Maintenance/inspection report",
+        isEditing: false,
+      },
+      {
+        id: "4",
+        text: "Utility bills (electricity/water matching address)",
+        isEditing: false,
+      },
+    ]);
     setIsVisible(false);
     setTimeout(onClose, 300);
+  };
+
+  // Add new rule
+  const handleAddRule = () => {
+    const newRule: Rule = {
+      id: Date.now().toString(),
+      text: "",
+      isEditing: true,
+      isNew: true,
+    };
+    
+    setRules([...rules, newRule]);
+  };
+
+  // Start editing a rule
+  const handleEditRule = (id: string) => {
+    setRules(rules.map(rule => 
+      rule.id === id ? { ...rule, isEditing: true } : rule
+    ));
+  };
+
+  // Save edited rule
+  const handleSaveRule = (id: string, newText: string) => {
+    if (newText.trim() === "") {
+      // If empty text and it's a new rule, remove it
+      if (rules.find(rule => rule.id === id)?.isNew) {
+        handleDeleteRule(id);
+      }
+      return;
+    }
+    
+    setRules(rules.map(rule => 
+      rule.id === id ? { ...rule, text: newText.trim(), isEditing: false, isNew: false } : rule
+    ));
+  };
+
+  // Delete rule
+  const handleDeleteRule = (id: string) => {
+    setRules(rules.filter(rule => rule.id !== id));
   };
 
   // Close drawer when clicking outside
@@ -173,13 +197,6 @@ const AddPropertyDrawer: React.FC<DrawerProps> = ({ onClose, isOpen }) => {
     };
   }, [isMounted]);
 
-  const rules = [
-    "Fire safety equipment (extinguishers, alarms, exit plan)",
-    "Waste disposal system compliance",
-    "Maintenance/inspection report",
-    "Utility bills (electricity/water matching address)"
-  ];
-
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       setIsVisible(false);
@@ -230,26 +247,84 @@ const AddPropertyDrawer: React.FC<DrawerProps> = ({ onClose, isOpen }) => {
                         focus:border-[#f8f94d] focus:shadow-[0_0_0_2px_rgba(248,249,77,0.1)] placeholder:text-white/40"
             />
             
+            {/* Add Rule Section */}
             <div className="pt-5 pb-3 flex items-center justify-between transition-all duration-300 ease-out">
               <p className="text-[14px] font-medium leading-[18px]">Add compliance rule</p> 
-              <p className="text-[16px] font-regular leading-5 cursor-pointer text-[#EFFC76] underline transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:opacity-80 active:scale-95">
+              <button
+                onClick={handleAddRule}
+                className="text-[16px] font-regular leading-5 cursor-pointer text-[#EFFC76] underline transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:opacity-80 active:scale-95"
+              >
                 Add Rule
-              </p>
+              </button>
             </div>
             
+            {/* Rules List */}
             <div className="flex flex-col gap-[10px] transition-all duration-300 ease-out">
-              {rules.map((item, index) => (
+              {rules.map((rule) => (
                 <div 
-                  key={index} 
-                  className="bg-gradient-to-b from-[#202020] to-[#101010] py-[17px] px-3 border border-[#FFFFFF1F] rounded-xl transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-white/30"
+                  key={rule.id} 
+                  className="group relative bg-gradient-to-b from-[#202020] to-[#101010] py-[17px] px-3 border border-[#FFFFFF1F] rounded-xl transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-white/30"
                 >
-                  <p className="font-regular leading-[18px] text-[14px] text-[#FFFFFF]">{item}</p> 
+                  {rule.isEditing ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        defaultValue={rule.text}
+                        placeholder="Enter rule text..."
+                        onBlur={(e) => handleSaveRule(rule.id, e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleSaveRule(rule.id, e.currentTarget.value);
+                          }
+                          if (e.key === 'Escape') {
+                            if (rule.isNew) {
+                              handleDeleteRule(rule.id);
+                            } else {
+                              handleSaveRule(rule.id, rule.text);
+                            }
+                          }
+                        }}
+                        className="flex-1 bg-transparent text-white border-b border-[#EFFC76] focus:outline-none placeholder:text-white/60"
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => {
+                          const input = document.querySelector(`input[defaultValue="${rule.text}"]`) as HTMLInputElement;
+                          handleSaveRule(rule.id, input?.value || rule.text);
+                        }}
+                        className="text-[#EFFC76] text-sm hover:underline transition-all duration-200"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <p 
+                        className="font-regular leading-[18px] text-[14px] text-[#FFFFFF] cursor-pointer flex-1"
+                        onClick={() => handleEditRule(rule.id)}
+                      >
+                        {rule.text || <span className="text-white/40">Click to edit rule...</span>}
+                      </p>
+                      {/* Delete icon that appears on hover */}
+                      <button
+                        onClick={() => handleDeleteRule(rule.id)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out
+                                  text-red-400 hover:text-red-300 p-1 rounded"
+                        title="Delete rule"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           </div>
         </div>
 
+        {/* Add Property Button */}
         <div className="transition-all duration-300 ease-out">
           <button
             onClick={handleAddCertificate}

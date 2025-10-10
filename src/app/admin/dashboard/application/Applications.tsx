@@ -29,7 +29,7 @@ export default function Applications() {
   const [modalType, setModalType] = useState<"single" | "multiple">("multiple");
 
   const [showOwnershipDropdown, setShowOwnershipDropdown] = useState(false);
-  const [showPropertyDropdown, setShowPropertyDropdown] = useState(false);
+  // const [showPropertyDropdown, setShowPropertyDropdown] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
 
   const [certificationFilters, setCertificationFilters] = useState({
@@ -309,7 +309,7 @@ export default function Applications() {
     highlightRowOnHover: true,
   };
 
-  const uniqueProperties = [...new Set(allCertificationData.map((item) => item["Property Name"]))];
+  // const uniqueProperties = [...new Set(allCertificationData.map((item) => item["Property Name"]))];
   const uniqueStatuses = [...new Set(allCertificationData.map((item) => item["Status"]))];
   const uniqueOwnerships = [...new Set(allCertificationData.map((item) => item["Ownership"]))];
 

@@ -1,11 +1,8 @@
 'use client'
 import Image from 'next/image';
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Table } from '@/app/shared/tables/Tables';
-import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import { Modal } from "@/app/shared/Modal";
-import Dropdown from "@/app/shared/InputDropDown";
 import FilterDrawer from "@/app/shared/tables/Filter"
 
 interface CustomDateInputProps {
@@ -34,14 +31,12 @@ export default function Tracking() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filterType, setFilterType] = useState<"certification" | "application">("certification");
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
 
   // Modal and delete states
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
-  const [singleRowToDelete, setSingleRowToDelete] = useState<{ row: Record<string, string>, id: number } | null>(null);
-  const [modalType, setModalType] = useState<'single' | 'multiple'>('multiple');
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
+  // const [singleRowToDelete, setSingleRowToDelete] = useState<{ row: Record<string, string>, id: number } | null>(null);
+  // const [ setModalType] = useState<'single' | 'multiple'>('multiple');
 
   const [certificationFilters, setCertificationFilters] = useState({
     listedProperty: "",
@@ -53,7 +48,7 @@ export default function Tracking() {
   const [showPropertyDropdown, setShowPropertyDropdown] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
 
-  const [applicationFilters, setApplicationFilters] = useState({
+  const [, setApplicationFilters] = useState({
     application: "",
     submissionDate: "",
   });
@@ -61,7 +56,7 @@ export default function Tracking() {
   const [expiryDate, setExpiryDate] = useState<Date | null>(null);
   const [submissionDate, setSubmissionDate] = useState<Date | null>(null);
 
-  const [certificationData, setCertificationData] = useState<CertificationDataItem[]>([
+  const [certificationData] = useState<CertificationDataItem[]>([
     {
       id: 1,
       "Property Name": "Coastal Hillside Estate",
@@ -99,7 +94,7 @@ export default function Tracking() {
     },
   ]);
 
-  const [applicationData] = useState<ApplicationDataItem[]>([
+  const [] = useState<ApplicationDataItem[]>([
     {
       "Application ID": "APP-001",
       "Property Name": "Coastal Hillside Estate",
@@ -220,15 +215,13 @@ export default function Tracking() {
   const uniqueProperties = [...new Set(certificationData.map((item) => item["Property Name"]))];
   const uniqueStatuses = [...new Set(certificationData.map((item) => item["Status"]))];
 
-  // Transform data for table display
-  const displayData = useMemo(() => {
-    return filteredCertificationData.map(({ id, ...rest }) => rest);
-  }, [filteredCertificationData]);
+const displayData = useMemo(() => {
+  return filteredCertificationData.map(({ id, ...rest }) => {
+    console.log("Certification ID:", id); 
+    return rest; 
+  });
+}, [filteredCertificationData]);
 
-  // Reset pagination when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, certificationFilters]);
 
   const openApplicationFilter = () => {
     setFilterType("application");
