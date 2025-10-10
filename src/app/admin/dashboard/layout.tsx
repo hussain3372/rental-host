@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { Sidebar } from "./dashboard-layout/Sidebar";
 import { Navbar } from "./dashboard-layout/Navbar";
+import { Manrope } from "next/font/google";
 
 import Image from "next/image";
 
@@ -13,11 +14,11 @@ type MainLayoutProps = {
   children: ReactNode;
 };
 
-// const manrope = Manrope({
-//   subsets: ["latin"],
-//   variable: "--font-manrope",
-//   display: "swap",
-// });
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  display: "swap",
+});
 
 
 export default function MainLayout({ children }: MainLayoutProps) {
@@ -28,7 +29,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   };
 
   return (
-    <div className={`  relative min-h-[100vh] bg-[#0A0C0B]  text-white  overflow-hidden`}>
+    <div className={`${manrope.className}  relative min-h-[100vh] bg-[#0A0C0B]  text-white  overflow-hidden`}>
       {/* Sidebar */}
       <Sidebar onCollapseChange={handleSidebarCollapseChange} />
 
