@@ -42,7 +42,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       ref={dropdownRef}
       className="absolute right-23 bottom-0 mb-1 z-50 flex flex-col items-start w-[161px] rounded-[10px] 
                  bg-[radial-gradient(75%_81%_at_50%_18.4%,#202020_0%,#101010_100%)] 
-                 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)] p-2"
+                 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)] pt-2"
     >
       {items.map((item, index) => (
         <button
