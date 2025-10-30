@@ -12,14 +12,16 @@ interface CertificationData {
   "Ticket Id": string;
   "Issue Type": string;
   Subject: string;
-  "Host Name"?: string; // Made optional for My Tickets
+  "Host Name"?: string;
   "Created On": string;
   Status: string;
 }
 
+
 export default function HelpSupport() {
   const [activeTab, setActiveTab] = useState("host");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
@@ -28,16 +30,24 @@ export default function HelpSupport() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
-  const [selectedTicket, setSelectedTicket] =
-    useState<CertificationData | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<CertificationData | null>(null);
+const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // Handle view details from both tables
   const handleViewDetails = (ticket: CertificationData) => {
     setSelectedTicket(ticket);
     setIsDetailDrawerOpen(true);
   };
 
-  // Handle tab content rendering
+  const handleTicketCreated = () => {
+    console.log("🟢 Ticket created, refreshing list...");
+    setRefreshTrigger(prev => prev + 1); // Trigger refresh
+    // You might also want to reset to first page
+    setCurrentPage(1);
+  };
+
+  
+
+  // Handle tab content rendering - pass refreshTrigger to tables
   const renderTabContent = () => {
     switch (activeTab) {
       case "host":
@@ -50,7 +60,8 @@ export default function HelpSupport() {
             itemsPerPage={itemsPerPage}
             isFilterOpen={isFilterOpen}
             onFilterToggle={setIsFilterOpen}
-            onViewDetails={handleViewDetails} // Added this prop
+            onViewDetails={handleViewDetails}
+          
           />
         );
       case "my":
@@ -63,13 +74,18 @@ export default function HelpSupport() {
             itemsPerPage={itemsPerPage}
             isFilterOpen={isFilterOpen}
             onFilterToggle={setIsFilterOpen}
-            onViewDetails={handleViewDetails} // Added this prop
+            onViewDetails={handleViewDetails}
+            refreshTrigger={refreshTrigger} 
+
           />
         );
       default:
         return null;
     }
   };
+
+  // Show Create Ticket button only when "My Tickets" tab is active
+  const showCreateTicketButton = activeTab === "my";
 
   return (
     <>
@@ -95,12 +111,16 @@ export default function HelpSupport() {
             announcements.
           </p>
         </div>
-        <button
-          onClick={() => setIsDrawerOpen(true)}
-          className="yellow-btn cursor-pointer text-black px-[20px] py-[12px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
-        >
-          Create Ticket
-        </button>
+        
+        {/* Conditionally render Create Ticket button */}
+        {showCreateTicketButton && (
+          <button
+            onClick={() => setIsDrawerOpen(true)}
+            className="yellow-btn cursor-pointer text-black px-[20px] py-[12px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
+          >
+            Create Ticket
+          </button>
+        )}
       </div>
 
       {/* Tabs Component */}
@@ -111,7 +131,7 @@ export default function HelpSupport() {
       {/* Tab Content */}
       {renderTabContent()}
 
-      {/* Create Ticket Drawer */}
+      {/* Create Ticket Drawer - Pass the callback */}
       <div
         className={`fixed inset-0 bg-[#121315CC] z-[3000000000] flex justify-end transition-opacity duration-300 ${
           isDrawerOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -127,6 +147,7 @@ export default function HelpSupport() {
           <HelpSupportDrawer
             isOpen={isDrawerOpen}
             onClose={() => setIsDrawerOpen(false)}
+            onTicketCreated={handleTicketCreated} // Pass the callback
           />
         </div>
       </div>
@@ -157,6 +178,8 @@ export default function HelpSupport() {
                       subject: selectedTicket["Subject"],
                       createdOn: selectedTicket["Created On"],
                       status: selectedTicket["Status"],
+                      description:"",
+                      data:""
                     }
                   : null
               }

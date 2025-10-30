@@ -1,3 +1,5 @@
+
+
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
@@ -6,7 +8,11 @@ import { Menu } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import SearchDrawer from "@/app/shared/SearchDrawer";
 import SearchDrawerShortcut from "@/app/shared/SearchDrawerShortcut";
-import { allProperties } from "@/app/(main)/search-page/data/properties";
+import Cookies from 'js-cookie';
+import { LogoutModal } from '../profile/LogoutModal';
+import { useNotificationContext } from '@/app/shared/context/HostNotificaiton'; // Fixed spelling
+import { useRouter } from 'next/navigation';
+// import { allProperties } from "@/app/(main)/search-page/data/properties";
 interface SidebarProps {
   onCollapseChange: (isCollapsed: boolean) => void;
 }
@@ -15,6 +21,9 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
+
+    const { notificationCount } = useNotificationContext();
+  
   const pathname = usePathname();
 
   const toggleCollapse = () => {
@@ -31,6 +40,17 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
     setIsMobileOpen((prev) => !prev);
   };
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+    const router = useRouter()
+
+    const handleLogout = () => {
+    Cookies.remove("accessToken");
+    localStorage.removeItem("userMfaEnabled");
+    localStorage.removeItem("userRole");
+    router.push("/auth/login");
+  };
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -184,7 +204,10 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                 className={`w-[20px] h-[20px] bg-[#D84725] rounded-[4px] border-b border-b-white flex items-center justify-center transition-transform duration-200 group-hover:scale-105 ${isCollapsed ? "hidden" : "flex"
                   }`}
               >
-                <span className="text-white text-[10px] font-medium">8</span>
+                 <span className="text-white text-[10px] font-medium">
+                  {" "}
+                  {notificationCount > 99 ? "99+" : notificationCount}
+                </span>
               </div>
             </Link>
 
@@ -443,6 +466,32 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
                 Help & Support
               </p>
             </Link>
+
+            <button
+              onClick={() => setIsLogoutModalOpen(true)}
+              className={`flex gap-[8px] w-full items-center px-[12px] py-[8px] rounded-[6px] cursor-pointer group transition-all duration-200 mb-[16px] hover:bg-[#4a5439]`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width={isCollapsed ? 28 : 20}
+                height={isCollapsed ? 28 : 20}
+                viewBox="0 0 20 20"
+                fill="none"
+                className={`stroke-white group-hover:stroke-[#eefb75]`}
+              >
+                <path
+                  d="M5.83333 2.5C5.05833 2.5 4.67083 2.5 4.35333 2.585C3.92927 2.69854 3.54259 2.92175 3.23217 3.23217C2.92175 3.54259 2.69854 3.92927 2.585 4.35333C2.5 4.67083 2.5 5.05833 2.5 5.83333V14.1667C2.5 14.9417 2.5 15.3292 2.585 15.6467C2.69854 16.0707 2.92175 16.4574 3.23217 16.7678C3.54259 17.0783 3.92927 17.3015 4.35333 17.415C4.67083 17.5 5.05833 17.5 5.83333 17.5M13.75 13.75C13.75 13.75 17.5 10.9883 17.5 10C17.5 9.01167 13.75 6.25 13.75 6.25M16.6667 10H6.66667"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+
+              <p
+                className={`font-normal text-[16px] leading-[20px] group-hover:text-[#eefb75] ${isCollapsed ? "hidden" : "block"}`}
+              >
+                Logout
+              </p>
+            </button>
           </div>
         </div>
 
@@ -453,7 +502,7 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
           alt="Collapse"
           width={28}
           height={32}
-          className={`cursor-pointer hover:scale-110 h-auto w-auto transition-transform duration-500 top-[26px] fixed
+          className={`cursor-pointer hover:scale-110 h-auto transition-transform duration-500 top-[26px] fixed
           ${isCollapsed ? "left-[88px] rotate-180" : "left-[224px]"}
           ${isMobileOpen ? "lg:block block" : "lg:block hidden"}
           ${isSearchOpen ? "hidden" : "z-[10000]"}
@@ -470,8 +519,14 @@ export function Sidebar({ onCollapseChange }: SidebarProps) {
       <SearchDrawer
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
-        data={allProperties} // your JSON array
+        // data={allProperties} // your JSON array
       />
+
+      <LogoutModal
+              isOpen={isLogoutModalOpen}
+              onClose={() => setIsLogoutModalOpen(false)}
+              onConfirm={handleLogout}
+            />
 
     </>
 

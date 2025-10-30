@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import AuthForm from "@/app/Layout/auth-layout/AuthForm";
-import { OtpVerification } from "@/app/api/auth/EmailVerificationAPI";
+// import { OtpVerification } from "@/app/api/auth/EmailVerificationAPI";
 import toast from "react-hot-toast";
+import { auth } from "@/app/api/auth";
 import Cookies from "js-cookie";
 interface FormData {
   firstName?: string;
@@ -24,12 +25,12 @@ export default function Email() {
         return;
       }
       const userEmail = Cookies.get("user-email");
-      if (!userEmail) {
-        toast.error("Email not found. Please try again.");
-        return;
-      }
-      const response = await OtpVerification({
-        email: userEmail,
+      // if (!userEmail) {
+      //   toast.error("Email not found. Please try again.");
+      //   return;
+      // }
+      const response = await auth.verifyOTP({
+        email: userEmail||"",
         otp: otpString,
       });
       if (response.success) {

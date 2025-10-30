@@ -1,185 +1,248 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { Table } from "@/app/admin/tables-essentials/Tables";
 import { Modal } from "@/app/shared/Modal";
 import FilterDrawer from "@/app/admin/tables-essentials/Filter";
+import { application } from "@/app/api/Admin/application";
+import type { Application } from "@/app/api/Admin/application/types";
+
+interface ApiParams {
+  page: number;
+  pageSize: number;
+  search?: string;
+  ownership?: string;
+  status?: string;
+  submittedAt?: string;
+}
 
 interface CertificationData {
-  id: number;
+  id: string;
   "Application ID": string;
   "Property Name": string;
   Address: string;
   Ownership: string;
-  "Submitted Date": string;
   Status: string;
+  "Submitted Date": string;
 }
 
 export default function Applications() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [singleRowToDelete, setSingleRowToDelete] = useState<{
     row: Record<string, string>;
-    id: number;
+    id: string;
   } | null>(null);
   const [modalType, setModalType] = useState<"single" | "multiple">("multiple");
 
+  // Dropdown states
   const [showOwnershipDropdown, setShowOwnershipDropdown] = useState(false);
-  // const [showPropertyDropdown, setShowPropertyDropdown] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
 
-  const [certificationFilters, setCertificationFilters] = useState({
+  // Separate state for applied filters vs temporary filter selections
+  const [appliedFilters, setAppliedFilters] = useState({
     ownership: "",
-    property: "",
+    status: "",
+    submittedDate: "",
+  });
+
+  const [tempFilters, setTempFilters] = useState({
+    ownership: "",
     status: "",
     submittedDate: "",
   });
 
   const [submittedDate, setSubmittedDate] = useState<Date | null>(null);
 
-  const [allCertificationData, setAllCertificationData] =
-    useState<CertificationData[]>([
-      {
-        id: 1,
-        "Application ID": "TAQ - 65432",
-        "Property Name": "Coastal Hillside Estate",
-        Address: "762 Evergreen Terrace",
-        Ownership: "Owner",
-        "Submitted Date": "Aug 12, 2025",
-        Status: "Approved",
-      },
-      {
-        id: 2,
-        "Application ID": "TAQ - 65432",
-        "Property Name": "Coastal Hillside Estate",
-        Address: "762 Evergreen Terrace",
-        Ownership: "Manager",
-        "Submitted Date": "Aug 12, 2025",
-        Status: "Pending",
-      },
-      {
-        id: 7,
-        "Application ID": "TAQ - 65432",
-        "Property Name": "Mountain View Complex",
-        Address: "123 Highland Road",
-        Ownership: "Owner",
-        "Submitted Date": "Sep 15, 2025",
-        Status: "Pending",
-      },
-      {
-        id: 8,
-        "Application ID": "TAQ - 65432",
-        "Property Name": "Skyline Residences",
-        Address: "456 Tower Street",
-        Ownership: "Manager",
-        "Submitted Date": "Oct 1, 2025",
-        Status: "Approved",
-      },
-    ]);
+  const [allCertificationData, setAllCertificationData] = useState<CertificationData[]>([]);
+  const [, setTotalItems] = useState(0);
 
-  // ✅ Filtering logic
-  const filteredCertificationData = useMemo(() => {
-    let filtered = allCertificationData;
-
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (item) =>
-          item["Property Name"]
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          item["Address"].toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item["Ownership"].toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  useEffect(() => {
+    if (isFilterOpen) {
+      setTempFilters(appliedFilters);
+      if (appliedFilters.submittedDate) {
+        setSubmittedDate(new Date(appliedFilters.submittedDate));
+      } else {
+        setSubmittedDate(null);
+      }
     }
+  }, [isFilterOpen, appliedFilters]);
 
-    if (certificationFilters.property) {
-      filtered = filtered.filter(
-        (item) => item["Property Name"] === certificationFilters.property
-      );
+  // Helper function to format date
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const capitalizeStatus = (status: string): string => {
+    return status.charAt(0) + status.slice(1).toLowerCase();
+  };
+
+  const fetchApplications = useCallback(async () => {
+    try {
+      setIsLoading(true);
+
+      const apiParams: ApiParams = {
+        page: 1,
+        pageSize: 100,
+      };
+
+      if (searchTerm) apiParams.search = searchTerm.trim();
+      if (appliedFilters.ownership)
+        apiParams.ownership = appliedFilters.ownership.trim();
+      if (appliedFilters.status)
+        apiParams.status = appliedFilters.status.trim();
+      if (appliedFilters.submittedDate)
+        apiParams.submittedAt = appliedFilters.submittedDate;
+
+      console.log("🔹 API Parameters:", apiParams);
+
+      const response = await application.getApplication(apiParams);
+      console.log("🔹 API Response:", response);
+
+      if (response.success && response.data) {
+        // 🔹 Step 1: Convert API response into table data
+        let transformedData: CertificationData[] =
+          response.data.applications.map((app: Application) => ({
+            id: app.id,
+            "Application ID": app.id.substring(0, 8) + "...",
+            "Property Name": app.propertyDetails?.propertyName || "N/A",
+            Address: app.propertyDetails?.address || "N/A",
+            Ownership: app.propertyDetails?.ownership || "N/A",
+            Status: capitalizeStatus(app.status),
+            "Submitted Date": app.submittedAt
+              ? formatDate(app.submittedAt)
+              : "—",
+          }));
+
+        // 🔹 Step 2: Apply ownership filter client-side (if backend doesn't filter)
+        if (appliedFilters.ownership) {
+          const ownershipFilter = appliedFilters.ownership.toLowerCase();
+          transformedData = transformedData.filter(
+            (item) => item.Ownership.toLowerCase() === ownershipFilter
+          );
+        }
+
+        // 🔹 Step 3: Update the UI
+        console.log("🔹 Filtered data count:", transformedData.length);
+        setAllCertificationData(transformedData);
+        setTotalItems(transformedData.length);
+      } else {
+        console.error("❌ Unexpected response:", response);
+        setAllCertificationData([]);
+        setTotalItems(0);
+      }
+    } catch (error) {
+      console.error("🚨 Error fetching applications:", error);
+      setAllCertificationData([]);
+      setTotalItems(0);
+    } finally {
+      setIsLoading(false);
     }
+  }, [
+    searchTerm,
+    appliedFilters.ownership,
+    appliedFilters.status,
+    appliedFilters.submittedDate,
+  ]);
 
-    if (certificationFilters.status) {
-      filtered = filtered.filter(
-        (item) => item["Status"] === certificationFilters.status
-      );
-    }
+  useEffect(() => {
+    fetchApplications();
+  }, [fetchApplications]);
 
-    if (certificationFilters.ownership) {
-      filtered = filtered.filter(
-        (item) => item["Ownership"] === certificationFilters.ownership
-      );
-    }
+  // 🔹 Only show first 5 applications
+  const limitedData = useMemo(() => {
+    return allCertificationData.slice(0, 5);
+  }, [allCertificationData]);
 
-    if (certificationFilters.submittedDate) {
-      filtered = filtered.filter(
-        (item) => item["Submitted Date"] === certificationFilters.submittedDate
-      );
-    }
-
-    return filtered;
-  }, [searchTerm, certificationFilters, allCertificationData]);
+  const displayData = useMemo(() => {
+    return limitedData.map(({ id, ...rest }) => {
+      console.log("Application ID:", id);
+      return rest;
+    });
+  }, [limitedData]);
 
   const handleSelectAll = (checked: boolean) => {
     const newSelected = new Set(selectedRows);
     if (checked) {
-      filteredCertificationData.forEach((item) => newSelected.add(item.id));
+      limitedData.forEach((item) => newSelected.add(item.id));
     } else {
-      filteredCertificationData.forEach((item) => newSelected.delete(item.id));
+      limitedData.forEach((item) => newSelected.delete(item.id));
     }
     setSelectedRows(newSelected);
   };
 
   const handleSelectRow = (id: string, checked: boolean) => {
     const newSelected = new Set(selectedRows);
-    const numericId = parseInt(id);
     if (checked) {
-      newSelected.add(numericId);
+      newSelected.add(id);
     } else {
-      newSelected.delete(numericId);
+      newSelected.delete(id);
     }
     setSelectedRows(newSelected);
   };
 
   const isAllDisplayedSelected = useMemo(() => {
     return (
-      filteredCertificationData.length > 0 &&
-      filteredCertificationData.every((item) => selectedRows.has(item.id))
+      limitedData.length > 0 &&
+      limitedData.every((item) => selectedRows.has(item.id))
     );
-  }, [filteredCertificationData, selectedRows]);
+  }, [limitedData, selectedRows]);
 
   const isSomeDisplayedSelected = useMemo(() => {
     return (
-      filteredCertificationData.some((item) => selectedRows.has(item.id)) &&
+      limitedData.some((item) => selectedRows.has(item.id)) &&
       !isAllDisplayedSelected
     );
-  }, [filteredCertificationData, selectedRows, isAllDisplayedSelected]);
+  }, [limitedData, selectedRows, isAllDisplayedSelected]);
 
-  const handleDeleteApplications = (selectedRowIds: Set<number>) => {
-    const idsToDelete = Array.from(selectedRowIds);
-    const updatedData = allCertificationData.filter(
-      (item) => !idsToDelete.includes(item.id)
-    );
-    setAllCertificationData(updatedData);
-    setIsModalOpen(false);
-    setSelectedRows(new Set());
+  const handleDeleteApplications = async (selectedRowIds: Set<string>) => {
+    try {
+      const deletePromises = Array.from(selectedRowIds).map((id) =>
+        application.deleteApplication(id)
+      );
+
+      await Promise.all(deletePromises);
+
+      // Refresh the applications list
+      await fetchApplications();
+
+      setIsModalOpen(false);
+      setSelectedRows(new Set());
+    } catch (error) {
+      console.error("Error deleting applications:", error);
+    }
   };
 
-  const handleDeleteSingleApplication = (
+  const handleDeleteSingleApplication = async (
     row: Record<string, string>,
-    id: number
+    id: string
   ) => {
-    const updatedData = allCertificationData.filter((item) => item.id !== id);
-    setAllCertificationData(updatedData);
-    setIsModalOpen(false);
-    setSingleRowToDelete(null);
+    try {
+      await application.deleteApplication(id);
 
-    const newSelected = new Set(selectedRows);
-    newSelected.delete(id);
-    setSelectedRows(newSelected);
+      // Refresh the applications list
+      await fetchApplications();
+
+      setIsModalOpen(false);
+      setSingleRowToDelete(null);
+
+      const newSelected = new Set(selectedRows);
+      newSelected.delete(id);
+      setSelectedRows(newSelected);
+    } catch (error) {
+      console.error("Error deleting application:", error);
+    }
   };
 
-  const openDeleteSingleModal = (row: Record<string, string>, id: number) => {
+  const openDeleteSingleModal = (row: Record<string, string>, id: string) => {
     setSingleRowToDelete({ row, id });
     setModalType("single");
     setIsModalOpen(true);
@@ -223,7 +286,6 @@ export default function Applications() {
     highlightRowOnHover: true,
   };
 
- 
   const uniqueStatuses = [
     ...new Set(allCertificationData.map((item) => item["Status"])),
   ];
@@ -231,34 +293,39 @@ export default function Applications() {
     ...new Set(allCertificationData.map((item) => item["Ownership"])),
   ];
 
-const displayData = useMemo(() => {
-  return filteredCertificationData.map(({ id, ...rest }) => {
-    console.log("ID:", id); 
-    return rest; 
-  });
-}, [filteredCertificationData]);
-
+  // ✅ ENHANCED RESET FILTER FUNCTION
   const handleResetFilter = () => {
-    setCertificationFilters({
+    const resetFilters = {
       ownership: "",
-      property: "",
       status: "",
       submittedDate: "",
-    });
-    setSearchTerm("");
+    };
+
+    setTempFilters(resetFilters);
+    setAppliedFilters(resetFilters);
     setSubmittedDate(null);
+    setIsFilterOpen(false);
   };
 
   const handleApplyFilter = () => {
-    if (submittedDate) {
-      setCertificationFilters((prev) => ({
-        ...prev,
-        submittedDate: submittedDate.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
-      }));
+    const filtersToApply = {
+      ...tempFilters,
+      submittedDate: submittedDate
+        ? submittedDate.toISOString().split("T")[0]
+        : "",
+    };
+
+    console.log("Applying filters:", filtersToApply);
+    setAppliedFilters(filtersToApply);
+    setIsFilterOpen(false);
+  };
+
+  const handleCloseFilter = () => {
+    setTempFilters(appliedFilters);
+    if (appliedFilters.submittedDate) {
+      setSubmittedDate(new Date(appliedFilters.submittedDate));
+    } else {
+      setSubmittedDate(null);
     }
     setIsFilterOpen(false);
   };
@@ -267,18 +334,26 @@ const displayData = useMemo(() => {
     {
       label: "View Details",
       onClick: (row: Record<string, string>, index: number) => {
-        const originalRow = filteredCertificationData[index];
+        const originalRow = limitedData[index];
         window.location.href = `/admin/dashboard/application/detail/${originalRow.id}`;
       },
     },
     {
       label: "Delete Application",
       onClick: (row: Record<string, string>, index: number) => {
-        const originalRow = filteredCertificationData[index];
+        const originalRow = limitedData[index];
         openDeleteSingleModal(row, originalRow.id);
       },
     },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-white">Loading applications...</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -300,14 +375,16 @@ const displayData = useMemo(() => {
 
       <div className="flex flex-col justify-between pt-5">
         <Table
+          setHeight={false}
           data={displayData}
           title="Applications"
           control={tableControl}
           showDeleteButton={true}
           onDeleteSingle={(row, index) => {
-            const originalRow = filteredCertificationData[index];
+            const originalRow = limitedData[index];
             openDeleteSingleModal(row, originalRow.id);
           }}
+          showPagination={false} // 🔹 Remove pagination
           clickable={true}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
@@ -315,37 +392,37 @@ const displayData = useMemo(() => {
           onSelectRow={handleSelectRow}
           isAllSelected={isAllDisplayedSelected}
           isSomeSelected={isSomeDisplayedSelected}
-          rowIds={filteredCertificationData.map((item) => item.id.toString())}
+          rowIds={limitedData.map((item) => item.id)}
           dropdownItems={dropdownItems}
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
-          totalItems={filteredCertificationData.length}
+          totalItems={limitedData.length}
           showFilter={true}
           onFilterToggle={setIsFilterOpen}
           onDeleteAll={handleDeleteSelected}
           isDeleteAllDisabled={
             selectedRows.size === 0 || selectedRows.size < displayData.length
           }
+          
         />
       </div>
 
       <FilterDrawer
         isOpen={isFilterOpen}
-        onClose={() => setIsFilterOpen(false)}
+        onClose={handleCloseFilter}
         title="Apply Filter"
         description="Refine listings to find the right property faster."
         resetLabel="Reset"
         onReset={handleResetFilter}
         buttonLabel="Apply Filter"
         onApply={handleApplyFilter}
-        filterValues={certificationFilters}
+        filterValues={tempFilters}
         onFilterChange={(filters) => {
-          setCertificationFilters((prev) => ({
+          setTempFilters((prev) => ({
             ...prev,
             ...filters,
           }));
         }}
-        
         dropdownStates={{
           ownership: showOwnershipDropdown,
           status: showStatusDropdown,

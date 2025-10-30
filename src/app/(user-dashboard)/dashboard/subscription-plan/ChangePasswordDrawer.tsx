@@ -1,134 +1,122 @@
 "use client";
 import React, { useState } from "react";
-import { Eye, EyeOff } from "lucide-react"; 
-import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import { Modal } from "@/app/shared/Modal";
+import { ChangePasswordResponse } from "@/app/api/Host/setting/types";
+import { setting } from "@/app/api/Host/setting";
 
 type ChangePasswordDrawerProps = {
-  onSave?: (currentPassword: string, newPassword: string) => void;
   onClose: () => void;
+  onSave?: (currentPassword: string, newPassword: string) => void;
 };
 
-export default function ChangePasswordDrawer({ onClose }: ChangePasswordDrawerProps) {
-  const router = useRouter();
-
+export default function ChangePasswordDrawer({
+  onClose,
+  onSave,
+}: ChangePasswordDrawerProps) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-
-  // ✅ Success modal state
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
 
-  const handlePasswordUpdate = () => {
-    // here you can add validation / API call
-    setIsSuccessModalOpen(true); // show success modal
-  };
+  const handlePasswordUpdate = async () => {
+    setError(null);
 
+    if (!currentPassword || !newPassword) {
+      setError("Both fields are required.");
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setError("New password must be at least 8 characters long.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await setting.changePassword({
+        currentPassword,
+        newPassword,
+      });
+      const data: ChangePasswordResponse = response.data;
+
+      if (data.status === "success") {
+        setIsSuccessModalOpen(true);
+        setCurrentPassword("");
+        setNewPassword("");
+        if (onSave) onSave(currentPassword, newPassword);
+      } else {
+        setError(
+          data.message || "Failed to change password. Please try again."
+        );
+      }
+    } catch (err) {
+      console.error("Password change error:", err);
+      setError("Unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="h-full flex flex-col justify-between text-white">
-      {/* Top content */}
       <div className="space-y-5">
-        <h2 className="text-[20px] leading-6 font-medium mb-3">
-          Manage Your Password
-        </h2>
-        <p className="text-[16px] leading-5 font-normal mb-10 text-[#FFFFFF99]">
-          Update your password anytime for better security, or reset it if
-          you’ve forgotten the current one.
-        </p>
+        <h2 className="text-[20px] font-medium">Change Password</h2>
 
-        {/* Current Password */}
         <div className="relative">
-          <label className="block text-[14px] font-medium mb-[10px]">
+          <label className="block text-[14px] mb-[10px]">
             Current password
           </label>
           <input
-            placeholder="Enter password"
             type={showCurrent ? "text" : "password"}
+            placeholder="Enter current password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            className="w-full p-3 pr-10 rounded-xl border border-[#404040]
-              bg-gradient-to-b from-[#202020] to-[#101010]
-              text-[14px] text-white placeholder:text-white/40
-              focus:outline-none focus:border-[#EFFC76]
-              transition duration-200 ease-in-out"
+            className="w-full p-3 pr-10 rounded-xl border border-[#404040] bg-gradient-to-b from-[#202020] to-[#101010]
+              text-[14px] text-white placeholder:text-white/40 focus:outline-none focus:border-[#EFFC76]"
           />
           <button
             type="button"
-            className="absolute right-3 top-[46px] text-gray-400 cursor-pointer"
+            className="absolute right-3 top-[46px] text-gray-400"
             onClick={() => setShowCurrent(!showCurrent)}
           >
             {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
-          <button
-            onClick={() => router.push("/auth/forgot-password")}
-            className="absolute right-0 -bottom-6 text-sm text-[#fff] cursor-pointer"
-          >
-            Forgot Password?
-          </button>
         </div>
-
-        {/* New Password */}
         <div className="relative">
-          <label className="block text-[14px] font-medium mb-[10px]">
-            New password
-          </label>
+          <label className="block text-[14px] mb-[10px]">New password</label>
           <input
-            placeholder="Enter new password"
             type={showNew ? "text" : "password"}
+            placeholder="Enter new password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full p-3 pr-10 rounded-xl border border-[#404040]
-              bg-gradient-to-b from-[#202020] to-[#101010]
-              text-[14px] text-white placeholder:text-white/40
-              focus:outline-none focus:border-[#EFFC76]
-              transition duration-200 ease-in-out"
+            className="w-full p-3 pr-10 rounded-xl border border-[#404040] bg-gradient-to-b from-[#202020] to-[#101010]
+              text-[14px] text-white placeholder:text-white/40 focus:outline-none focus:border-[#EFFC76]"
           />
           <button
             type="button"
-            className="absolute right-3 top-[46px] text-gray-400 cursor-pointer"
+            className="absolute right-3 top-[46px] text-gray-400"
             onClick={() => setShowNew(!showNew)}
           >
             {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         </div>
 
-        {/* Confirm Password */}
-        <div className="relative">
-          <label className="block text-[14px] font-medium mb-[10px]">
-            Confirm new password
-          </label>
-          <input
-            placeholder="Enter confirm new password"
-            type={showConfirm ? "text" : "password"}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full p-3 pr-10 rounded-xl border border-[#404040]
-              bg-gradient-to-b from-[#202020] to-[#101010]
-              text-[14px] text-white placeholder:text-white/40
-              focus:outline-none focus:border-[#EFFC76]
-              transition duration-200 ease-in-out"
-          />
-          <button
-            type="button"
-            className="absolute right-3 top-[46px] text-gray-400 cursor-pointer"
-            onClick={() => setShowConfirm(!showConfirm)}
-          >
-            {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-        </div>
+        {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
       </div>
 
-      {/* Bottom button */}
-      <div className="mt-6 lg:mt-auto">
+      <div className="mt-6">
         <button
+          disabled={loading}
           onClick={handlePasswordUpdate}
-                    className="yellow-btn cursor-pointer w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px] leading-[22px] hover:bg-[#E5F266] transition-colors duration-300"
+          className={`yellow-btn w-full text-black px-[40px] py-[16px] rounded-[8px] font-semibold text-[18px]
+            ${
+              loading ? "opacity-70 cursor-not-allowed" : "hover:bg-[#E5F266]"
+            }`}
         >
-          Update Password
+          {loading ? "Updating..." : "Update Password"}
         </button>
       </div>
 
@@ -137,7 +125,7 @@ export default function ChangePasswordDrawer({ onClose }: ChangePasswordDrawerPr
           isOpen={isSuccessModalOpen}
           onClose={() => {
             setIsSuccessModalOpen(false);
-            onClose(); 
+            onClose();
           }}
           onConfirm={() => {
             setIsSuccessModalOpen(false);

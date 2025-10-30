@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { Manrope } from "next/font/google";
+import GlobalAuthManager from "./shared/utils/auth-guard/AuthGuard";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -23,7 +24,7 @@ type RootLayoutProps = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body className={` ${manrope.className} !overflow-x-hidden`}>
+      <body className={`${manrope.className} !overflow-x-hidden`}>
         <Toaster
           position="top-right"
           toastOptions={{
@@ -31,12 +32,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
             style: {
               background: "white",
               color: "black",
+              zIndex:"9000000000"
             },
             success: {
               duration: 3000,
             },
           }}
         />
+        <GlobalAuthManager />
+
         <main>{children}</main>
       </body>
     </html>

@@ -20,13 +20,13 @@ interface Step1aProps {
   formData: {
     propertyName: string;
     propertyAddress: string;
-    propertyType: string; // This will store the ID
-    propertyTypeName: string; // Add this to store the display name
+    propertyType: string;
+    propertyTypeName: string;
     ownership: string;
   };
   errors: { [key: string]: string };
   onFieldChange: (field: string, value: string) => void;
-  propertyTypes: PropertyType[]; // Change to PropertyType array
+  propertyTypes: PropertyType[];
   loadingPropertyTypes: boolean;
 }
 
@@ -79,16 +79,14 @@ export default function Step1a({
     label: type.name,
     onClick: () => {
       // Store both ID and name
-      onFieldChange("propertyType", type.id); // Store ID for API
-      onFieldChange("propertyTypeName", type.name); // Store name for display
+      onFieldChange("propertyType", type.id);
+      onFieldChange("propertyTypeName", type.name);
       setShowPropertyType(false);
     },
   }));
 
   // Handle property type selection
   const handlePropertyTypeToggle = () => {
-    if (loadingPropertyTypes) return;
-    if (!propertyTypes || propertyTypes.length === 0) return;
     setShowPropertyType((prev) => !prev);
   };
 

@@ -4,7 +4,10 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 // import { X, User, Briefcase, Calendar, Activity } from "lucide-react";
 import Image from "next/image";
 import Dropdown from "@/app/shared/Dropdown";
-
+interface ColumnConfig {
+  truncate?: boolean;
+  className?: string;
+}
 export type TableControl = {
   hover?: boolean;
   striped?: boolean;
@@ -29,11 +32,13 @@ export type TableControl = {
   nthChildStart?: number;
   nthChildStep?: number;
   highlightRowOnHover?: boolean;
+  columnConfig?: Record<string, ColumnConfig>;
+
 };
 
 interface TableProps<T> {
   title?: string;
-  setHeight?:boolean
+  setHeight?: boolean;
   onSelectAll: (checked: boolean) => void;
   onSelectRow: (rowId: string, checked: boolean) => void;
   isAllSelected: boolean;
@@ -46,8 +51,8 @@ interface TableProps<T> {
   clickable?: boolean;
   onDeleteSingle?: (row: T, index: number) => void;
   showDeleteButton?: boolean;
-  selectedRows: Set<number>;
-  setSelectedRows: React.Dispatch<React.SetStateAction<Set<number>>>;
+  selectedRows: Set<string>;
+  setSelectedRows: React.Dispatch<React.SetStateAction<Set<string>>>;
   searchTerm?: string;
   onSearchChange?: (term: string) => void;
   currentPage?: number;
@@ -59,11 +64,15 @@ interface TableProps<T> {
   onFilterToggle?: (isOpen: boolean) => void;
   onDeleteAll?: () => void;
   isDeleteAllDisabled?: boolean;
+  disableClientSidePagination?: boolean;
+    isLoading?: boolean;
+
+
 }
 
 export function Table<T extends Record<string, unknown>>({
   title,
-  setHeight=true,
+  setHeight = true,
   data,
   control = {},
   onRowClick,
@@ -71,26 +80,31 @@ export function Table<T extends Record<string, unknown>>({
   showDeleteButton = false,
   dropdownItems,
   selectedRows = new Set(),
-  setSelectedRows = () => {},
+  setSelectedRows = () => { },
   onSelectAll,
   onSelectRow,
   isAllSelected = false,
   isSomeSelected = false,
   rowIds = [],
   searchTerm = "",
-  onSearchChange = () => {},
+  onSearchChange = () => { },
   currentPage = 1,
-  onPageChange = () => {},
+  onPageChange = () => { },
   itemsPerPage = 6,
   totalItems = 0,
   showPagination = true,
   showFilter = false,
-  onFilterToggle = () => {},
-  onDeleteAll = () => {},
+  onFilterToggle = () => { },
+  onDeleteAll = () => { },
   isDeleteAllDisabled = true,
+  disableClientSidePagination = false, // ✅ ADD THIS
+
+
 }: TableProps<T>) {
   const [displayData, setDisplayData] = useState<T[]>(data);
-  const [activeSortDropdown, setActiveSortDropdown] = useState<string | null>(null);
+  const [activeSortDropdown, setActiveSortDropdown] = useState<string | null>(
+    null
+  );
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -107,19 +121,31 @@ export function Table<T extends Record<string, unknown>>({
 
   const renderStatusBadge = (status: string) => {
     const statusLower = status.toLowerCase();
-    let badgeClasses = "inline-flex px-2 py-1 rounded-full text-xs font-medium ";
+    let badgeClasses =
+      "inline-flex px-2 py-1 rounded-full text-xs font-medium ";
 
-    if (statusLower === "verified" || statusLower === "approved" || statusLower === "active") {
+    if (
+      statusLower === "verified" ||
+      statusLower === "approved" ||
+      statusLower === "active"
+    ) {
       badgeClasses += "bg-[#2d2d2d] text-[#EFFC76] py-2 px-3";
-    } else if (statusLower === "near expiry" || statusLower === "pending" || statusLower === "inactive") {
+    } else if (
+      statusLower === "near expiry" ||
+      statusLower === "pending" ||
+      statusLower === "inactive"
+    ) {
       badgeClasses += "bg-[#2d2d2d] text-[#FFB52B] py-2 px-3";
-    } else if (statusLower === "expired" || statusLower === "rejected"||statusLower === "suspended" ||statusLower === "failed" ) {
+    } else if (
+      statusLower === "expired" ||
+      statusLower === "rejected" ||
+      statusLower === "suspended" ||
+      statusLower === "failed"
+    ) {
       badgeClasses += "bg-[#2d2d2d] text-[#FF5050] py-2 px-3";
-    }
-    else if (statusLower === "refunded" ) {
+    } else if (statusLower === "refunded") {
       badgeClasses += "bg-[#2d2d2d] text-[#28EB1D] py-2 px-3";
-    }
-     else {
+    } else {
       badgeClasses += "bg-[#2d2d2d] text-[#EFFC76] py-2 px-3";
     }
 
@@ -151,7 +177,8 @@ export function Table<T extends Record<string, unknown>>({
         if (rowNumber >= nthStart) {
           const adjustedPosition = rowNumber - nthStart;
           if (adjustedPosition % nthStep === 0) {
-            const colorIndex = Math.floor(adjustedPosition / nthStep) % nthColors.length;
+            const colorIndex =
+              Math.floor(adjustedPosition / nthStep) % nthColors.length;
             bgColor = nthColors[colorIndex];
           }
         }
@@ -197,7 +224,11 @@ export function Table<T extends Record<string, unknown>>({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (activeSortDropdown && sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
+      if (
+        activeSortDropdown &&
+        sortDropdownRef.current &&
+        !sortDropdownRef.current.contains(event.target as Node)
+      ) {
         setActiveSortDropdown(null);
       }
     };
@@ -206,16 +237,26 @@ export function Table<T extends Record<string, unknown>>({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [activeSortDropdown]);
 
-  const totalPages = showPagination ? Math.ceil(totalItems / itemsPerPage) : 1;
-  const startIndex = showPagination ? (currentPage - 1) * itemsPerPage : 0;
-  const tableData = showPagination ? displayData.slice(startIndex, startIndex + itemsPerPage) : displayData;
 
+  const totalPages = showPagination ? Math.ceil(totalItems / itemsPerPage) : 1;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+
+  const tableData = disableClientSidePagination
+    ? data
+    : (showPagination
+      ? data.slice(startIndex, startIndex + itemsPerPage)
+      : data);
   const renderPaginationButtons = () => {
     const buttons = [];
     const maxVisiblePages = 5;
 
+    if (totalPages <= 1) {
+      return null;
+    }
+
     buttons.push(
       <button
+        type="button"
         key="prev"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
@@ -249,13 +290,13 @@ export function Table<T extends Record<string, unknown>>({
     for (let i = startPage; i <= endPage; i++) {
       buttons.push(
         <button
+          type="button"
           key={i}
           onClick={() => onPageChange(i)}
-          className={`w-8 h-8 flex items-center justify-center rounded text-sm leading-[18px] p-[13px] transition-colors border cursor-pointer ${
-            currentPage === i
-              ? "bg-[#EFFC76] text-black font-medium border-[#EFFC76]"
-              : "text-white opacity-60 border-gray-600"
-          }`}
+          className={`w-8 h-8 flex items-center justify-center rounded text-sm leading-[18px] p-[13px] transition-colors border cursor-pointer ${currentPage === i
+            ? "bg-[#EFFC76] text-black font-medium border-[#EFFC76]"
+            : "text-white opacity-60 border-gray-600"
+            }`}
         >
           {i}
         </button>
@@ -264,12 +305,18 @@ export function Table<T extends Record<string, unknown>>({
 
     buttons.push(
       <button
+        type="button"
         key="next"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
         className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white transition-colors border border-gray-600 rounded cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 p-[13px]"
       >
-        <Image src="/images/arrow-right.svg" height={14} width={14} alt="Back" />
+        <Image
+          src="/images/arrow-right.svg"
+          height={14}
+          width={14}
+          alt="Back"
+        />
       </button>
     );
 
@@ -289,7 +336,11 @@ export function Table<T extends Record<string, unknown>>({
   const handleRowClick = (row: T, index: number, e?: React.MouseEvent) => {
     if (clickable && onRowClick && e) {
       const target = e.target as HTMLElement;
-      if (!target.closest('input[type="checkbox"]') && !target.closest("button") && !target.closest("label")) {
+      if (
+        !target.closest('input[type="checkbox"]') &&
+        !target.closest("button") &&
+        !target.closest("label")
+      ) {
         onRowClick(row, index);
       }
     }
@@ -297,42 +348,67 @@ export function Table<T extends Record<string, unknown>>({
 
   return (
     <div style={{ marginBottom: 15 }}>
-      <div className={`bg-[#121315] overflow-auto ${setHeight?"custom-height":""}  rounded-lg relative z-[10] scrollbar-hide`}>
+      <div
+        className={`bg-[#121315] overflow-auto ${setHeight ? "custom-height" : ""
+          }  rounded-lg relative z-[10] scrollbar-hide`}
+      >
         <div className="flex flex-col sm:flex-row justify-between lg:items-center pt-5 px-5">
-          <h2 className="text-white text-[16px] font-semibold leading-[20px]">{title}</h2>
+          <h2 className="text-white text-[16px] font-semibold leading-[20px]">
+            {title}
+          </h2>
           <div className="flex flex-wrap sm:flex-row items-start sm:items-center pt-3 sm:pt-0 gap-3">
             <div className="relative w-full sm:w-[204px]">
               <input
                 type="text"
                 placeholder="Search"
                 value={searchTerm}
+                autoFocus
                 onChange={(e) => onSearchChange(e.target.value)}
                 className="bg-white/12 border rounded-lg text-white/40 placeholder-white/60 w-full px-3 py-2 text-sm pl-8 border-none outline-none"
               />
               <div className="absolute left-2.5 top-2.5 w-4 h-4 text-gray-500">
-                <Image src="/images/search.png" alt="search" width={16} height={16} />
+                <Image
+                  src="/images/search.png"
+                  alt="search"
+                  width={16}
+                  height={16}
+                />
               </div>
             </div>
 
             {showFilter && (
               <button
+                type="button"
                 onClick={() => onFilterToggle(true)}
                 className="h-[34px] cursor-pointer w-[86px] rounded-md bg-[#2e2f31] py-2 px-3 flex items-center gap-1"
               >
-                <span className="text-sm leading-[18px] font-medium text-white opacity-60">Filter</span>
-                <Image src="/images/filter1.png" alt="filter" height={9} width={13} />
+                <span className="text-sm leading-[18px] font-medium text-white opacity-60">
+                  Filter
+                </span>
+                <Image
+                  src="/images/filter1.png"
+                  alt="filter"
+                  height={9}
+                  width={13}
+                />
               </button>
             )}
 
             {showDeleteButton && (
               <button
+                type="button"
                 onClick={onDeleteAll}
                 disabled={isDeleteAllDisabled}
                 className="flex cursor-pointer items-center gap-[6px] p-2 rounded-[8px] 
                   border border-[rgba(239,252,118,0.32)] text-[#EFFC76] text-[12px] font-normal leading-[16px]
                   disabled:bg-[transparent] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <Image src="/images/delete-row.svg" alt="Delete selected" width={12} height={12} />
+                <Image
+                  src="/images/delete-row.svg"
+                  alt="Delete selected"
+                  width={12}
+                  height={12}
+                />
                 Delete All
               </button>
             )}
@@ -340,15 +416,18 @@ export function Table<T extends Record<string, unknown>>({
         </div>
 
         <div className="p-0 cursor-pointer">
-          <div 
-          className="scrollbar-hide"
+          <div
+            className="scrollbar-hide"
             style={{
               overflowX: "auto",
               width: "100%",
-              borderRadius: control.borderRadius ? `${control.borderRadius}px` : "0",
+              borderRadius: control.borderRadius
+                ? `${control.borderRadius}px`
+                : "0",
               boxShadow: control.shadow ? "0 4px 6px rgba(0,0,0,0.1)" : "none",
               border: control.bordered
-                ? `${getBorderWidth()} ${control.borderStyle || "solid"} ${control.borderColor || "#e0e0e0"}`
+                ? `${getBorderWidth()} ${control.borderStyle || "solid"} ${control.borderColor || "#e0e0e0"
+                }`
                 : "none",
             }}
           >
@@ -358,7 +437,7 @@ export function Table<T extends Record<string, unknown>>({
                 className="p-5 scrollbar-hide"
                 style={{
                   width: "100%",
-                  overflow:"auto",
+                  overflow: "auto",
                   minWidth: "max-content",
                   borderCollapse: "collapse",
                   backgroundColor: "transparent",
@@ -367,7 +446,9 @@ export function Table<T extends Record<string, unknown>>({
                 }}
               >
                 <thead className={!data || data.length === 0 ? "hidden" : ""}>
-                  <tr style={{ backgroundColor: control.headerBgColor || "#333" }}>
+                  <tr
+                    style={{ backgroundColor: control.headerBgColor || "#333" }}
+                  >
                     {showDeleteButton && (
                       <th
                         style={{
@@ -395,13 +476,13 @@ export function Table<T extends Record<string, unknown>>({
                           />
                           <span
                             className="absolute inset-0 rounded-md border-2 border-[#FFFFFFCC] translate-x-1 translate-y-1 
-               peer-checked:border-[#EFFC76]"
+                          peer-checked:border-[#EFFC76]"
                           ></span>
                           <span
                             className="relative w-5 h-5 rounded-md border-2 border-[#FFFFFFCC] bg-[#252628] 
-               flex items-center justify-center 
-               peer-checked:bg-[#EFFC76] peer-checked:border-[#EFFC76]
-               peer-checked:after:content-['✓'] peer-checked:after:text-black peer-checked:after:text-xs peer-checked:after:font-bold"
+                            flex items-center justify-center 
+                            peer-checked:bg-[#EFFC76] peer-checked:border-[#EFFC76]
+                            peer-checked:after:content-['✓'] peer-checked:after:text-black peer-checked:after:text-xs peer-checked:after:font-bold"
                           ></span>
                         </label>
                       </th>
@@ -419,8 +500,14 @@ export function Table<T extends Record<string, unknown>>({
                           lineHeight: "16px",
                           whiteSpace: "nowrap",
                           position: "relative",
-                          borderTopLeftRadius: !showDeleteButton && index === 0 ? control.borderRadius || 8 : 0,
-                          borderTopRightRadius: index === keys.length - 1 && !showDeleteButton ? control.borderRadius || 8 : 0,
+                          borderTopLeftRadius:
+                            !showDeleteButton && index === 0
+                              ? control.borderRadius || 8
+                              : 0,
+                          borderTopRightRadius:
+                            index === keys.length - 1 && !showDeleteButton
+                              ? control.borderRadius || 8
+                              : 0,
                         }}
                       >
                         <div
@@ -433,11 +520,18 @@ export function Table<T extends Record<string, unknown>>({
                           }}
                           onClick={(e) => {
                             e.stopPropagation();
-                            setActiveSortDropdown(activeSortDropdown === key ? null : key);
+                            setActiveSortDropdown(
+                              activeSortDropdown === key ? null : key
+                            );
                           }}
                         >
                           {key}
-                          <Image src="/images/menu.png" alt="menu" height={16} width={16} />
+                          <Image
+                            src="/images/menu.png"
+                            alt="menu"
+                            height={16}
+                            width={16}
+                          />
                         </div>
                       </th>
                     ))}
@@ -456,21 +550,48 @@ export function Table<T extends Record<string, unknown>>({
                         }}
                       >
                         Action
-                        <Image src="/images/menu.png" alt="menu" height={16} width={16} />
+                        <Image
+                          src="/images/menu.png"
+                          alt="menu"
+                          height={16}
+                          width={16}
+                        />
                       </th>
                     )}
                   </tr>
                 </thead>
 
                 {!data || data.length === 0 ? (
-                  <div>
-                    <div
-                      className="text-center bg-[#121315] custom-height flex justify-center items-center"
-                      style={{ padding: 20, textAlign: "center", color: "#666" }}
-                    >
-                      No data available
-                    </div>
-                  </div>
+                  <tbody>
+                    <tr>
+                      <td
+                        colSpan={Math.max(
+                          keys.length + (showDeleteButton ? 1 : 0),
+                          1
+                        )}
+                      >
+                        <div
+                          className="text-center bg-[#121315] custom-height flex flex-col justify-center items-center"
+                          style={{
+                            padding: 20,
+                            textAlign: "center",
+                            color: "#666",
+                          }}
+                        >
+                          <Image
+                            src="/images/empty.png"
+                            alt="No data"
+                            width={120}
+                            height={120}
+                            className="mb-3"
+                          />
+                          <p className="text-white/60 font-medium text-[16px] leading-[20px]">
+                            No data available
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
                 ) : (
                   <tbody className="!bg-transparent table-container">
                     {tableData.map((row, idx) => (
@@ -481,26 +602,39 @@ export function Table<T extends Record<string, unknown>>({
                         onClick={() => handleRowClick(row, idx)}
                       >
                         {showDeleteButton && (
-                          <td style={{ padding: paddingSize, whiteSpace: "nowrap", width: "24px" }}>
+                          <td
+                            style={{
+                              padding: paddingSize,
+                              whiteSpace: "nowrap",
+                              width: "24px",
+                            }}
+                          >
                             <label className="relative inline-flex items-center cursor-pointer">
                               <input
                                 type="checkbox"
-                                checked={selectedRows.has(parseInt(rowIds[showPagination ? startIndex + idx : idx]))}
+                                checked={selectedRows.has(
+                                  rowIds[
+                                  showPagination ? startIndex + idx : idx
+                                  ]
+                                )}
                                 onChange={(e) => {
-                                  const rowId = rowIds[showPagination ? startIndex + idx : idx];
+                                  const rowId =
+                                    rowIds[
+                                    showPagination ? startIndex + idx : idx
+                                    ];
                                   onSelectRow?.(rowId, e.target.checked);
                                 }}
                                 className="peer hidden"
                               />
                               <span
                                 className="absolute inset-0 rounded-md border-2 border-[#FFFFFFCC] translate-x-1 translate-y-1 
-               peer-checked:border-[#EFFC76]"
+                              peer-checked:border-[#EFFC76]"
                               ></span>
                               <span
                                 className="relative w-5 h-5 rounded-md border-2 border-[#FFFFFFCC] bg-[#252628] 
-               flex items-center justify-center 
-               peer-checked:bg-[#EFFC76] peer-checked:border-[#EFFC76]
-               peer-checked:after:content-['✓'] peer-checked:after:text-black peer-checked:after:text-xs peer-checked:after:font-bold"
+                                          flex items-center justify-center 
+                                          peer-checked:bg-[#EFFC76] peer-checked:border-[#EFFC76]
+                                          peer-checked:after:content-['✓'] peer-checked:after:text-black peer-checked:after:text-xs peer-checked:after:font-bold"
                               ></span>
                             </label>
                           </td>
@@ -516,6 +650,9 @@ export function Table<T extends Record<string, unknown>>({
                               lineHeight: "18px",
                               color: "#FFFFFF99",
                               whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              maxWidth: "150px", // 👈 adjust this width as needed
                             }}
                           >
                             {renderCellContent(key, row[key])}
@@ -525,10 +662,16 @@ export function Table<T extends Record<string, unknown>>({
                         {showDeleteButton && (
                           <td style={{ position: "relative" }}>
                             <button
+                              type="button"
                               onClick={(e) => handleDropdownToggle(idx, e)}
                               className={`px-6 py-1 text-white rounded cursor-pointer`}
                             >
-                              <Image src="/images/menu.svg" alt="Open detail" width={3} height={12} />
+                              <Image
+                                src="/images/menu.svg"
+                                alt="Open detail"
+                                width={3}
+                                height={12}
+                              />
                             </button>
 
                             {activeDropdown === idx && dropdownItems && (
@@ -537,15 +680,23 @@ export function Table<T extends Record<string, unknown>>({
                                 onClose={() => setActiveDropdown(null)}
                                 items={dropdownItems.map((item) => {
                                   let disabled = false;
-                                  if (item.label === "Delete Application" || item.label.toLowerCase().includes("delete")) {
-                                    const rowId = rowIds[showPagination ? startIndex + idx : idx];
-                                    disabled = !selectedRows.has(parseInt(rowId));
+                                  if (
+                                    item.label === "Delete Application" ||
+                                    item.label.toLowerCase().includes("delete")
+                                  ) {
+                                    const rowId =
+                                      rowIds[
+                                      showPagination ? startIndex + idx : idx
+                                      ];
+                                    disabled = !selectedRows.has(rowId);
                                   }
 
                                   return {
                                     label: item.label,
                                     disabled,
-                                    className: disabled ? "opacity-50 cursor-not-allowed" : "",
+                                    className: disabled
+                                      ? "opacity-50 cursor-not-allowed"
+                                      : "",
                                     onClick: () => {
                                       if (!disabled) {
                                         item.onClick(row, idx);
@@ -570,7 +721,9 @@ export function Table<T extends Record<string, unknown>>({
 
       {showPagination && totalPages > 1 && (
         <div className="flex justify-center mt-[20px]">
-          <div className="flex items-center gap-2">{renderPaginationButtons()}</div>
+          <div className="flex items-center gap-2">
+            {renderPaginationButtons()}
+          </div>
         </div>
       )}
     </div>

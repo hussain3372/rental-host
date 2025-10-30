@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { TwoFAModal } from "./TwoFAModal";
 import EmailVerifyDrawer from "./VerifyEmailDrawer";
@@ -7,6 +7,8 @@ import { AuthenticationEnable } from "./AuthenticationEnable";
 import ChangePasswordDrawer from "./ChangePasswordDrawer";
 import ToggleSwitch from "@/app/shared/Toggles";
 import { Modal } from "@/app/shared/Modal";
+import toast from "react-hot-toast";
+import { setting } from "@/app/api/Admin/setting";
 
 interface PreferenceItemProps {
   title: string;
@@ -38,7 +40,6 @@ const PreferenceItem: React.FC<PreferenceItemProps> = ({
   onArrowClick,
 }) => (
   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-    {/* Title + description */}
     <div className="flex-1 relative w-full">
       <div className="flex justify-between items-center sm:block">
         <h4 className="text-white text-[16px] leading-[20px] font-medium mb-2 pt-3">
@@ -100,50 +101,227 @@ const PreferenceItem: React.FC<PreferenceItemProps> = ({
   </div>
 );
 
+// ✅ Define proper interface for notification payload
+interface NotificationPayload {
+  isEmailStatus: boolean;
+  isNotificationStatus: boolean;
+}
+
+// ✅ Define proper error type
+interface ApiError {
+  message?: string;
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
+
 const NotificationPreferences: React.FC = () => {
-  const [emailNotifications, setEmailNotifications] = useState(false);
-  const [pushNotifications, setPushNotifications] = useState(false);
+  const [emailNotifications, setEmailNotifications] = useState<boolean>(true);
+  const [pushNotifications, setPushNotifications] = useState<boolean>(true);
+
   const [twoFactorAuth, setTwoFactorAuth] = useState(false);
+
+  const [, setIsLoading] = useState(false);
 
   const [is2FAModalOpen, setIs2FAModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isPasswordDrawerOpen, setIsPasswordDrawerOpen] = useState(false);
-    const [isDisableAuthModalOpen, setIsDisableAuthModalOpen] = useState(false);
+  const [isDisableAuthModalOpen, setIsDisableAuthModalOpen] = useState(false);
 
-  // const [isOn, setIsOn] = useState(false);
+  // New states for Email and Push Notification modals
+  const [isEmailEnableModalOpen, setIsEmailEnableModalOpen] = useState(false);
+  const [isEmailDisableModalOpen, setIsEmailDisableModalOpen] = useState(false);
+  const [isPushEnableModalOpen, setIsPushEnableModalOpen] = useState(false);
+  const [isPushDisableModalOpen, setIsPushDisableModalOpen] = useState(false);
 
   const [email] = useState("johndeo@gmail.com");
 
+  useEffect(() => {
+    const mfaEnabled = localStorage.getItem("userMfaEnabled");
+
+    if (mfaEnabled !== null) {
+      setTwoFactorAuth(JSON.parse(mfaEnabled));
+    }
+  }, []);
+
+  // Fetch settings on component mount
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      try {
+        setIsLoading(true);
+        const response = await setting.getSetting();
+
+        console.log("main response", response);
+        if (response.success) {
+          const { isEmailStatus, isNotificationStatus } = response.data.data;
+
+          console.log(response.data);
+
+          setEmailNotifications(isEmailStatus ?? false);
+          setPushNotifications(isNotificationStatus ?? false);
+        }
+      } catch (error: unknown) {
+        console.error("Failed to fetch preferences:", error);
+
+        let errorMessage = "Failed to fetch preferences";
+        if (typeof error === "object" && error !== null) {
+          const apiError = error as ApiError;
+          errorMessage =
+            apiError?.response?.data?.message ||
+            apiError?.message ||
+            errorMessage;
+        }
+
+        toast.error(errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPreferences();
+  }, []);
+
+  const handleToggle2FA = async () => {
+    try {
+      setIsLoading(true);
+
+      const newMfaStatus = !twoFactorAuth;
+
+      const payload = {
+        mfaEnabled: newMfaStatus,
+      };
+
+      const response = await setting.changetwoFactorAuth(payload);
+
+      if (response?.data?.mfaEnabled !== undefined) {
+        setTwoFactorAuth(response.data.mfaEnabled);
+
+        localStorage.setItem(
+          "userMfaEnabled",
+          JSON.stringify(response.data.mfaEnabled)
+        );
+
+        toast.success(
+          response.data.mfaEnabled
+            ? "Two-Factor Authentication enabled successfully"
+            : "Two-Factor Authentication disabled successfully"
+        );
+      } else {
+        toast.error("Failed to update Two-Factor Authentication status");
+      }
+    } catch (error: unknown) {
+      console.error("2FA toggle error:", error);
+
+      let errorMessage = "Something went wrong while updating 2FA";
+      if (typeof error === "object" && error !== null) {
+        const apiError = error as ApiError;
+        errorMessage = apiError?.message || errorMessage;
+      }
+
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ✅ FIXED: Convert object to FormData for changeStatus API
+  const objectToFormData = (obj: NotificationPayload): FormData => {
+    const formData = new FormData();
+    formData.append("isEmailStatus", obj.isEmailStatus.toString());
+    formData.append(
+      "isNotificationStatus",
+      obj.isNotificationStatus.toString()
+    );
+    return formData;
+  };
+
+  // Update email notification status
+  const updateEmailStatus = async (newStatus: boolean) => {
+    try {
+      setIsLoading(true);
+
+      const payload: NotificationPayload = {
+        isEmailStatus: newStatus,
+        isNotificationStatus: pushNotifications,
+      };
+
+      // ✅ FIXED: Convert to FormData before sending
+      const formData = objectToFormData(payload);
+      const response = await setting.changeStatus(formData);
+
+      if (response.success) {
+        setEmailNotifications(newStatus);
+        toast.success(
+          newStatus
+            ? "Email notifications enabled successfully"
+            : "Email notifications disabled successfully"
+        );
+      }
+    } catch (error: unknown) {
+      console.error("Failed to update email status:", error);
+
+      let errorMessage = "Failed to update email notifications";
+      if (typeof error === "object" && error !== null) {
+        const apiError = error as ApiError;
+        errorMessage = apiError?.response?.data?.message || errorMessage;
+      }
+
+      toast.error(errorMessage);
+      setEmailNotifications(!newStatus);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Update push notification status
+  const updatePushStatus = async (newStatus: boolean) => {
+    try {
+      setIsLoading(true);
+
+      const payload: NotificationPayload = {
+        isEmailStatus: emailNotifications,
+        isNotificationStatus: newStatus,
+      };
+
+      // ✅ FIXED: Convert to FormData before sending
+      const formData = objectToFormData(payload);
+      const response = await setting.changeStatus(formData);
+
+      if (response.success) {
+        setPushNotifications(newStatus);
+        toast.success(
+          newStatus
+            ? "Push notifications enabled successfully"
+            : "Push notifications disabled successfully"
+        );
+      }
+    } catch (error: unknown) {
+      console.error("Failed to update push status:", error);
+
+      let errorMessage = "Failed to update push notifications";
+      if (typeof error === "object" && error !== null) {
+        const apiError = error as ApiError;
+        errorMessage = apiError?.response?.data?.message || errorMessage;
+      }
+
+      toast.error(errorMessage);
+      setPushNotifications(!newStatus);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleVerifyOtp = (otp: string) => {
     console.log("Entered OTP:", otp);
-
-    // close drawer first
     setIsDrawerOpen(false);
-
-    // open success modal
     setIsAuthModalOpen(true);
   };
 
-  // const handleContinueFromModal = () => {
-  //   setIs2FAModalOpen(false);
-  //   setIsDrawerOpen(true);
-  // };
-
   return (
     <div className=" space-y-5 py-5">
-
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="text-[20px] leading-[24px] font-semibold text-white">
-          Settings & Preferences
-        </h1>
-      </div>
-      <p className="text-4 leading-5 text-[#FFFFFF99] font-normal mb-[40px] max-w-[573px] w-full">
-        Manage your personal details, security, notifications, and billing all
-        in one place. Customize your experience and keep your account up to
-        date.
-      </p>
-      
       {/* Notification Preferences Card */}
       <div className="bg-[#121315] rounded-[12px] p-5">
         <h3 className="text-white text-[18px] leading-[22px] font-medium mb-5">
@@ -157,7 +335,13 @@ const NotificationPreferences: React.FC = () => {
             description="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
             hasToggle
             toggleState={emailNotifications}
-            onToggleChange={() => setEmailNotifications(!emailNotifications)}
+            onToggleChange={() => {
+              if (!emailNotifications) {
+                setIsEmailEnableModalOpen(true);
+              } else {
+                setIsEmailDisableModalOpen(true);
+              }
+            }}
             trackWidth="w-[32px]"
             trackHeight="h-[19px]"
             thumbSize="w-4 h-4"
@@ -170,7 +354,13 @@ const NotificationPreferences: React.FC = () => {
             description="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
             hasToggle
             toggleState={pushNotifications}
-            onToggleChange={() => setPushNotifications(!pushNotifications)}
+            onToggleChange={() => {
+              if (!pushNotifications) {
+                setIsPushEnableModalOpen(true);
+              } else {
+                setIsPushDisableModalOpen(true);
+              }
+            }}
             trackWidth="w-[32px]"
             trackHeight="h-[19px]"
             thumbSize="w-4 h-4"
@@ -185,8 +375,7 @@ const NotificationPreferences: React.FC = () => {
         <h3 className="text-white text-[18px] leading-[22px] font-medium mb-5">
           Security Preferences
         </h3>
-        <div className="h-px bg-gray-700"></div>{" "}
-        {/* ✅ keep only heading bottom line */}
+        <div className="h-px bg-gray-700"></div>
         <div className="space-y-0">
           <PreferenceItem
             title="Change Password"
@@ -195,30 +384,78 @@ const NotificationPreferences: React.FC = () => {
             onArrowClick={() => setIsPasswordDrawerOpen(true)}
           />
 
-         <PreferenceItem
-  title="2 - Factor Authentication"
-  description="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
-  hasToggle
-  toggleState={twoFactorAuth}
-  onToggleChange={() => {
-    if (!twoFactorAuth) {
-      // ✅ Turning ON
-      setIs2FAModalOpen(true);
-    } else {
-      // ✅ Turning OFF → open modal instead of toast
-      setIsDisableAuthModalOpen(true);
-    }
-  }}
-  trackWidth="w-[32px]"
-  trackHeight="h-[19px]"
-  thumbSize="w-4 h-4"
-  iconSize="w-3 h-3"
-  thumbTranslate="translate-x-2.5"
-/>
-
-
+          <PreferenceItem
+            title="2 - Factor Authentication"
+            description="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
+            hasToggle
+            toggleState={twoFactorAuth}
+            onToggleChange={handleToggle2FA}
+            trackWidth="w-[32px]"
+            trackHeight="h-[19px]"
+            thumbSize="w-4 h-4"
+            iconSize="w-3 h-3"
+            thumbTranslate="translate-x-2.5"
+          />
         </div>
       </div>
+
+      {/* Email Notification Enable Modal */}
+      <Modal
+        isOpen={isEmailEnableModalOpen}
+        onClose={() => setIsEmailEnableModalOpen(false)}
+        onConfirm={async () => {
+          setIsEmailEnableModalOpen(false);
+          await updateEmailStatus(true);
+        }}
+        title="Email Notifications Enabled"
+        description="You will now receive email notifications for important updates and activities."
+        image="/images/2fa-image.png"
+        confirmText="Continue"
+      />
+
+      {/* Email Notification Disable Modal */}
+      <Modal
+        isOpen={isEmailDisableModalOpen}
+        onClose={() => setIsEmailDisableModalOpen(false)}
+        onConfirm={async () => {
+          setIsEmailDisableModalOpen(false);
+          await updateEmailStatus(false);
+        }}
+        title="Email Notifications Disabled"
+        description="You will no longer receive email notifications. You can enable them again anytime."
+        image="/images/2fa-image.png"
+        confirmText="Continue"
+      />
+
+      {/* Push Notification Enable Modal */}
+      <Modal
+        isOpen={isPushEnableModalOpen}
+        onClose={() => setIsPushEnableModalOpen(false)}
+        onConfirm={async () => {
+          setIsPushEnableModalOpen(false);
+          await updatePushStatus(true);
+        }}
+        title="Push Notifications Enabled"
+        description="You will now receive push notifications for important updates and activities."
+        image="/images/2fa-image.png"
+        confirmText="Continue"
+      />
+
+      {/* Push Notification Disable Modal */}
+      <Modal
+        isOpen={isPushDisableModalOpen}
+        onClose={() => setIsPushDisableModalOpen(false)}
+        onConfirm={async () => {
+          setIsPushDisableModalOpen(false);
+          await updatePushStatus(false);
+        }}
+        title="Push Notifications Disabled"
+        description="You will no longer receive push notifications. You can enable them again anytime."
+        image="/images/2fa-image.png"
+        confirmText="Continue"
+      />
+
+      {/* 2FA Modal */}
       <TwoFAModal
         isOpen={is2FAModalOpen}
         onClose={() => {
@@ -231,13 +468,12 @@ const NotificationPreferences: React.FC = () => {
         }}
       />
 
-
+      {/* Email Verify Drawer */}
       {isDrawerOpen && (
         <div
           className="fixed inset-0 bg-[#121315CC] z-[2021] flex justify-end transition-opacity duration-300"
           onClick={() => setIsDrawerOpen(false)}
         >
-          {/* Drawer Panel */}
           <div
             className="w-full  lg:max-w-[608px] md:max-w-[500px]  max-w-[280px] p-5 sm:p-7 h-full bg-[#0A0C0B] overflow-auto border border-[#FFFFFF1F] rounded-l-[12px] shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
             onClick={(e) => e.stopPropagation()}
@@ -250,50 +486,54 @@ const NotificationPreferences: React.FC = () => {
           </div>
         </div>
       )}
-      {/* step 3 */}
+
+      {/* Authentication Enable Modal */}
       <AuthenticationEnable
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onConfirm={() => {
           console.log("2FA setup completed");
-          setIsAuthModalOpen(false); // ✅ only close modal now
+          setIsAuthModalOpen(false);
         }}
       />
-      {/* Step 4 - Change Password Drawer */}
+
+      {/* Change Password Drawer */}
       {isPasswordDrawerOpen && (
         <div
           className="fixed inset-0 bg-[#121315CC] z-[2022] flex justify-end transition-opacity duration-300"
           onClick={() => setIsPasswordDrawerOpen(false)}
         >
           <div
-            className="w-full lg:max-w-[608px] md:max-w-[500px] max-w-[280px] p-5 sm:p-7 h-full bg-[#0A0C0B] overflow-auto border border-[#FFFFFF1F] rounded-l-[12px] shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
+            className="w-full lg:max-w-[608px] md:max-w-[550px] max-w-[280px] p-5 sm:p-7 h-full bg-[#0A0C0B] overflow-auto border border-[#FFFFFF1F] rounded-l-[12px] shadow-[0_4px_12px_0_rgba(0,0,0,0.12)] transform transition-transform duration-300 ease-in-out"
             onClick={(e) => e.stopPropagation()}
           >
             <ChangePasswordDrawer
               onSave={(current, newPass) => {
                 console.log("Password updated:", current, newPass);
-                setIsPasswordDrawerOpen(false);
+                // ⚠️ Do not close the drawer here — it will close automatically
+                // after the success modal is confirmed in ChangePasswordDrawer
               }}
               onClose={() => setIsPasswordDrawerOpen(false)}
             />
           </div>
         </div>
       )}
-{isDisableAuthModalOpen && (
-  <Modal
-    isOpen={isDisableAuthModalOpen}
-    onClose={() => setIsDisableAuthModalOpen(false)}
-    onConfirm={() => {
-      setTwoFactorAuth(false); // disable 2FA
-      setIsDisableAuthModalOpen(false);
-    }}
-    title="Two-Factor Authentication Disabled"
-    description="Your two-factor authentication has been successfully disabled."
-          image="/images/2fa-image.png"
-    confirmText="Okay"
-  />
-)}
 
+      {/* 2FA Disable Modal */}
+      {isDisableAuthModalOpen && (
+        <Modal
+          isOpen={isDisableAuthModalOpen}
+          onClose={() => setIsDisableAuthModalOpen(false)}
+          onConfirm={() => {
+            setTwoFactorAuth(false);
+            setIsDisableAuthModalOpen(false);
+          }}
+          title="Two-Factor Authentication Disabled"
+          description="Your two-factor authentication has been successfully disabled."
+          image="/images/2fa-image.png"
+          confirmText="Okay"
+        />
+      )}
     </div>
   );
 };

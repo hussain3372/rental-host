@@ -35,28 +35,30 @@ interface CustomDateInputProps {
   placeholder?: string;
 }
 
-const CustomDateInput = React.forwardRef<HTMLInputElement, CustomDateInputProps>(  ({ value, onClick, placeholder }, ref) => (
-    <div className="relative">
-      <input
-        type="text"
-        value={value}
-        onClick={onClick}
-        ref={ref}
-        readOnly
-        placeholder={placeholder}
-        className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none cursor-pointer text-white placeholder-white/40 transition-colors duration-200"
+const CustomDateInput = React.forwardRef<
+  HTMLInputElement,
+  CustomDateInputProps
+>(({ value, onClick, placeholder }, ref) => (
+  <div className="relative">
+    <input
+      type="text"
+      value={value}
+      onClick={onClick}
+      ref={ref}
+      readOnly
+      placeholder={placeholder}
+      className="w-full bg-gradient-to-b from-[#202020] to-[#101010] border rounded-xl px-4 py-3 text-sm border-[#404040] focus:border-[#EFFC76] focus:outline-none cursor-pointer text-white placeholder-white/40 transition-colors duration-200"
+    />
+    <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+      <Image
+        src="/images/calender.svg"
+        alt="Pick date"
+        width={20}
+        height={20}
       />
-      <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-        <Image
-          src="/images/calender.svg"
-          alt="Pick date"
-          width={20}
-          height={20}
-        />
-      </div>
     </div>
-  )
-);
+  </div>
+));
 
 CustomDateInput.displayName = "CustomDateInput";
 
@@ -77,16 +79,17 @@ export default function FilterDrawer({
 }: FilterDrawerProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const dropdownRefs = useRef<Record<string, React.RefObject<HTMLDivElement | null>>>(
-  {}
-);
-useEffect(() => {
-  fields.forEach((field) => {
-    if (field.type === "dropdown" && !dropdownRefs.current[field.key]) {
-      dropdownRefs.current[field.key] = React.createRef<HTMLDivElement | null>();
-    }
-  });
-}, [fields]);
+  const dropdownRefs = useRef<
+    Record<string, React.RefObject<HTMLDivElement | null>>
+  >({});
+  useEffect(() => {
+    fields.forEach((field) => {
+      if (field.type === "dropdown" && !dropdownRefs.current[field.key]) {
+        dropdownRefs.current[field.key] =
+          React.createRef<HTMLDivElement | null>();
+      }
+    });
+  }, [fields]);
   const overlayRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
 
@@ -105,7 +108,7 @@ useEffect(() => {
         requestAnimationFrame(() => {
           setIsVisible(true);
         });
-      }); 
+      });
     } else if (!isOpen && isMounted) {
       setIsVisible(false);
       const timer = setTimeout(() => {
@@ -195,6 +198,7 @@ useEffect(() => {
                 {title}
               </h3>
               <button
+                type="button"
                 onClick={onReset}
                 className="text-[#EFFC76] cursor-pointer text-[18px] leading-[22px] font-medium underline transition-opacity duration-200 hover:opacity-80 focus:opacity-80 focus:outline-none"
               >
@@ -300,6 +304,7 @@ useEffect(() => {
 
           <div className="p-6 sticky bottom-0 bg-[#0A0C0B] ">
             <button
+              type="button"
               onClick={() => {
                 onApply();
                 setIsVisible(false);

@@ -1,22 +1,31 @@
 "use client";
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
-import { useParams } from "next/navigation";
 import Image from "next/image";
-import { allProperties } from "@/app/(main)/search-page/data/properties";
+import { useRef, useState, useEffect } from "react";
+import { ApplicationData } from "@/app/api/Host/application/types";
+import TicketDrawer from "../EditDrawer";
 
-export default function ApplicationDetail() {
-  const { id } = useParams();
-  const applicationId = Number(id);
+interface DetailProps {
+  application: ApplicationData;
+    onApplicationUpdate: () => void; // Add this prop
+
+}
+
+export default function ApplicationDetail({ application,onApplicationUpdate  }: DetailProps) {
   const thumbnailsContainerRef = useRef<HTMLDivElement>(null);
   const [thumbnailsHeight, setThumbnailsHeight] = useState(0);
-
-  // Get property by ID (using the existing properties data)
-  const application = allProperties.find((property) => property.id === applicationId);
-
   const [currentStep, setCurrentStep] = useState(0);
+  const [showDrawer , setShowDrawer] = useState(false)
 
-  // Effect to sync heights
+  const openDrawer = ()=>{
+    setShowDrawer(true)
+  }
+  const closeDrawer = ()=>{
+    setShowDrawer(false)
+    onApplicationUpdate()
+  }
+  
+
   useEffect(() => {
     const updateHeight = () => {
       if (thumbnailsContainerRef.current) {
@@ -25,35 +34,17 @@ export default function ApplicationDetail() {
       }
     };
 
-    // Initial measurement
-    updateHeight();
+    if (application) {
+      setTimeout(updateHeight, 100);
+      window.addEventListener("resize", updateHeight);
+      return () => window.removeEventListener("resize", updateHeight);
+    }
+  }, [application]);
 
-    // Update on window resize
-    window.addEventListener('resize', updateHeight);
-
-    return () => window.removeEventListener('resize', updateHeight);
-  }, [application]); // Re-run when application changes
-
-  // If application not found
-  if (!application) {
-    return (
-      <div className="flex items-center justify-center">
-        <div className="text-center flex flex-col items-center justify-center">
-          <Image src="/images/empty.png" alt='not found' width={220} height={220} />
-          <h1 className="text-2xl mb-3 text-white font-medium leading-[28px]">No Applications Yet</h1>
-          <p className="text-white/60 mb-6 max-w-[504px] font-regular text-[18px] leading-[22px]">Start your first application today to begin the process of certifying your property and tracking progress here.</p>
-          <Link
-            href="/dashboard/application"
-            className="inline-block yellow-btn w-[150px] text-black px-6 py-3 rounded-lg hover:bg-[#e8f566] transition-colors"
-          >
-            Apply Now
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  const images = application.images || [];
+  // Get images from application data or use fallbacks - FIXED
+  const images = application.propertyDetails?.images || []
+    
+  
   const totalSteps = images.length;
 
   const nextStep = () =>
@@ -61,141 +52,150 @@ export default function ApplicationDetail() {
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
 
   return (
-    <div className=" text-white">
+    <>
+    <div className="text-white">
       {/* Breadcrumb */}
       <nav className="mb-4">
         <div className="flex items-center text-[12px] sm:text-[16px] gap-3 font-regular leading-[20px] text-white/40 ">
           <Link href="/dashboard/application" className="hover:text-[#EFFC76]">
             My Applications
           </Link>
-          <Image src="/images/greater.svg" alt="linked" width={16} height={16} />
-          <span className="text-white font-regular text-[12px] sm:text-[16px] leading-[20px] ">{application.title}</span>
+          <Image
+            src="/images/greater.svg"
+            alt="linked"
+            width={16}
+            height={16}
+          />
+          <span className="text-white font-regular text-[12px] sm:text-[16px] leading-[20px] ">
+            {application.propertyDetails?.propertyName || "Application Detail"}
+          </span>
         </div>
       </nav>
 
-      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start mb-2">
-        <h1 className=" text-[16px] sm:text-[24px] font-medium leading-[28px] ">
-          Coastal Hillside Estate with Panoramic City
-        </h1>
-        <button className="text-[#EFFC76] opacity-80 hover:text-[#e8f566] underline cursor-pointer font-medium text-[12px] sm:text-[18px] leading-[22px] ">
+        <h1 className="text-[16px] sm:text-[24px] font-medium leading-[28px] ">
+          {application.propertyDetails?.propertyName || "Untitled Property"}
+        </h1>  
+        { application.status === "DRAFT" && (
+        <button onClick={openDrawer} className="text-[#EFFC76] opacity-80 hover:text-[#e8f566] underline cursor-pointer font-medium text-[12px] sm:text-[18px] leading-[22px] ">
           Edit
         </button>
+        ) }
       </div>
 
-      {/* Address */}
-      <p className="text-white/80 font-medium leading-[20px] text-[12px] sm:text-[16px]  mb-[18px]">
-        742 Evergreen Terrace, Springfield, Illinois, USA
+      <p className="text-white/80 font-medium leading-[20px] text-[12px] sm:text-[16px] mb-[18px]">
+        {application.propertyDetails?.address || "Address not available"}
       </p>
 
-      {/* Main Content Area */}
-      <div className="flex flex-col sm:flex-row gap-3 items-center">
-        {/* Main Image Container - Height synced with thumbnails */}
-        <div className=" w-full flex flex-col">
+      <div className={`flex flex-col sm:flex-row !items-start gap-3 ${images.length === 0 ? "hidden":""}`}>
+        <div className="w-full flex flex-col">
+          {/* Main Image - Desktop */}
+          
           <div
             className={`
-    relative w-full rounded-lg overflow-hidden bg-gray-900
-    ${thumbnailsHeight ? "hidden sm:block" : ""} 
-  `}
-            style={{ height: thumbnailsHeight || "auto" }}
+              relative w-full rounded-lg overflow-hidden bg-gray-900
+              ${thumbnailsHeight ? "hidden sm:block" : ""} 
+            `}
+            style={{ height: "300px" }}
           >
-            {/* Desktop/Tablet → Height synced */}
             <Image
-              src={images[currentStep] || "/images/placeholder.jpg"}
+              src={images[currentStep]}
               alt={`Property view ${currentStep + 1}`}
               fill
               className="object-cover"
+              priority={currentStep === 0}
             />
           </div>
 
-          {/* Mobile → Aspect ratio */}
+          {/* Main Image - Mobile */}
           <div className="relative w-full aspect-[16/10] rounded-lg overflow-hidden bg-gray-900 sm:hidden">
             <Image
-              src={images[currentStep] || "/images/placeholder.jpg"}
+              src={images[currentStep]}
               alt={`Property view ${currentStep + 1}`}
               fill
               className="object-cover"
+              priority={currentStep === 0}
             />
           </div>
-
-
-          {/* Navigation Controls - Full width progress bar */}
         </div>
 
-        {/* Thumbnail Gallery - Reference for height measurement */}
+        {/* Thumbnails */}
+        {/* Thumbnails - Only show if there are images */}
+{images.length > 0 && (
+  <div
+    ref={thumbnailsContainerRef}
+    className="w-full max-w-[300px] sm:w-[145px] max-h-full flex flex-wrap justify-between gap-3 sm:flex-col sm:justify-center sm:items-center"
+  >
+    {images.map((image, index) => (
+      <div
+        key={index}
+        className={`relative aspect-[16/10] w-full sm:max-w-[145px] rounded-md max-h-[60px] max-w-[60px] sm:max-h-[300px]  overflow-y-auto scrollbar-hide  cursor-pointer border-2 ${
+          currentStep === index ? "border-[#EFFC76]" : "border-transparent"
+        }`}
+      >
+        <Image
+          onClick={() => setCurrentStep(index)}
+          src={image}
+          alt={`Thumbnail ${index + 1}`}
+          fill
+          className="object-cover hover:opacity-80 transition-opacity"
+        />
+      </div>
+    ))}
+  </div>
+)}
+      </div>
+
+      {/* Navigation Controls */}
+     {/* Navigation Controls - Only show if there are images */}
+{images.length > 0 && (
+  <div className="flex items-center justify-between mt-6 gap-3 sm:gap-[40px] w-full">
+    <button
+      onClick={prevStep}
+      disabled={currentStep === 0}
+      className="w-8 h-8 p-2 cursor-pointer rounded border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+    >
+      <Image src="/images/left.svg" alt="back" width={24} height={24} />
+    </button>
+
+    <div className="flex items-center gap-3 sm:gap-10 flex-1">
+      <span className="text-white/60 leading-[20px] font-regular text-[16px] flex-shrink-0">
+        {String(currentStep + 1).padStart(2, "0")}
+      </span>
+      <div className="w-full h-[1px] bg-white/20 relative">
         <div
-          ref={thumbnailsContainerRef}
-          className="  w-full max-w-[300px] 
-    sm:w-[145px] max-h-full 
-    flex flex-wrap justify-between gap-3 
-    sm:flex-col sm:justify-center sm:items-center"
-        >
-          {images.map((image, index) => (
-
-            <div key={index} className="relative aspect-[16/10] w-full sm:max-w-[145px]]">
-              <Image
-                onClick={() => setCurrentStep(index)}
-                src={image}
-                alt={`Thumbnail ${index + 1}`}
-                fill
-                className="object-cover rounded-md cursor-pointer"
-              />
-            </div>
-
-          ))}
-        </div>
+          className="absolute top-0 left-0 h-full bg-[#EFFC76] transition-all duration-300"
+          style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
+        />
       </div>
+      <span className="text-sm text-white/60 leading-[20px] font-regular text-[16px] flex-shrink-0">
+        {String(totalSteps).padStart(2, "0")}
+      </span>
+    </div>
 
-      <div className="flex items-center justify-between mt-6 gap-3 sm:gap-[40px] w-full">
-        {/* Left Arrow */}
-        <button
-          onClick={prevStep}
-          disabled={currentStep === 0}
-          className="w-8 h-8 p-2 cursor-pointer rounded border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
-        >
-          <Image src="/images/left.svg" alt="back" width={24} height={24} />
-        </button>
+    <button
+      onClick={nextStep}
+      disabled={currentStep === totalSteps - 1}
+      className="w-8 h-8 rounded cursor-pointer p-2 border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+    >
+      <Image src="/images/right.svg" alt="back" width={24} height={24} />
+    </button>
+  </div>
+)}
 
-        {/* Progress Bar - Takes all remaining space */}
-        <div className="flex items-center gap-3 sm:gap-10 flex-1 ">
-          <span className=" text-white/60 leading-[20px] font-regular text-[16px]  flex-shrink-0">
-            {String(currentStep + 1).padStart(2, "0")}
-          </span>
-
-          {/* Progress Bar - Full available width */}
-          <div className="w-full h-[1px] bg-white/20 relative ">
-            <div
-              className="absolute top-0 left-0 h-full bg-[#EFFC76] transition-all duration-300"
-              style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
-            />
-          </div>
-
-          <span className="text-sm text-white/60 leading-[20px] font-regular text-[16px]  flex-shrink-0">
-            {String(totalSteps).padStart(2, "0")}
-          </span>
-        </div>
-
-        {/* Right Arrow */}
-        <button
-          onClick={nextStep}
-          disabled={currentStep === totalSteps - 1}
-          className="w-8 h-8 rounded cursor-pointer p-2 border border-gray-600 flex items-center justify-center hover:border-[#EFFC76] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
-        >
-          <Image src="/images/right.svg" alt="back" width={24} height={24} />
-
-        </button>
-      </div>
       {/* Description */}
       <div className="mt-[60px] max-w-[1134px]">
         <p className="text-white/80 font-normal text-[16px] sm:text-[18px] tracking-[0%] leading-[22px] text-justify">
-          {application.title} at 1234 Maplewood Avenue, Austin, Texas is a fully verified
-          and certified property. Featuring 4 bedrooms, 3 bathrooms, and a modern kitchen,
-          this home combines comfort with trust. With a landscaped garden, private patio,
-          and verified legal documentation, it offers both luxury and peace of mind. Each
-          listing comes with a digital badge and QR code for instant authenticity checks.
+          {application.propertyDetails?.description}
+            
         </p>
       </div>
-
     </div>
+    {
+      showDrawer && (
+        <TicketDrawer onClose={closeDrawer}  applicationId={application.id} />
+      )
+    }
+    </>
   );
 }

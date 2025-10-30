@@ -1,274 +1,348 @@
 "use client";
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { Table } from "@/app/admin/tables-essentials/Tables";
 import { Modal } from "@/app/shared/Modal";
 import FilterDrawer from "../../tables-essentials/Filter";
+import { application } from "@/app/api/Admin/application";
+
+interface ApiParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  ownership?: string;
+  status?: string;
+  submittedAt?: string;
+}
 
 interface CertificationData {
-  id: number;
-  "Application ID" :string
+  id: string;
+  "Application ID": string;
   "Property Name": string;
   Address: string;
   Ownership: string;
-  "Submitted Date": string;
   Status: string;
+  "Submitted Date": string;
+}
+
+interface PaginationData {
+  total: number;
+  pageSize: number;
+  currentPage: number;
+  totalPages: number;
+  nextPage: number | null;
+  prevPage: number | null;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
 }
 
 export default function Applications() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const [itemsPerPage] = useState(6);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [singleRowToDelete, setSingleRowToDelete] = useState<{
     row: Record<string, string>;
-    id: number;
+    id: string;
   } | null>(null);
   const [modalType, setModalType] = useState<"single" | "multiple">("multiple");
 
   const [showOwnershipDropdown, setShowOwnershipDropdown] = useState(false);
-  // const [showPropertyDropdown, setShowPropertyDropdown] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
 
-  const [certificationFilters, setCertificationFilters] = useState({
+  const [appliedFilters, setAppliedFilters] = useState({
     ownership: "",
-    property: "",
+    status: "",
+    submittedDate: "",
+  });
+
+  const [tempFilters, setTempFilters] = useState({
+    ownership: "",
     status: "",
     submittedDate: "",
   });
 
   const [submittedDate, setSubmittedDate] = useState<Date | null>(null);
 
-  const [allCertificationData, setAllCertificationData] = useState<CertificationData[]>([
-    {
-      id: 1,
-      "Application ID" :"TAQ - 65432",
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Owner",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 2,
-            "Application ID" :"TAQ - 65432",
+  const [allCertificationData, setAllCertificationData] = useState<CertificationData[]>([]);
+  const [paginationData, setPaginationData] = useState<PaginationData>({
+    total: 0,
+    pageSize: 6,
+    currentPage: 1,
+    totalPages: 1,
+    nextPage: null,
+    prevPage: null,
+    hasNextPage: false,
+    hasPrevPage: false
+  });
 
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Manager",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Pending",
-    },
-    {
-      id: 3,
-            "Application ID" :"TAQ - 65432",
+  const [allStatuses, setAllStatuses] = useState<string[]>([]);
+  const [allOwnerships, setAllOwnerships] = useState<string[]>([]);
 
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Owner",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 4,
-            "Application ID" :"TAQ - 65432",
+  // Debounce search term - only update if 3+ characters or empty
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (searchTerm.trim().length >= 3 || searchTerm.trim() === "") {
+        setDebouncedSearchTerm(searchTerm);
+      }
+    }, 500);
 
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Manager",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Pending",
-    },
-    {
-      id: 5,
-            "Application ID" :"TAQ - 65432",
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
 
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Agent",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Rejected",
-    },
-    {
-      id: 6,
-            "Application ID" :"TAQ - 65432",
+  const hasActiveFilters = useMemo(() => {
+    return (
+      debouncedSearchTerm.trim() !== "" ||
+      appliedFilters.ownership.trim() !== "" ||
+      appliedFilters.status.trim() !== "" ||
+      appliedFilters.submittedDate !== ""
+    );
+  }, [debouncedSearchTerm, appliedFilters]);
 
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Agent",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 7,
-            "Application ID" :"TAQ - 65432",
+  const fetchFilterOptions = useCallback(async () => {
+    try {
+      const response = await application.getAllApplicationsForFilters();
 
-      "Property Name": "Mountain View Complex",
-      Address: "123 Highland Road",
-      Ownership: "Owner",
-      "Submitted Date": "Sep 15, 2025",
-      Status: "Pending",
-    },
-    {
-      id: 8,
-            "Application ID" :"TAQ - 65432",
+      if (response.success && response.data) {
+        const applications = response.data.applications;
+        
+        const statuses = [...new Set(applications.map((app) => 
+          app.status ? app.status.toUpperCase() : ''
+        ))].filter(Boolean);
+        
+        const ownerships = [...new Set(applications.map((app) => 
+          app.propertyDetails?.ownership || ''
+        ))].filter(Boolean);
 
-      "Property Name": "Skyline Residences",
-      Address: "456 Tower Street",
-      Ownership: "Manager",
-      "Submitted Date": "Oct 1, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 9,
-            "Application ID" :"TAQ - 65432",
+        setAllStatuses(statuses);
+        setAllOwnerships(ownerships);
+      }
+    } catch (error) {
+      console.error("Error fetching filter options:", error);
+    }
+  }, []);
 
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Owner",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 10,
-            "Application ID" :"TAQ - 65432",
+  useEffect(() => {
+    fetchFilterOptions();
+  }, [fetchFilterOptions]);
 
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Manager",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Pending",
-    },
-    {
-      id: 11,
-            "Application ID" :"TAQ - 65432",
+  useEffect(() => {
+    if (isFilterOpen) {
+      setTempFilters(appliedFilters);
+      if (appliedFilters.submittedDate) {
+        setSubmittedDate(new Date(appliedFilters.submittedDate));
+      } else {
+        setSubmittedDate(null);
+      }
+    }
+  }, [isFilterOpen, appliedFilters]);
 
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Agent",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Rejected",
-    },
-    {
-      id: 12,
-            "Application ID" :"TAQ - 65432",
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Agent",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 13,
-            "Application ID" :"TAQ - 65432",
+  const formatDateForAPI = (date: Date | null): string => {
+    if (!date) return "";
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
-      "Property Name": "Mountain View Complex",
-      Address: "123 Highland Road",
-      Ownership: "Owner",
-      "Submitted Date": "Sep 15, 2025",
-      Status: "Pending",
-    },
+  const capitalizeStatusForDisplay = (status: string): string => {
+    if (!status) return "";
+    return status.charAt(0) + status.slice(1).toLowerCase();
+  };
 
+  const getStatusForAPI = (status: string): string => {
+    if (!status) return "";
+    return status.toUpperCase();
+  };
+
+  const fetchApplications = useCallback(async () => {
+    try {
+      // setIsLoading(true);
+
+      const queryParams: ApiParams = {};
+
+      if (!hasActiveFilters) {
+        queryParams.page = currentPage;
+        queryParams.pageSize = itemsPerPage;
+      } else {
+        if (currentPage > 1) {
+          queryParams.page = currentPage;
+        }
+        if (itemsPerPage !== 6) {
+          queryParams.pageSize = itemsPerPage;
+        }
+      }
+
+      // Only include search if it has 3+ characters
+      if (debouncedSearchTerm.trim().length >= 3) {
+        queryParams.search = debouncedSearchTerm.trim();
+      }
+
+      if (appliedFilters.ownership.trim()) {
+        queryParams.ownership = appliedFilters.ownership.trim();
+      }
+      
+      if (appliedFilters.status.trim()) {
+        queryParams.status = getStatusForAPI(appliedFilters.status.trim());
+      }
+      
+      if (appliedFilters.submittedDate) {
+        queryParams.submittedAt = appliedFilters.submittedDate;
+      }
+
+      console.log("🚀 HITTING API WITH PARAMS:", queryParams);
+
+      const response = await application.getApplication(queryParams);
+
+      if (response.success && response.data) {
+        const transformedData: CertificationData[] = response.data.applications.map((app: unknown) => ({
+          id: (app as { id: string }).id,
+          "Application ID": (app as { id: string }).id.substring(0, 8) + "...",
+          "Property Name": (app as { propertyDetails?: { propertyName?: string } }).propertyDetails?.propertyName || "N/A",
+          Address: (app as { propertyDetails?: { address?: string } }).propertyDetails?.address || "N/A", 
+          Ownership: (app as { propertyDetails?: { ownership?: string } }).propertyDetails?.ownership || "N/A",
+          "Current Step": (app as { currentStep?: string }).currentStep || "N/A",
+          Status: capitalizeStatusForDisplay((app as { status: string }).status),
+          "Submitted Date": (app as { submittedAt?: string }).submittedAt ? formatDate((app as { submittedAt?: string }).submittedAt!) : "—",
+        }));
+
+        setAllCertificationData(transformedData);
+
+        if (response.data.pagination) {
+          setPaginationData(response.data.pagination);
+        }
+      } else {
+        console.error("❌ Unexpected response:", response);
+        setAllCertificationData([]);
+        setPaginationData({
+          total: 0,
+          pageSize: itemsPerPage,
+          currentPage: 1,
+          totalPages: 1,
+          nextPage: null,
+          prevPage: null,
+          hasNextPage: false,
+          hasPrevPage: false
+        });
+      }
+    } catch (error) {
+      console.error("🚨 Error fetching applications:", error);
+      setAllCertificationData([]);
+      setPaginationData({
+        total: 0,
+        pageSize: itemsPerPage,
+        currentPage: 1,
+        totalPages: 1,
+        nextPage: null,
+        prevPage: null,
+        hasNextPage: false,
+        hasPrevPage: false
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [
+    debouncedSearchTerm,
+    appliedFilters.ownership,
+    appliedFilters.status,
+    appliedFilters.submittedDate,
+    currentPage,
+    itemsPerPage,
+    hasActiveFilters,
   ]);
 
-  const filteredCertificationData = useMemo(() => {
-    let filtered = allCertificationData;
+  useEffect(() => {
+    fetchApplications();
+  }, [fetchApplications]);
 
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (item) =>
-          item["Property Name"].toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item["Address"].toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item["Ownership"].toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (certificationFilters.property) {
-      filtered = filtered.filter((item) => item["Property Name"] === certificationFilters.property);
-    }
-
-    if (certificationFilters.status) {
-      filtered = filtered.filter((item) => item["Status"] === certificationFilters.status);
-    }
-
-    if (certificationFilters.ownership) {
-      filtered = filtered.filter((item) => item["Ownership"] === certificationFilters.ownership);
-    }
-
-    if (certificationFilters.submittedDate) {
-      filtered = filtered.filter((item) =>
-        item["Submitted Date"].includes(certificationFilters.submittedDate)
-      );
-    }
-
-    return filtered;
-  }, [searchTerm, certificationFilters, allCertificationData]);
+  const displayData = useMemo(() => {
+    return allCertificationData.map(({ id, ...rest }) => {
+      return rest;
+    });
+  }, [allCertificationData]);
 
   const handleSelectAll = (checked: boolean) => {
     const newSelected = new Set(selectedRows);
     if (checked) {
-      filteredCertificationData.forEach((item) => newSelected.add(item.id));
+      allCertificationData.forEach((item) => newSelected.add(item.id));
     } else {
-      filteredCertificationData.forEach((item) => newSelected.delete(item.id));
+      allCertificationData.forEach((item) => newSelected.delete(item.id));
     }
     setSelectedRows(newSelected);
   };
 
   const handleSelectRow = (id: string, checked: boolean) => {
     const newSelected = new Set(selectedRows);
-    const numericId = parseInt(id);
     if (checked) {
-      newSelected.add(numericId);
+      newSelected.add(id);
     } else {
-      newSelected.delete(numericId);
+      newSelected.delete(id);
     }
     setSelectedRows(newSelected);
   };
 
   const isAllDisplayedSelected = useMemo(() => {
     return (
-      filteredCertificationData.length > 0 &&
-      filteredCertificationData.every((item) => selectedRows.has(item.id))
+      allCertificationData.length > 0 &&
+      allCertificationData.every((item) => selectedRows.has(item.id))
     );
-  }, [filteredCertificationData, selectedRows]);
+  }, [allCertificationData, selectedRows]);
 
   const isSomeDisplayedSelected = useMemo(() => {
     return (
-      filteredCertificationData.some((item) => selectedRows.has(item.id)) &&
+      allCertificationData.some((item) => selectedRows.has(item.id)) &&
       !isAllDisplayedSelected
     );
-  }, [filteredCertificationData, selectedRows, isAllDisplayedSelected]);
+  }, [allCertificationData, selectedRows, isAllDisplayedSelected]);
 
-  const handleDeleteApplications = (selectedRowIds: Set<number>) => {
-    const idsToDelete = Array.from(selectedRowIds);
-    const updatedData = allCertificationData.filter((item) => !idsToDelete.includes(item.id));
-    setAllCertificationData(updatedData);
-    setIsModalOpen(false);
-    setSelectedRows(new Set());
-  };
+  const handleDeleteApplications = async (selectedRowIds: Set<string>) => {
+    try {
+      const deletePromises = Array.from(selectedRowIds).map((id) =>
+        application.deleteApplication(id)
+      );
 
-  const handleDeleteSingleApplication = (row: Record<string, string>, id: number) => {
-    const updatedData = allCertificationData.filter((item) => item.id !== id);
-    setAllCertificationData(updatedData);
-    setIsModalOpen(false);
-    setSingleRowToDelete(null);
-
-    const newSelected = new Set(selectedRows);
-    newSelected.delete(id);
-    setSelectedRows(newSelected);
-
-    const remainingDataCount = updatedData.length;
-    const maxPageAfterDeletion = Math.ceil(remainingDataCount / itemsPerPage);
-
-    if (currentPage > maxPageAfterDeletion) {
-      setCurrentPage(Math.max(1, maxPageAfterDeletion));
+      await Promise.all(deletePromises);
+      await fetchApplications();
+      setIsModalOpen(false);
+      setSelectedRows(new Set());
+    } catch (error) {
+      console.error("Error deleting applications:", error);
     }
   };
 
-  const openDeleteSingleModal = (row: Record<string, string>, id: number) => {
+  const handleDeleteSingleApplication = async (
+    row: Record<string, string>,
+    id: string
+  ) => {
+    try {
+      await application.deleteApplication(id);
+      await fetchApplications();
+      setIsModalOpen(false);
+      setSingleRowToDelete(null);
+      const newSelected = new Set(selectedRows);
+      newSelected.delete(id);
+      setSelectedRows(newSelected);
+    } catch (error) {
+      console.error("Error deleting application:", error);
+    }
+  };
+
+  const openDeleteSingleModal = (row: Record<string, string>, id: string) => {
     setSingleRowToDelete({ row, id });
     setModalType("single");
     setIsModalOpen(true);
@@ -285,7 +359,10 @@ export default function Applications() {
     if (modalType === "multiple" && selectedRows.size > 0) {
       handleDeleteApplications(selectedRows);
     } else if (modalType === "single" && singleRowToDelete) {
-      handleDeleteSingleApplication(singleRowToDelete.row, singleRowToDelete.id);
+      handleDeleteSingleApplication(
+        singleRowToDelete.row,
+        singleRowToDelete.id
+      );
     }
   };
 
@@ -309,42 +386,53 @@ export default function Applications() {
     highlightRowOnHover: true,
   };
 
-  // const uniqueProperties = [...new Set(allCertificationData.map((item) => item["Property Name"]))];
-  const uniqueStatuses = [...new Set(allCertificationData.map((item) => item["Status"]))];
-  const uniqueOwnerships = [...new Set(allCertificationData.map((item) => item["Ownership"]))];
-
-  const displayData = useMemo(() => {
-    return filteredCertificationData.map(({ id, ...rest }) => {
-      console.log(id);
-      return rest;
-    });
-  }, [filteredCertificationData]);
-
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, certificationFilters]);
+  }, [
+    debouncedSearchTerm,
+    appliedFilters.ownership,
+    appliedFilters.status,
+    appliedFilters.submittedDate,
+  ]);
 
   const handleResetFilter = () => {
-    setCertificationFilters({
+    const resetFilters = {
       ownership: "",
-      property: "",
       status: "",
       submittedDate: "",
-    });
-    setSearchTerm("");
+    };
+
+    setTempFilters(resetFilters);
+    setAppliedFilters(resetFilters);
     setSubmittedDate(null);
+    setSearchTerm("");
+    setDebouncedSearchTerm("");
+    setCurrentPage(1);
+    setIsFilterOpen(false);
   };
 
   const handleApplyFilter = () => {
-    if (submittedDate) {
-      setCertificationFilters((prev) => ({
-        ...prev,
-        submittedDate: submittedDate.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
-      }));
+    const dateString = formatDateForAPI(submittedDate);
+    
+    const filtersToApply = {
+      ownership: tempFilters.ownership,
+      status: tempFilters.status,
+      submittedDate: dateString,
+    };
+
+    console.log("🟢 APPLYING FILTERS:", filtersToApply);
+
+    setAppliedFilters(filtersToApply);
+    setCurrentPage(1);
+    setIsFilterOpen(false);
+  };
+
+  const handleCloseFilter = () => {
+    setTempFilters(appliedFilters);
+    if (appliedFilters.submittedDate) {
+      setSubmittedDate(new Date(appliedFilters.submittedDate));
+    } else {
+      setSubmittedDate(null);
     }
     setIsFilterOpen(false);
   };
@@ -353,24 +441,38 @@ export default function Applications() {
     setCurrentPage(page);
   };
 
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    // Only reset page if we're actually going to search (3+ chars) or clearing search
+    if (term.trim().length >= 3 || term.trim() === "") {
+      setCurrentPage(1);
+    }
+  };
+
   const dropdownItems = [
     {
       label: "View Details",
       onClick: (row: Record<string, string>, index: number) => {
-        const globalIndex = (currentPage - 1) * itemsPerPage + index;
-        const originalRow = filteredCertificationData[globalIndex];
+        const originalRow = allCertificationData[index];
         window.location.href = `/admin/dashboard/application/detail/${originalRow.id}`;
       },
     },
     {
       label: "Delete Application",
       onClick: (row: Record<string, string>, index: number) => {
-        const globalIndex = (currentPage - 1) * itemsPerPage + index;
-        const originalRow = filteredCertificationData[globalIndex];
+        const originalRow = allCertificationData[index];
         openDeleteSingleModal(row, originalRow.id);
       },
     },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-white">Loading applications...</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -391,9 +493,12 @@ export default function Applications() {
       )}
 
       <div>
-        <h2 className="font-semibold text-[20px] leading-[20px]">Review Applications</h2>
+        <h2 className="font-semibold text-[20px] leading-[20px]">
+          Review Applications
+        </h2>
         <p className="font-regular text-[16px] leading-5 mb-[22px] pt-2 text-[#FFFFFF99]">
-          Review and manage all submitted property certification applications in one place.
+          Review and manage all submitted property certification applications in
+          one place.
         </p>
       </div>
 
@@ -404,54 +509,60 @@ export default function Applications() {
           control={tableControl}
           showDeleteButton={true}
           onDeleteSingle={(row, index) => {
-            const globalIndex = (currentPage - 1) * itemsPerPage + index;
-            const originalRow = filteredCertificationData[globalIndex];
+            const originalRow = allCertificationData[index];
             openDeleteSingleModal(row, originalRow.id);
           }}
-          // showModal={true}
           showPagination={true}
           clickable={true}
-          // modalTitle="Property Details"
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           onSelectAll={handleSelectAll}
           onSelectRow={handleSelectRow}
           isAllSelected={isAllDisplayedSelected}
           isSomeSelected={isSomeDisplayedSelected}
-          rowIds={filteredCertificationData.map((item) => item.id.toString())}
+          rowIds={allCertificationData.map((item) => item.id)}
           dropdownItems={dropdownItems}
           searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
+          onSearchChange={handleSearch}
           currentPage={currentPage}
           onPageChange={handlePageChange}
-          itemsPerPage={itemsPerPage}
-          totalItems={filteredCertificationData.length}
+          itemsPerPage={paginationData.pageSize}
+          totalItems={paginationData.total || 0}
           showFilter={true}
-          // isFilterOpen={isFilterOpen}
           onFilterToggle={setIsFilterOpen}
           onDeleteAll={handleDeleteSelected}
-          isDeleteAllDisabled={selectedRows.size === 0 || selectedRows.size < displayData.length}
+          isDeleteAllDisabled={
+            selectedRows.size === 0 || selectedRows.size < displayData.length
+          }
+          disableClientSidePagination={true}
         />
       </div>
 
       <FilterDrawer
         isOpen={isFilterOpen}
-        onClose={() => setIsFilterOpen(false)}
+        onClose={handleCloseFilter}
         title="Apply Filter"
         description="Refine listings to find the right property faster."
         resetLabel="Reset"
         onReset={handleResetFilter}
         buttonLabel="Apply Filter"
         onApply={handleApplyFilter}
-        filterValues={certificationFilters}
-        onFilterChange={(filters) => {
-            setCertificationFilters(prev => ({
-              ...prev,
-              ...filters
-            }));
-          }}
-          // dateValue={submittedDate}
-          // onDateChange={setSubmittedDate}
+        filterValues={{
+          ownership: tempFilters.ownership,
+          status: tempFilters.status,
+          "Submitted On": submittedDate,
+        }}
+        onFilterChange={(newValues) => {
+          if (newValues.ownership !== undefined) {
+            setTempFilters(prev => ({ ...prev, ownership: newValues.ownership as string }));
+          }
+          if (newValues.status !== undefined) {
+            setTempFilters(prev => ({ ...prev, status: newValues.status as string }));
+          }
+          if (newValues["Submitted On"] !== undefined) {
+            setSubmittedDate(newValues["Submitted On"] as Date | null);
+          }
+        }}
         dropdownStates={{
           ownership: showOwnershipDropdown,
           status: showStatusDropdown,
@@ -466,19 +577,18 @@ export default function Applications() {
             key: "ownership",
             type: "dropdown",
             placeholder: "Select ownership",
-            options: uniqueOwnerships,
+            options: allOwnerships,
           },
-       
           {
             label: "Status",
             key: "status",
             type: "dropdown",
             placeholder: "Select status",
-            options: uniqueStatuses,
+            options: allStatuses.map(status => capitalizeStatusForDisplay(status)),
           },
           {
             label: "Submitted On",
-            key: "submittedDate",
+            key: "Submitted On",
             type: "date",
             placeholder: "Select date",
           },

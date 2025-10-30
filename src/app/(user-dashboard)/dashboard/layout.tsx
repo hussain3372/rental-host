@@ -1,10 +1,11 @@
-'use client'
+"use client";
 
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { Sidebar } from "./dashboard-layout/Sidebar";
 import { Navbar } from "./dashboard-layout/Navbar";
 import Image from "next/image";
+import { NotificationProvider } from "@/app/shared/context/HostNotificaiton";
 
 type MainLayoutProps = {
   children: ReactNode;
@@ -18,6 +19,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   };
 
   return (
+    <NotificationProvider>
     <div className="relative min-h-[100vh] bg-[#0A0C0B] text-white  overflow-hidden">
       {/* Sidebar */}
       <Sidebar onCollapseChange={handleSidebarCollapseChange} />
@@ -41,8 +43,12 @@ export default function MainLayout({ children }: MainLayoutProps) {
         }`}
       >
         <Navbar isCollapsed={isSidebarCollapsed} />
-        <main className=" px-4 sm:px-6 pt-[99px] sm:pt-[120px] relative">{children}</main>
+        <main className=" px-4 sm:px-6 pt-[99px] sm:pt-[120px] relative">
+          {children}
+        </main>
       </div>
     </div>
+        </NotificationProvider>
+
   );
 }

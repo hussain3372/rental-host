@@ -1,10 +1,15 @@
 "use client";
-import React, { useMemo, useState, useRef, useEffect } from "react";
+
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Table } from "@/app/shared/tables/Tables";
 import FilterDrawer from "../../../shared/tables/Filter";
 import "react-datepicker/dist/react-datepicker.css";
-import { Modal } from "@/app/shared/Modal";
+import { application } from "@/app/api/Host/application";
+import type {
+  ApplicationData,
+  PaginationInfo,
+} from "@/app/api/Host/application/types";
 
 interface CustomDateInputProps {
   value?: string;
@@ -13,7 +18,8 @@ interface CustomDateInputProps {
 }
 
 interface CertificationData {
-  id: number;
+  id: string;
+  "Application ID": string;
   "Property Name": string;
   Address: string;
   Ownership: string;
@@ -21,482 +27,304 @@ interface CertificationData {
   Status: string;
 }
 
+interface ApiParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  ownership?: string;
+  status?: string;
+  submittedAt?: string;
+  propertyName?: string;
+}
+
 export default function Applications() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const [itemsPerPage] = useState(6);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Modal and delete states
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
-  const [singleRowToDelete, setSingleRowToDelete] = useState<{
-    row: Record<string, string>;
-    id: number;
-  } | null>(null);
-  const [modalType, setModalType] = useState<"single" | "multiple">("multiple");
-
-  // Dropdown states
   const [showOwnershipDropdown, setShowOwnershipDropdown] = useState(false);
-  const [showPropertyDropdown, setShowPropertyDropdown] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
 
-  // Refs for dropdown containers
-  const ownershipDropdownRef = useRef<HTMLDivElement>(null);
-  const propertyDropdownRef = useRef<HTMLDivElement>(null);
-  const statusDropdownRef = useRef<HTMLDivElement>(null);
-
-  const [certificationFilters, setCertificationFilters] = useState({
+  const [appliedFilters, setAppliedFilters] = useState({
     ownership: "",
-    property: "",
     status: "",
     submittedDate: "",
+    propertyName: "",
   });
 
-  // State for date picker
+  const [tempFilters, setTempFilters] = useState({
+    ownership: "",
+    status: "",
+    submittedDate: "",
+    propertyName: "",
+  });
+
   const [submittedDate, setSubmittedDate] = useState<Date | null>(null);
 
   const [allCertificationData, setAllCertificationData] = useState<
     CertificationData[]
-  >([
-    {
-      id: 1,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Owner",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 2,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Manager",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Pending",
-    },
-    {
-      id: 3,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Owner",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 4,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Manager",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Pending",
-    },
-    {
-      id: 5,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Agent",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Rejected",
-    },
-    {
-      id: 6,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Agent",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 7,
-      "Property Name": "Mountain View Complex",
-      Address: "123 Highland Road",
-      Ownership: "Owner",
-      "Submitted Date": "Sep 15, 2025",
-      Status: "Pending",
-    },
-    {
-      id: 8,
-      "Property Name": "Skyline Residences",
-      Address: "456 Tower Street",
-      Ownership: "Manager",
-      "Submitted Date": "Oct 1, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 9,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Owner",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 10,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Manager",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Pending",
-    },
-    {
-      id: 11,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Agent",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Rejected",
-    },
-    {
-      id: 12,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Agent",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 13,
-      "Property Name": "Mountain View Complex",
-      Address: "123 Highland Road",
-      Ownership: "Owner",
-      "Submitted Date": "Sep 15, 2025",
-      Status: "Pending",
-    },
-    {
-      id: 14,
-      "Property Name": "Skyline Residences",
-      Address: "456 Tower Street",
-      Ownership: "Manager",
-      "Submitted Date": "Oct 1, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 15,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Owner",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 16,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Manager",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Pending",
-    },
-    {
-      id: 17,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Agent",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Rejected",
-    },
-    {
-      id: 18,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Agent",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 19,
-      "Property Name": "Mountain View Complex",
-      Address: "123 Highland Road",
-      Ownership: "Owner",
-      "Submitted Date": "Sep 15, 2025",
-      Status: "Pending",
-    },
-    {
-      id: 20,
-      "Property Name": "Skyline Residences",
-      Address: "456 Tower Street",
-      Ownership: "Manager",
-      "Submitted Date": "Oct 1, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 21,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Owner",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 22,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Owner",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 23,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Owner",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 24,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Owner",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-    {
-      id: 25,
-      "Property Name": "Coastal Hillside Estate",
-      Address: "762 Evergreen Terrace",
-      Ownership: "Owner",
-      "Submitted Date": "Aug 12, 2025",
-      Status: "Approved",
-    },
-  ]);
+  >([]);
+  const [, setPaginationInfo] = useState<PaginationInfo | null>(null);
+  const [totalItems, setTotalItems] = useState(0);
 
-  // Close dropdowns on outside click
+  // State for filter options
+  const [allStatuses, setAllStatuses] = useState<string[]>([]);
+  const [allOwnerships, setAllOwnerships] = useState<string[]>([]);
+  const [, setAllPropertyNames] = useState<string[]>([]);
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        ownershipDropdownRef.current &&
-        !ownershipDropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowOwnershipDropdown(false);
-      }
-      if (
-        propertyDropdownRef.current &&
-        !propertyDropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowPropertyDropdown(false);
-      }
-      if (
-        statusDropdownRef.current &&
-        !statusDropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowStatusDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // ⏳ Delay of 500ms after typing stops
+
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      clearTimeout(handler); // cleanup on every new keystroke
     };
+  }, [searchTerm]);
+
+  const hasActiveFilters = useMemo(() => {
+    return (
+      searchTerm.trim() !== "" ||
+      appliedFilters.ownership.trim() !== "" ||
+      appliedFilters.status.trim() !== "" ||
+      appliedFilters.submittedDate !== "" ||
+      appliedFilters.propertyName.trim() !== ""
+    );
+  }, [searchTerm, appliedFilters]);
+
+  // Fetch filter options method
+  const fetchFilterOptions = useCallback(async () => {
+    try {
+      const response = await application.getApplications({
+        page: 1,
+        pageSize: 1000,
+      });
+
+      if (response.success && response.data) {
+        const applications = response.data.applications;
+
+        const statuses = [
+          ...new Set(
+            applications.map((app: ApplicationData) =>
+              app.status ? app.status.toUpperCase() : ""
+            )
+          ),
+        ].filter(Boolean);
+
+        const ownerships = [
+          ...new Set(
+            applications.map(
+              (app: ApplicationData) => app.propertyDetails?.ownership || ""
+            )
+          ),
+        ].filter(Boolean);
+
+        const propertyNames = [
+          ...new Set(
+            applications.map(
+              (app: ApplicationData) => app.propertyDetails?.propertyName || ""
+            )
+          ),
+        ].filter(Boolean);
+
+        setAllStatuses(statuses);
+        setAllOwnerships(ownerships);
+        setAllPropertyNames(propertyNames);
+      }
+    } catch (error) {
+      console.error("Error fetching filter options:", error);
+    }
   }, []);
 
-  const filteredCertificationData = useMemo(() => {
-    let filtered = allCertificationData;
+  useEffect(() => {
+    fetchFilterOptions();
+  }, [fetchFilterOptions]);
 
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (item) =>
-          item["Property Name"]
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          item["Address"].toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item["Ownership"].toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  useEffect(() => {
+    if (isFilterOpen) {
+      setTempFilters(appliedFilters);
+      if (appliedFilters.submittedDate) {
+        setSubmittedDate(new Date(appliedFilters.submittedDate));
+      } else {
+        setSubmittedDate(null);
+      }
     }
+  }, [isFilterOpen, appliedFilters]);
 
-    if (certificationFilters.property) {
-      filtered = filtered.filter(
-        (item) => item["Property Name"] === certificationFilters.property
-      );
-    }
-
-    if (certificationFilters.status) {
-      filtered = filtered.filter(
-        (item) => item["Status"] === certificationFilters.status
-      );
-    }
-
-    if (certificationFilters.ownership) {
-      filtered = filtered.filter(
-        (item) => item["Ownership"] === certificationFilters.ownership
-      );
-    }
-
-    if (certificationFilters.submittedDate) {
-      filtered = filtered.filter((item) =>
-        item["Submitted Date"].includes(certificationFilters.submittedDate)
-      );
-    }
-
-    return filtered;
-  }, [searchTerm, certificationFilters, allCertificationData]);
-
-  // Handle select all for ALL filtered data
-  const handleSelectAll = (checked: boolean) => {
-    const newSelected = new Set(selectedRows);
-
-    if (checked) {
-      // Add ALL filtered data IDs
-      filteredCertificationData.forEach((item) => newSelected.add(item.id));
-    } else {
-      // Remove ALL filtered data IDs
-      filteredCertificationData.forEach((item) => newSelected.delete(item.id));
-    }
-
-    setSelectedRows(newSelected);
+  // Date formatting methods
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   };
 
-  const handleSelectRow = (id: string, checked: boolean) => {
-    const newSelected = new Set(selectedRows);
-    const numericId = parseInt(id);
+  const formatDateForAPI = (date: Date | null): string => {
+    if (!date) return "";
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
-    if (checked) {
-      newSelected.add(numericId);
-    } else {
-      newSelected.delete(numericId);
+  const capitalizeStatusForDisplay = (status: string): string => {
+    if (!status) return "";
+    return status.charAt(0) + status.slice(1).toLowerCase();
+  };
+
+  const getStatusForAPI = (status: string): string => {
+    if (!status) return "";
+    return status.toUpperCase();
+  };
+
+  // Updated fetchApplications method
+  const fetchApplications = useCallback(async () => {
+    try {
+      setIsLoading(true);
+
+      const queryParams: ApiParams = {};
+
+      if (!hasActiveFilters) {
+        queryParams.page = currentPage;
+        queryParams.pageSize = itemsPerPage;
+      } else {
+        if (currentPage > 1) {
+          queryParams.page = currentPage;
+        }
+        if (itemsPerPage !== 6) {
+          queryParams.pageSize = itemsPerPage;
+        }
+      }
+
+      if (debouncedSearchTerm.trim().length >= 3) {
+        queryParams.search = debouncedSearchTerm.trim();
+      }
+
+      if (appliedFilters.ownership.trim()) {
+        queryParams.ownership = appliedFilters.ownership.trim();
+      }
+
+      if (appliedFilters.status.trim()) {
+        queryParams.status = getStatusForAPI(appliedFilters.status.trim());
+      }
+
+      if (appliedFilters.submittedDate) {
+        queryParams.submittedAt = appliedFilters.submittedDate;
+      }
+
+      if (appliedFilters.propertyName.trim()) {
+        queryParams.propertyName = appliedFilters.propertyName.trim();
+      }
+
+      console.log("🚀 HITTING API WITH PARAMS:", queryParams);
+
+      const response = await application.getApplications(queryParams);
+
+      if (response.success && response.data) {
+        const transformedData: CertificationData[] =
+          response.data.applications.map((app: ApplicationData) => ({
+            id: app.id,
+            "Application ID": app.id,
+            "Property Name": app.propertyDetails?.propertyName || "N/A",
+            Address: app.propertyDetails?.address || "N/A",
+            Ownership: app.propertyDetails?.ownership || "-",
+            "Current Step": app.currentStep || "-",
+            Status: capitalizeStatusForDisplay(app.status || ""),
+            "Submitted Date": app.submittedAt
+              ? formatDate(app.submittedAt)
+              : "—",
+          }));
+
+        setAllCertificationData(transformedData);
+        setPaginationInfo(response.data.pagination || null);
+        setTotalItems(
+          response.data.pagination?.total || response.data.total || 0
+        );
+      } else {
+        console.log("❌ No applications found or API error");
+        setAllCertificationData([]);
+        setPaginationInfo(null);
+        setTotalItems(0);
+      }
+    } catch (error) {
+      console.error("💥 Error fetching applications:", error);
+      setAllCertificationData([]);
+      setPaginationInfo(null);
+      setTotalItems(0);
+    } finally {
+      setIsLoading(false);
     }
-    setSelectedRows(newSelected);
-  };
+  }, [debouncedSearchTerm, appliedFilters.ownership, appliedFilters.status, appliedFilters.submittedDate, appliedFilters.propertyName, currentPage, itemsPerPage, hasActiveFilters]
+);
 
-  // Fix selection state calculations for ALL filtered data
-  const isAllDisplayedSelected = useMemo(() => {
-    return (
-      filteredCertificationData.length > 0 &&
-      filteredCertificationData.every((item) => selectedRows.has(item.id))
-    );
-  }, [filteredCertificationData, selectedRows]);
-
-  const isSomeDisplayedSelected = useMemo(() => {
-    return (
-      filteredCertificationData.some((item) => selectedRows.has(item.id)) &&
-      !isAllDisplayedSelected
-    );
-  }, [filteredCertificationData, selectedRows, isAllDisplayedSelected]);
-
-  // Delete handlers
-  const handleDeleteApplications = (selectedRowIds: Set<number>) => {
-    const idsToDelete = Array.from(selectedRowIds);
-
-    const updatedData = allCertificationData.filter(
-      (item) => !idsToDelete.includes(item.id)
-    );
-    setAllCertificationData(updatedData);
-    setIsModalOpen(false);
-    setSelectedRows(new Set());
-  };
-
-  const handleDeleteSingleApplication = (
-    row: Record<string, string>,
-    id: number
-  ) => {
-    const updatedData = allCertificationData.filter((item) => item.id !== id);
-    setAllCertificationData(updatedData);
-    setIsModalOpen(false);
-    setSingleRowToDelete(null);
-
-    // Only remove the deleted row from selection, keep others selected
-    const newSelected = new Set(selectedRows);
-    newSelected.delete(id);
-    setSelectedRows(newSelected);
-
-    // Reset to first page if current page has no data after deletion
-    const remainingDataCount = updatedData.length;
-    const maxPageAfterDeletion = Math.ceil(remainingDataCount / itemsPerPage);
-
-    if (currentPage > maxPageAfterDeletion) {
-      setCurrentPage(Math.max(1, maxPageAfterDeletion));
-    }
-  };
-
-  const openDeleteSingleModal = (row: Record<string, string>, id: number) => {
-    setSingleRowToDelete({ row, id });
-    setModalType("single");
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteSelected = () => {
-    if (selectedRows.size > 0) {
-      setModalType("multiple");
-      setIsModalOpen(true);
-    }
-  };
-
-  const handleModalConfirm = () => {
-    if (modalType === "multiple" && selectedRows.size > 0) {
-      handleDeleteApplications(selectedRows);
-    } else if (modalType === "single" && singleRowToDelete) {
-      handleDeleteSingleApplication(
-        singleRowToDelete.row,
-        singleRowToDelete.id
-      );
-    }
-  };
-
-  const tableControl = {
-    hover: true,
-    striped: false,
-    bordered: false,
-    shadow: false,
-    compact: false,
-    headerBgColor: "#252628",
-    headerTextColor: "white",
-    rowBgColor: "black",
-    rowTextColor: "#e5e7eb",
-    hoverBgColor: "black",
-    hoverTextColor: "#ffffff",
-    fontSize: 13,
-    textAlign: "left" as const,
-    rowBorder: false,
-    headerBorder: true,
-    borderColor: "#374151",
-    highlightRowOnHover: true,
-    
-  };
-
-  // Unique dropdown values
-  const uniqueProperties = [
-    ...new Set(allCertificationData.map((item) => item["Property Name"])),
-  ];
-  const uniqueStatuses = [
-    ...new Set(allCertificationData.map((item) => item["Status"])),
-  ];
-  const uniqueOwnerships = [
-    ...new Set(allCertificationData.map((item) => item["Ownership"])),
-  ];
+  useEffect(() => {
+    fetchApplications();
+  }, [fetchApplications]);
 
   const displayData = useMemo(() => {
-    return filteredCertificationData.map(({ id, ...rest }) => {
-            console.log(id);
+    return allCertificationData.map(({ id, ...rest }) => {
+      console.log("application  ID:", id);
+
       return rest;
     });
-  }, [filteredCertificationData]);
+  }, [allCertificationData]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, certificationFilters]);
+  }, [
+    searchTerm,
+    appliedFilters.ownership,
+    appliedFilters.status,
+    appliedFilters.submittedDate,
+    appliedFilters.propertyName,
+  ]);
 
+  // Filter handler methods
   const handleResetFilter = () => {
-    setCertificationFilters({
+    const resetFilters = {
       ownership: "",
-      property: "",
       status: "",
       submittedDate: "",
-    });
-    setSearchTerm("");
+      propertyName: "",
+    };
+
+    setTempFilters(resetFilters);
+    setAppliedFilters(resetFilters);
     setSubmittedDate(null);
+    setSearchTerm("");
+    setCurrentPage(1);
+    setIsFilterOpen(false);
   };
 
   const handleApplyFilter = () => {
-    if (submittedDate) {
-      setCertificationFilters((prev) => ({
-        ...prev,
-        submittedDate: submittedDate.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
-      }));
-    }
+    const dateString = formatDateForAPI(submittedDate);
 
+    const filtersToApply = {
+      ownership: tempFilters.ownership,
+      status: tempFilters.status,
+      submittedDate: dateString,
+      propertyName: tempFilters.propertyName,
+    };
+
+    console.log("🟢 APPLYING FILTERS:", filtersToApply);
+
+    setAppliedFilters(filtersToApply);
+    setCurrentPage(1);
+    setIsFilterOpen(false);
+  };
+
+  const handleCloseFilter = () => {
+    setTempFilters(appliedFilters);
+    if (appliedFilters.submittedDate) {
+      setSubmittedDate(new Date(appliedFilters.submittedDate));
+    } else {
+      setSubmittedDate(null);
+    }
     setIsFilterOpen(false);
   };
 
@@ -504,21 +332,20 @@ export default function Applications() {
     setCurrentPage(page);
   };
 
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    setCurrentPage(1);
+  };
+
   const dropdownItems = [
     {
       label: "View Details",
       onClick: (row: Record<string, string>, index: number) => {
         const globalIndex = (currentPage - 1) * itemsPerPage + index;
-        const originalRow = filteredCertificationData[globalIndex];
-        window.location.href = `/dashboard/application/detail/${originalRow.id}`;
-      },
-    },
-    {
-      label: "Delete Application",
-      onClick: (row: Record<string, string>, index: number) => {
-        const globalIndex = (currentPage - 1) * itemsPerPage + index;
-        const originalRow = filteredCertificationData[globalIndex];
-        openDeleteSingleModal(row, originalRow.id);
+        const originalRow = allCertificationData[globalIndex];
+        if (originalRow) {
+          window.location.href = `/dashboard/application/detail/${originalRow.id}`;
+        }
       },
     },
   ];
@@ -551,84 +378,89 @@ export default function Applications() {
 
   CustomDateInput.displayName = "CustomDateInput";
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-white">Loading applications...</p>
+      </div>
+    );
+  }
+
   return (
     <>
-      {isModalOpen && (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setSelectedRows(new Set());
-            setSingleRowToDelete(null);
-          }}
-          onConfirm={handleModalConfirm}
-          title="Confirm Application Deletion"
-          description="Deleting this application means it will no longer appear in your requests."
-          image="/images/delete-modal.png"
-          confirmText="Delete"
-        />
-      )}
-
-    
-
       <div className="flex flex-col justify-between">
-        <Table
-          data={displayData}
-          title="Applications"
-          control={tableControl}
-          showDeleteButton={true}
-          onDeleteSingle={(row, index) => {
-            const globalIndex = (currentPage - 1) * itemsPerPage + index;
-            const originalRow = filteredCertificationData[globalIndex];
-            openDeleteSingleModal(row, originalRow.id);
-          }}
-          showPagination={true}
-          clickable={true}
-          selectedRows={selectedRows}
-          setSelectedRows={setSelectedRows}
-          onSelectAll={handleSelectAll}
-          onSelectRow={handleSelectRow}
-          isAllSelected={isAllDisplayedSelected}
-          isSomeSelected={isSomeDisplayedSelected}
-          rowIds={filteredCertificationData.map((item) => item.id.toString())}
-          dropdownItems={dropdownItems}
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-          itemsPerPage={itemsPerPage}
-          totalItems={filteredCertificationData.length}
-          showFilter={true}
-          onFilterToggle={setIsFilterOpen}
-          onDeleteAll={handleDeleteSelected}
-          isDeleteAllDisabled={selectedRows.size === 0 || selectedRows.size < displayData.length}
-        />
+        <form onSubmit={(e) => e.preventDefault()}>
+          <Table
+            data={displayData}
+            title="Applications"
+            showDeleteButton={false}
+            showPagination={true}
+            clickable={true}
+            onRowClick={(row: Record<string, string>, index: number) => {
+              const globalIndex = (currentPage - 1) * itemsPerPage + index;
+              const originalRow = allCertificationData[globalIndex];
+              if (originalRow) {
+                window.location.href = `/dashboard/application/detail/${originalRow.id}`;
+              }
+            }}
+            dropdownItems={dropdownItems}
+            searchTerm={searchTerm}
+            onSearchChange={handleSearch}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalItems}
+            showFilter={true}
+            onFilterToggle={setIsFilterOpen}
+            disableClientSidePagination={true}
+          />
+        </form>
       </div>
 
       <FilterDrawer
         isOpen={isFilterOpen}
-        onClose={() => setIsFilterOpen(false)}
+        onClose={handleCloseFilter}
         title="Apply Filter"
         description="Refine listings to find the right property faster."
         resetLabel="Reset"
         onReset={handleResetFilter}
         buttonLabel="Apply Filter"
         onApply={handleApplyFilter}
-        filterValues={certificationFilters}
-        onFilterChange={(filters) => {
-          setCertificationFilters(prev => ({
-            ...prev,
-            ...filters
-          }));
+        filterValues={{
+          ownership: tempFilters.ownership,
+          status: tempFilters.status,
+          "Submitted On": submittedDate,
+          propertyName: tempFilters.propertyName,
+        }}
+        onFilterChange={(newValues) => {
+          if (newValues.ownership !== undefined) {
+            setTempFilters((prev) => ({
+              ...prev,
+              ownership: newValues.ownership as string,
+            }));
+          }
+          if (newValues.status !== undefined) {
+            setTempFilters((prev) => ({
+              ...prev,
+              status: newValues.status as string,
+            }));
+          }
+          if (newValues["Submitted On"] !== undefined) {
+            setSubmittedDate(newValues["Submitted On"] as Date | null);
+          }
+          if (newValues.propertyName !== undefined) {
+            setTempFilters((prev) => ({
+              ...prev,
+              propertyName: newValues.propertyName as string,
+            }));
+          }
         }}
         dropdownStates={{
           ownership: showOwnershipDropdown,
-          property: showPropertyDropdown,
           status: showStatusDropdown,
         }}
         onDropdownToggle={(key, value) => {
           if (key === "ownership") setShowOwnershipDropdown(value);
-          if (key === "property") setShowPropertyDropdown(value);
           if (key === "status") setShowStatusDropdown(value);
         }}
         fields={[
@@ -637,25 +469,22 @@ export default function Applications() {
             key: "ownership",
             type: "dropdown",
             placeholder: "Select ownership",
-            options: uniqueOwnerships,
-          },
-          {
-            label: "Property",
-            key: "property",
-            type: "dropdown",
-            placeholder: "Select property",
-            options: uniqueProperties,
+            options: allOwnerships.map((ownership) =>
+              capitalizeStatusForDisplay(ownership)
+            ),
           },
           {
             label: "Status",
             key: "status",
             type: "dropdown",
             placeholder: "Select status",
-            options: uniqueStatuses,
+            options: allStatuses.map((status) =>
+              capitalizeStatusForDisplay(status)
+            ),
           },
           {
-            label: "Submitted date",
-            key: "submittedDate",
+            label: "Submitted On",
+            key: "Submitted On",
             type: "date",
             placeholder: "Select date",
           },

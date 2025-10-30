@@ -1,8 +1,21 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Table } from "@/app/shared/tables/Tables";
-import { Modal } from "@/app/shared/Modal";
 import FilterDrawer from "@/app/shared/tables/Filter";
+import { setting } from "@/app/api/Host/setting";
+
+interface PaymentData {
+  id: string;
+  createdAt: string;
+  amount: number;
+  currency: string;
+  status: string;
+  application?: {
+    propertyDetails?: {
+      propertyName: string;
+    };
+  };
+}
 
 interface CertificationData {
   id: number;
@@ -11,18 +24,19 @@ interface CertificationData {
   "Purchase Date": string;
   "End Date": string;
   Status: string;
+  // Add ISO dates for proper filtering
+  purchaseDateISO: string;
+  endDateISO: string;
 }
+
+// const status = ["COMPLETED", "PENDING", "REJECTED"];
 
 export default function BillingHistory() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
-  const [singleRowToDelete, setSingleRowToDelete] = useState<{ 
-    row: Record<string, string>, 
-    id: number 
-  } | null>(null);
-  const [modalType, setModalType] = useState<'single' | 'multiple'>('multiple');
+  const [loading, setLoading] = useState(true);
+  const [apiData, setApiData] = useState<PaymentData[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const [certificationFilters, setCertificationFilters] = useState({
     planName: "",
@@ -39,48 +53,76 @@ export default function BillingHistory() {
   const [planDropdownOpen, setPlanDropdownOpen] = useState(false);
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
 
-  const [certificationData, setCertificationData] = useState<CertificationData[]>([
-    {
-      id: 1,
-      "Plan Name": "Starter",
-      Amount: "$12",
-      "Purchase Date": "Aug 12, 2025",
-      "End Date": "Aug 12, 2025",
-      Status: "Active",
-    },
-    {
-      id: 2,
-      "Plan Name": "Professional",
-      Amount: "$24",
-      "Purchase Date": "Aug 12, 2025",
-      "End Date": "Aug 12, 2025",
-      Status: "Inactive",
-    },
-    {
-      id: 3,
-      "Plan Name": "Enterprise",
-      Amount: "$200",
-      "Purchase Date": "Aug 12, 2025",
-      "End Date": "Aug 12, 2025",
-      Status: "Active",
-    },
-    {
-      id: 4,
-      "Plan Name": "Starter",
-      Amount: "$12",
-      "Purchase Date": "Aug 12, 2025",
-      "End Date": "Aug 12, 2025",
-      Status: "Inactive",
-    },
-    {
-      id: 5,
-      "Plan Name": "Enterprise",
-      Amount: "$200",
-      "Purchase Date": "Aug 12, 2025",
-      "End Date": "Aug 12, 2025",
-      Status: "Active",
-    },
-  ]);
+  // Fetch data from API with proper query parameters
+  useEffect(() => {
+    const fetchBillingData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        console.log("Fetching billing data with query parameters...");
+
+        const response = await setting.getBillingWithParams({
+          // status: "COMPLETED",
+          skip: 0,
+          take: 10,
+        });
+
+        console.log("API Response:", response);
+
+        // In the useEffect where you set the API data:
+        if (response.success && response.data && response.data.payments) {
+          // Convert amount from string to number
+          const paymentsWithNumberAmount = response.data.payments.map(
+            (payment) => ({
+              ...payment,
+              amount: parseFloat(payment.amount) || 0,
+            })
+          );
+          setApiData(paymentsWithNumberAmount);
+        }
+      } catch (err: unknown) {
+        console.error("Error fetching billing data:", err);
+        setError((err as Error).message || "Failed to load billing history");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBillingData();
+  }, []);
+
+  // Transform API data to match existing CertificationData structure
+  const certificationData = useMemo((): CertificationData[] => {
+    if (!apiData.length) return [];
+
+    return apiData.map((payment, index) => {
+      const purchaseDateObj = new Date(payment.createdAt);
+      const endDateObj = new Date(payment.createdAt);
+
+      return {
+        id: index + 1,
+        "Plan Name":
+          payment.application?.propertyDetails?.propertyName ||
+          `Property ${index + 1}`,
+        Amount: `${payment.amount} ${payment.currency}`,
+        "Purchase Date": purchaseDateObj.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
+        "End Date": endDateObj.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }),
+        Status: payment.status,
+        // Store ISO dates for consistent filtering
+        purchaseDateISO: purchaseDateObj.toISOString().split("T")[0], // YYYY-MM-DD
+        endDateISO: endDateObj.toISOString().split("T")[0], // YYYY-MM-DD
+      };
+    });
+  }, [apiData]);
 
   // Unique dropdown values
   const uniquePlanNames = [
@@ -90,7 +132,7 @@ export default function BillingHistory() {
     ...new Set(certificationData.map((item) => item["Status"])),
   ];
 
-  // Filter + search logic
+  // FIXED: Filter + search logic with proper date comparison
   const filteredCertificationData = useMemo(() => {
     let filtered = certificationData;
 
@@ -111,107 +153,49 @@ export default function BillingHistory() {
         (item) => item["Status"] === certificationFilters.status
       );
     }
+
+    // FIXED: Date filtering using ISO dates
     if (certificationFilters.purchaseDate) {
       filtered = filtered.filter(
-        (item) => item["Purchase Date"] === certificationFilters.purchaseDate
+        (item) => item.purchaseDateISO === certificationFilters.purchaseDate
       );
     }
+
+    // FIXED: Date filtering using ISO dates
     if (certificationFilters.endDate) {
       filtered = filtered.filter(
-        (item) => item["End Date"] === certificationFilters.endDate
+        (item) => item.endDateISO === certificationFilters.endDate
       );
     }
+
     return filtered;
   }, [searchTerm, certificationFilters, certificationData]);
 
-  // Delete handlers
-  const handleDeleteCertifications = (selectedRowIds: Set<number>) => {
-    const idsToDelete = Array.from(selectedRowIds);
-    const updatedData = certificationData.filter(item => !idsToDelete.includes(item.id));
-    setCertificationData(updatedData);
-    setIsModalOpen(false);
-    setSelectedRows(new Set());
+  // Handle row click to open detail page
+  const handleRowClick = (row: Record<string, string>, index: number) => {
+    const originalRow = filteredCertificationData[index];
+    const actualPaymentId = apiData[index]?.id;
+    window.location.href = `/dashboard/billing/detail/${
+      actualPaymentId || originalRow.id
+    }`;
   };
-
-  const handleDeleteSingleCertification = (row: Record<string, string>, id: number) => {
-    const updatedData = certificationData.filter(item => item.id !== id);
-    setCertificationData(updatedData);
-    setIsModalOpen(false);
-    setSingleRowToDelete(null);
-
-    const newSelected = new Set(selectedRows);
-    newSelected.delete(id);
-    setSelectedRows(newSelected);
-  };
-
-  const openDeleteSingleModal = (row: Record<string, string>, id: number) => {
-    setSingleRowToDelete({ row, id });
-    setModalType('single');
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteSelected = () => {
-    if (selectedRows.size > 0) {
-      setModalType('multiple');
-      setIsModalOpen(true);
-    }
-  };
-
-  const handleModalConfirm = () => {
-    if (modalType === 'multiple' && selectedRows.size > 0) {
-      handleDeleteCertifications(selectedRows);
-    } else if (modalType === 'single' && singleRowToDelete) {
-      handleDeleteSingleCertification(singleRowToDelete.row, singleRowToDelete.id);
-    }
-  };
-
-  // Selection handlers
-  const handleSelectAll = (checked: boolean) => {
-    const newSelected = new Set(selectedRows);
-
-    if (checked) {
-      filteredCertificationData.forEach(item => newSelected.add(item.id));
-    } else {
-      filteredCertificationData.forEach(item => newSelected.delete(item.id));
-    }
-
-    setSelectedRows(newSelected);
-  };
-
-  const handleSelectRow = (id: string, checked: boolean) => {
-    const newSelected = new Set(selectedRows);
-    const numericId = parseInt(id);
-
-    if (checked) {
-      newSelected.add(numericId);
-    } else {
-      newSelected.delete(numericId);
-    }
-    setSelectedRows(newSelected);
-  };
-
-  // Selection state calculations
-  const isAllDisplayedSelected = useMemo(() => {
-    return filteredCertificationData.length > 0 &&
-      filteredCertificationData.every(item => selectedRows.has(item.id));
-  }, [filteredCertificationData, selectedRows]);
-
-  const isSomeDisplayedSelected = useMemo(() => {
-    return filteredCertificationData.some(item => selectedRows.has(item.id)) &&
-      !isAllDisplayedSelected;
-  }, [filteredCertificationData, selectedRows, isAllDisplayedSelected]);
 
   // Transform data to exclude ID from display and ensure all values are strings
-  const displayData = useMemo((): Record<string, string>[] => {
-    return filteredCertificationData.map(({ id, ...rest }) => {
-      const stringRow: Record<string, string> = {};
-      Object.entries(rest).forEach(([key, value]) => {
-        stringRow[key] = String(value);
-              console.log(id);
+  // Remove this line:
+  // const status = ["COMPLETED", "PENDING", "REJECTED"];
 
-      });
-      return stringRow;
-    });
+  // In the transform function, remove unused destructured parameters:
+  const displayData = useMemo((): Record<string, string>[] => {
+    return filteredCertificationData.map(
+      ({ id, purchaseDateISO, endDateISO, ...rest }) => {
+        console.log(id, purchaseDateISO, endDateISO);
+        const stringRow: Record<string, string> = {};
+        Object.entries(rest).forEach(([key, value]) => {
+          stringRow[key] = String(value);
+        });
+        return stringRow;
+      }
+    );
   }, [filteredCertificationData]);
 
   // Table control
@@ -248,94 +232,91 @@ export default function BillingHistory() {
     setEndDate(null);
   };
 
-  // Apply filter
+  // FIXED: Apply filter with proper date handling
   const handleApplyFilter = () => {
+    const newFilters = { ...certificationFilters };
+
+    // Store dates as ISO strings (YYYY-MM-DD) for consistent comparison
     if (purchaseDate) {
-      setCertificationFilters((prev) => ({
-        ...prev,
-        purchaseDate: purchaseDate.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
-      }));
+      newFilters.purchaseDate = purchaseDate.toISOString().split("T")[0];
+    } else {
+      newFilters.purchaseDate = "";
     }
 
     if (endDate) {
-      setCertificationFilters((prev) => ({
-        ...prev,
-        endDate: endDate.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
-      }));
+      newFilters.endDate = endDate.toISOString().split("T")[0];
+    } else {
+      newFilters.endDate = "";
     }
 
+    setCertificationFilters(newFilters);
     setIsFilterOpen(false);
   };
 
+  // Only keep View Details in dropdown
   const dropdownItems = [
     {
       label: "View Details",
       onClick: (row: Record<string, string>, index: number) => {
         const originalRow = filteredCertificationData[index];
-        window.location.href = `/dashboard/application/detail/${originalRow.id}`;
-      },
-    },
-    {
-      label: "Delete History",
-      onClick: (row: Record<string, string>, index: number) => {
-        const originalRow = filteredCertificationData[index];
-        openDeleteSingleModal(row, originalRow.id);
+        const actualPaymentId = apiData[index]?.id;
+        window.location.href = `/dashboard/billing/detail/${
+          actualPaymentId || originalRow.id
+        }`;
       },
     },
   ];
 
+  // Add debug logging to see what's happening
+  useEffect(() => {
+    console.log("Current filters:", certificationFilters);
+    console.log("Filtered data count:", filteredCertificationData.length);
+    console.log("All data count:", certificationData.length);
+  }, [certificationFilters, filteredCertificationData, certificationData]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-white">Loading billing history...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-red-500 text-center">
+          <p className="font-semibold">Error Loading Data</p>
+          <p className="text-sm mt-2">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!apiData.length && !loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-white">No billing history found</div>
+      </div>
+    );
+  }
+
   return (
     <>
-      {isModalOpen && (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setSelectedRows(new Set());
-            setSingleRowToDelete(null);
-          }}
-          onConfirm={handleModalConfirm}
-          title="Confirm Deletion"
-          description="Deleting this history means it will no longer appear in your requests."
-          image="/images/delete-modal.png"
-          confirmText="Delete"
-        />
-      )}
-
       <div className="flex flex-col justify-between">
         <Table
           data={displayData}
           title="Billing History"
           control={tableControl}
-          showDeleteButton={true}
-          onDeleteSingle={(row, index) => {
-            const originalRow = filteredCertificationData[index];
-            openDeleteSingleModal(row, originalRow.id);
-          }}
-          showPagination={false} // No pagination for billing history
+          showDeleteButton={false}
+          showPagination={true}
           clickable={true}
-          selectedRows={selectedRows}
-          setSelectedRows={setSelectedRows}
-          onSelectAll={handleSelectAll}
-          onSelectRow={handleSelectRow}
-          isAllSelected={isAllDisplayedSelected}
-          isSomeSelected={isSomeDisplayedSelected}
-          rowIds={filteredCertificationData.map(item => item.id.toString())}
+          onRowClick={handleRowClick}
           dropdownItems={dropdownItems}
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           showFilter={true}
           onFilterToggle={setIsFilterOpen}
-          onDeleteAll={handleDeleteSelected}
-          isDeleteAllDisabled={selectedRows.size === 0 || selectedRows.size < displayData.length}
         />
       </div>
 
@@ -350,9 +331,9 @@ export default function BillingHistory() {
         onApply={handleApplyFilter}
         filterValues={certificationFilters}
         onFilterChange={(filters) => {
-          setCertificationFilters(prev => ({
+          setCertificationFilters((prev) => ({
             ...prev,
-            ...filters
+            ...filters,
           }));
         }}
         dropdownStates={{

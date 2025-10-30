@@ -1,52 +1,124 @@
+"use client";
+
+import { dashboard } from "@/app/api/Host/dashboard";
+import { DashboardStatsResponse } from "@/app/api/Host/dashboard/types";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+
+// ✅ Define proper error type
+interface ApiError {
+  message?: string;
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
 
 export default function Status() {
-  const application = [
+  const [applicationData, setApplicationData] =
+    useState<DashboardStatsResponse>();
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await dashboard.fetchStats();
+        setApplicationData(response.data);
+      } catch (error: unknown) { 
+        console.log(error);
+        
+        // ✅ Proper error handling with type checking
+        let errorMessage = "Failed to fetch stats";
+        
+        if (typeof error === 'object' && error !== null) {
+          const apiError = error as ApiError;
+          errorMessage = apiError?.message || 
+                        apiError?.response?.data?.message || 
+                        errorMessage;
+        }
+        
+        toast.error(errorMessage);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  // ✅ Map API data to UI-friendly structure
+  const cards = [
     {
       id: 1,
-      title: "Property Listing",
-      number: "5",
-      status: "+1",
-      color: "#FFB52B",
-      braces: "(1 Property listings left for this month)",
+      title: "Property Listings",
+      number: applicationData?.propertyListings?.count ?? 0,
+      status: `${
+        (applicationData?.propertyListings?.changeFromLastMonth ?? 0) >= 0
+          ? "+"
+          : ""
+      }${applicationData?.propertyListings?.changeFromLastMonth ?? 0}`,
+      color:
+        (applicationData?.propertyListings?.changeFromLastMonth ?? 0) >= 0
+          ? "#28EB1D"
+          : "#FF3F3F",
+      braces: `(${
+        applicationData?.propertyListings?.leftThisMonth ?? 0
+      } Property listings left for this month)`,
       img: "/images/card1.svg",
     },
     {
       id: 2,
       title: "Active Badges",
-      number: "3",
-      status: "+4%",
-      color: "#28EB1D",
-      braces: "(growth compared to last month)",
+      number: applicationData?.activeBadges?.count ?? 0,
+      status: `${
+        (applicationData?.activeBadges?.changeFromLastMonth ?? 0) >= 0
+          ? "+"
+          : ""
+      }${applicationData?.activeBadges?.changeFromLastMonth ?? 0}`,
+      color:
+        (applicationData?.activeBadges?.changeFromLastMonth ?? 0) >= 0
+          ? "#28EB1D"
+          : "#FF3F3F",
+      braces: `(growth compared to last month)`,
       img: "/images/card2.svg",
     },
     {
       id: 3,
       title: "Applications in Progress",
-      number: "1",
-      status: "-1",
-      color: "#FF3F3F",
-      braces: "(one fewer than last week)",
+      number: applicationData?.applicationsInProgress?.count ?? 0,
+      status: `${
+        (applicationData?.applicationsInProgress?.changeFromLastWeek ?? 0) >= 0
+          ? "+"
+          : ""
+      }${applicationData?.applicationsInProgress?.changeFromLastWeek ?? 0}`,
+      color:
+        (applicationData?.applicationsInProgress?.changeFromLastWeek ?? 0) >= 0
+          ? "#28EB1D"
+          : "#FF3F3F",
+      braces: `(change compared to last week)`,
       img: "/images/card3.svg",
     },
     {
       id: 4,
       title: "Expired",
-      number: "1",
-      status: "-1",
-      color: "#FF3F3F",
-      braces: "(recently expired)",
+      number: applicationData?.expired?.count ?? 0,
+      status: `${
+        (applicationData?.expired?.recentlyExpired ?? 0) >= 0 ? "+" : ""
+      }${applicationData?.expired?.recentlyExpired ?? 0}`,
+      color:
+        (applicationData?.expired?.recentlyExpired ?? 0) >= 0
+          ? "#28EB1D"
+          : "#FF3F3F",
+      braces: `(recently expired)`,
       img: "/images/card4.svg",
     },
   ];
 
   return (
-    <div className=" flex flex-col xl:flex-row gap-[17px]">
+    <div className="flex flex-col xl:flex-row gap-[17px]">
       {/* Cards Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-[12px] flex-1">
-        {application.map((item) => (
+        {cards.map((item) => (
           <div
             key={item.id}
             className="bg-[#121315] rounded-[12px] py-[20px] pr-[20px] pl-[20px] flex flex-col justify-between"
@@ -75,7 +147,7 @@ export default function Status() {
               >
                 {item.status}
               </span>
-              <p className="text-[14px] leading-[18px] overflow-hidden text-white opacity-80 ">
+              <p className="text-[14px] leading-[18px] overflow-hidden text-white opacity-80">
                 {item.braces}
               </p>
             </div>
@@ -84,7 +156,7 @@ export default function Status() {
       </div>
 
       {/* Yellow Section */}
-      <div className="bg-[#EFFC76] lg:max-h-[304px] !z-0 w-full xl:max-w-[397px]  relative rounded-[24px] text-black flex flex-col justify-between overflow-hidden">
+      <div className="bg-[#EFFC76] lg:max-h-[304px] !z-0 w-full xl:max-w-[397px] relative rounded-[24px] text-black flex flex-col justify-between overflow-hidden">
         <div className="p-[20px] flex flex-col justify-between !z-0 relative">
           <h3 className="font-bold text-[28px] leading-[32px] max-w-[309px]">
             Ready for your next property certification?
@@ -93,7 +165,10 @@ export default function Status() {
             Start your certification application today and keep your properties
             verified.
           </p>
-          <Link href="/listing" className="mt-[84px] cursor-pointer w-[130px] text-center flex items-center font-semibold text-[16px] leading-[20px] bg-black text-[#c4c4c4] px-[20px] py-[11px] rounded-[8px] shadow-[0_4px_20px_rgba(0,0,0,0.6)] transition-all duration-200 hover:opacity-90">
+          <Link
+            href="/listing"
+            className="mt-[84px] cursor-pointer w-[130px] text-center flex items-center font-semibold text-[16px] leading-[20px] bg-black text-[#c4c4c4] px-[20px] py-[11px] rounded-[8px] shadow-[0_4px_20px_rgba(0,0,0,0.6)] transition-all duration-200 hover:opacity-90"
+          >
             Apply Now
           </Link>
         </div>

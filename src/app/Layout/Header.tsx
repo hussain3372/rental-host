@@ -4,10 +4,12 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+// import Cookies from "js-cookie";
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -84,7 +86,7 @@ export default function Navbar() {
   };
   return (
     <>
-      <header className="fixed top-0 left-0 w-full z-50 bg-[#17181A] px-[0px] md:px-[89px] shadow-md">
+      <header className="fixed top-0 left-0 w-full z-50 bg-[#17181A] px-[0px] md:px-[83px] shadow-md">
         <div className="bg-[#0A0C0B] rounded-lg relative w-full max-w-[1304px] mx-auto">
           <nav className="mx-auto flex items-center justify-between py-[24px] px-3 sm:px-[20px]">
             {/* Mobile Menu Button */}
@@ -150,37 +152,14 @@ export default function Navbar() {
             </div>
             {/* CTA Buttons */}
             <div className="flex gap-3 lg:flex-1 lg:justify-end">
+              
               <Link
-                href="/super-admin/dashboard"
+                href="/auth/login"
                 className="text-[16px] font-medium leading-5 flex items-center transition-all duration-300
                 bg-[#fff] rounded-[8px] h-[30px] pt-[6px] pb-[6px] pl-[12px] pr-[12px] gap-[4px]
                 lg:h-[36px] lg:pt-[8px] lg:pb-[8px] lg:pl-[24px] lg:pr-[24px] lg:gap-[8px] text-black"
               >
-                SA
-              </Link>
-              <Link
-                href="/admin/dashboard"
-                className="text-[16px] font-medium leading-5 flex items-center transition-all duration-300
-                bg-[#fff] rounded-[8px] h-[30px] pt-[6px] pb-[6px] pl-[12px] pr-[12px] gap-[4px]
-                lg:h-[36px] lg:pt-[8px] lg:pb-[8px] lg:pl-[24px] lg:pr-[24px] lg:gap-[8px] text-black"
-              >
-                AD
-              </Link>
-              <Link
-                href="/dashboard"
-                className="text-[16px] font-medium leading-5 flex items-center transition-all duration-300
-                bg-[#fff] rounded-[8px] h-[30px] pt-[6px] pb-[6px] pl-[12px] pr-[12px] gap-[4px]
-                lg:h-[36px] lg:pt-[8px] lg:pb-[8px] lg:pl-[24px] lg:pr-[24px] lg:gap-[8px] text-black"
-              >
-                Host
-              </Link>
-              <Link
-                href="/auth/signup"
-                className="text-[16px] font-medium leading-5 flex items-center transition-all duration-300
-                bg-[#fff] rounded-[8px] h-[30px] pt-[6px] pb-[6px] pl-[12px] pr-[12px] gap-[4px]
-                lg:h-[36px] lg:pt-[8px] lg:pb-[8px] lg:pl-[24px] lg:pr-[24px] lg:gap-[8px] text-black"
-              >
-                Sign Up
+                Sign in
               </Link>
             </div>
           </nav>

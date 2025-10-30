@@ -28,7 +28,6 @@ export default function SubscriptionPlan() {
       featureSize: "text-[12px] leading-[16px]",
       descriptionClass: "text-[14px] leading-[18px]",
       priceSize: "text-[40px] leading-[68px]",
-
     },
     {
       key: "Professional",
@@ -86,17 +85,6 @@ export default function SubscriptionPlan() {
 
   return (
     <div className="">
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="text-[20px] leading-[24px] font-semibold text-white">
-          Settings & Preferences
-        </h1>
-      </div>
-      <p className="text-4 leading-5 text-[#FFFFFF99] font-normal mb-[40px] max-w-[573px] w-full">
-        Manage your personal details, security, notifications, and billing all
-        in one place. Customize your experience and keep your account up to
-        date.
-      </p>
-
       {/* Cards */}
       <div className="flex flex-col xl:flex-row items-center justify-between gap-[20px] mb-5">
         {plans.map((plan) => (
@@ -119,34 +107,38 @@ export default function SubscriptionPlan() {
                 : "bg-[#121315]"
             }
             textColor="text-white"
-            buttonBg={subscribedPlan === plan.key ? "bg-[#EFFC76]" : "bg-[#2D2D2D]"}
-            buttonTextColor={subscribedPlan === plan.key ? "text-black" : "text-white"}
+            buttonBg={
+              subscribedPlan === plan.key ? "bg-[#EFFC76]" : "bg-[#2D2D2D]"
+            }
+            buttonTextColor={
+              subscribedPlan === plan.key ? "text-black" : "text-white"
+            }
             padding="p-[20px]"
-
             titleClass={plan.titleClass}
             featureSize={plan.featureSize}
             descriptionClass={plan.descriptionClass}
             priceSize={plan.priceSize}
           />
-
         ))}
       </div>
 
       {/* Filter Drawer */}
       <div
-        className={`fixed inset-0 flex justify-end bg-black/70 z-[2000] transition-opacity duration-300 ${showPayment
-          ? "opacity-100 pointer-events-auto"
-          : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 flex justify-end bg-black/70 z-[2000] transition-opacity duration-300 ${
+          showPayment
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
         onClick={() => setShowPayment(false)}
       >
         <div
           className={`relative w-full sm:max-w-[608px] max-w-[260px] h-full  rounded-xl               border border-[#FFFFFF1F] 
- bg-[#0A0C0B] shadow-lg overflow-y-auto scrollbar-hide z-[2010] transform transition-transform duration-300 ease-in-out ${showPayment ? "translate-x-0" : "translate-x-full"
-            }`}
+ bg-[#0A0C0B] shadow-lg overflow-y-auto scrollbar-hide z-[2010] transform transition-transform duration-300 ease-in-out ${
+   showPayment ? "translate-x-0" : "translate-x-full"
+ }`}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="h-full bg-[#0A0C0B] "> 
+          <div className="h-full bg-[#0A0C0B] ">
             <ApplyNowFilter
               selectedPlan={selectedPlan ?? ""}
               onClose={() => setShowPayment(false)}
